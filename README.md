@@ -1,25 +1,22 @@
 # Neko Game Engine 
 develop branch: [![Build Status](https://travis-ci.com/EliasFarhan/NekoEngine.svg?branch=develop)](https://travis-ci.com/EliasFarhan/NekoEngine)
 
-Neko is a 3D game engine based on SDL2 and OpenGL ES 3.0 that works on Desktop (Windows and Linux, not MacOSX), WebGL2 and Nintendo Switch (port to Android and iOS possible) used at [SAE Institute Geneva](https://sae.swiss).
+NekoGame is a 3D game engine that works on Windows and Linux, forked from the Neko repo that is used at [SAE Institute Geneva](https://sae.swiss).
+This is my own personal fork that I use as a testing ground for experimentation, however I do intend for it to be a fully functional game engine in the future.
 
-## Requirements
-### Windows
-Install CMake ([https://cmake.org/download/]), the Vulkan SDK ([https://www.lunarg.com/vulkan-sdk/]) and Python3 ([https://www.python.org/downloads/]). Visual Studio 2019 is recommended on Windows.
-### Ubuntu
-Because we use C++17 filesystem, you will need at least Ubuntu 19.10 to compile with the latest libstdc++ or even better Clang and libc++. You will need to install the packages:
-```
-sudo apt-get install build-essential cmake libsdl2-dev glslang-tools python3-dev libgl1-mesa-dev libzstd-dev 
-```
-### Android
-Simply use Android Studio and open the android/GPR5300 folder. You will need to install NDK. The Android Studio cmake version is too old so put your recent cmake into the PATH as well as Ninja ([https://ninja-build.org/]).
-### Emscripten/WebGL
-Install the emsdk. Then you can:
-```
-emcmake cmake .. # it will not work the first time?
-emcmake cmake ..
-make comp_graph # only the comp graph executable is currently working 
-```
+## Installation
+### Requirements
+- [CMake](https://cmake.org/download/) to generate the project files.
+- [Python3](https://www.python.org/downloads/) for running the different scripts available.
+- [Vulkan SDK](https://www.lunarg.com/vulkan-sdk/) (Optional) if you're plaaning on working with Vulkan.
+
+Clang is recommended to compile the engine.
+
+### Steps
+- Clone the repository.
+- Setup CMake as you usually would with your favorite IDE.
+- Build the 'GenerateDataTool' in release to generate the files needed for assets compilation.
+
 ## Libraries used
 - SDL2 [https://www.libsdl.org/index.php]
 - GLAD [https://glad.dav1d.de/]
