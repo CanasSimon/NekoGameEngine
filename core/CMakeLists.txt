@@ -13,7 +13,7 @@ source_group("Physics"				FILES ${Neko_PHYSICS_SRC})
 source_group("Sound"				FILES ${Neko_SOUND_SRC})
 source_group("Maths"			FILES ${Neko_MATH_SRC})
 
-List(APPEND Neko_SRC
+list(APPEND Neko_SRC
         ${Neko_ENGINE_SRC}
         ${Neko_GRAPHICS_SRC}
         ${Neko_UTILITY_SRC}
@@ -21,20 +21,14 @@ List(APPEND Neko_SRC
         ${Neko_SOUND_SRC}
         ${Neko_MATH_SRC})
 
-#imgui
-set(IMGUI_VERSION "1.80" CACHE INTERNAL "")
-set(IMGUI_ROOT "${EXTERNAL_DIR}/imgui-${IMGUI_VERSION}" CACHE STRING "")
-add_subdirectory("${IMGUI_ROOT}" ${CMAKE_CURRENT_BINARY_DIR}/imgui)
-set_target_properties(imgui PROPERTIES UNITY_BUILD ON)
 #Utility
 set(UTILITIES_DIR ${EXTERNAL_DIR}/utilities/)
 
 add_library(Neko_Core STATIC ${Neko_SRC})
-target_include_directories(Neko_Core PUBLIC "${IMGUI_ROOT}")
 target_link_libraries(Neko_Core PUBLIC imgui)
 if (APPLE)
     target_link_libraries(Neko_Core PUBLIC ${Boost_LIBRARIES})
-endif(APPLE)
+endif ()
 
 if(Neko_Profile)
     target_link_libraries(Neko_Core PUBLIC easy_profiler)
@@ -51,11 +45,8 @@ target_compile_definitions(Neko_Core PUBLIC SOURCE_PATH="${CMAKE_SOURCE_DIR}")
 set_target_properties (Neko_Core PROPERTIES FOLDER Neko/Core)
 
 target_include_directories(Neko_Core PUBLIC "${IMGUI_ROOT}")
-target_include_directories(Neko_Core PUBLIC "include/")
-target_include_directories(Neko_Core PUBLIC "${UTILITIES_DIR}")
-
-
-
+target_include_directories(Neko_Core PUBLIC include/)
+target_include_directories(Neko_Core PUBLIC ${UTILITIES_DIR})
 neko_lib_config(Neko_Core)
 
 if(Neko_Test)

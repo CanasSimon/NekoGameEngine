@@ -79,7 +79,7 @@ void HelloSceneProgram::Destroy()
 void HelloSceneProgram::DrawImGui()
 {
 	std::lock_guard<std::mutex> lock(updateMutex_);
-	entityViewer_.DrawImGui();
+	entityViewer_.DrawActorImGui();
 
 	transformViewer_.SetSelectedEntity(entityViewer_.GetSelectedEntity());
 	ImGui::Begin("Inspector");

@@ -1,4 +1,5 @@
 #pragma once
+#include "graphics/color.h"
 /*
  MIT License
 
@@ -22,46 +23,79 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
  */
+#ifdef NEKO_GLES3
+#include "engine/globals.h"
+#include "mathematics/aabb.h"
 
-#include <vector>
-
-#include "assimp/material.h"
-#include "mathematics/vector.h"
+#include "gl/mesh.h"
 #include "gl/shader.h"
-#include "gl/texture.h"
-#include "mathematics/circle.h"
 
-struct aiMesh;
-struct aiScene;
-
-namespace neko::assimp
+namespace neko::gl
 {
+struct Vertex
+{
+    Vertex() = default;
+    Vertex(const Vec3f& pos, const Vec3f& norm, const Vec2f& uv);
 
-	struct Vertex
-	{
-		Vec3f position;
-		Vec3f normal;
-		Vec2f texCoords;
-        Vec3f tangent;
-        Vec3f bitangent;
-    };
+    bool operator==(const Vertex& other) const;
 
-	struct Texture
-	{
-		gl::TextureId textureId = gl::INVALID_TEXTURE_ID;
-        gl::TextureName textureName = gl::INVALID_TEXTURE_NAME;
+    Vec3f position  = Vec3f::zero;
+    Vec3f normal    = Vec3f::zero;
+    Vec2f texCoords = Vec2f::zero;
+    Vec3f tangent   = Vec3f::zero;
+    Vec3f bitangent = Vec3f::zero;
+};
 
-		aiTextureType type = aiTextureType_NONE;
-	};
-
-
-	struct Mesh
+class Mesh
+{
+public:
+    struct Texture
     {
-        std::vector<Vertex> vertices;
-        std::vector<unsigned int> indices;
-        std::vector<Texture> textures;
-        float specularExponent = 0.0f;
-        unsigned int VAO = 0, VBO = 0, EBO = 0;
-        Vec3f min, max;
+        enum Type : std::uint8_t
+        {
+            NONE     = 0u,
+            DIFFUSE  = 1u << 0u,
+            SPECULAR = 1u << 1u,
+            NORMAL   = 1u << 2u,
+            EMISSIVE = 1u << 3u,
+        };
+
+        TextureId textureId     = INVALID_TEXTURE_ID;
+        TextureName textureName = INVALID_TEXTURE_NAME;
+
+        Type type = NONE;
     };
-}
+
+    void Init();
+    void InitInstanced() const;
+    void Draw(const Shader& shader) const;
+    void DrawInstanced(const Shader& shader, int instanceNum) const;
+    void DrawFromTexture(const Shader& shader, const TextureName& texture);
+    void Destroy();
+
+    [[nodiscard]] const std::vector<Vertex>& GetVertices() const { return vertices_; }
+    [[nodiscard]] const std::vector<Index>& GetIndices() const { return indices_; }
+    [[nodiscard]] const Aabb3d& GetAabb() const { return aabb_; }
+    [[nodiscard]] const GLuint& GetVao() const { return vao_; }
+
+    std::vector<Texture>& GetTextures() { return textures_; }
+    Texture& GetTexture(std::size_t index) { return textures_[index]; }
+    std::size_t GetTexture(gl::Mesh::Texture::Type type);
+
+private:
+    friend class Model;
+    friend class ModelLoader;
+    void BindTextures(const Shader& shader) const;
+
+    std::vector<Vertex> vertices_;
+    std::vector<Index> indices_;
+    std::vector<Texture> textures_;
+
+    float shininess_ = 64.0f;
+    Color3 color_    = Vec3f::one;
+    Aabb3d aabb_ {};
+
+    GLuint vao_ = 0, vbo_ = 0, ebo_ = 0;
+};
+}    // namespace neko::gl
+#endif

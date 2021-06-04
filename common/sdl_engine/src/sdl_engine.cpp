@@ -21,22 +21,18 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
  */
-#include <sstream>
-#include <mathematics/vector.h>
 #include "sdl_engine/sdl_engine.h"
-#include "engine/log.h"
 
-#include "imgui.h"
-#include "imgui_impl_sdl.h"
+#include <imgui.h>
+#include <imgui_impl_sdl.h>
+#include <imgui_internal.h>
 
 #include <fmt/format.h>
 
-#include "utils/file_utility.h"
+#include "engine/log.h"
 #include "engine/window.h"
-
-#ifdef NEKO_GLES3
-#include "gl/gles3_window.h"
-#endif
+#include "mathematics/vector.h"
+#include "utils/file_utility.h"
 
 #ifdef EASY_PROFILE_USE
 #include "easy/profiler.h"
@@ -44,67 +40,66 @@
 
 namespace neko::sdl
 {
-
 void SdlEngine::Init()
 {
 #ifdef EASY_PROFILE_USE
-    EASY_BLOCK("Init Sdl Engine");
+	EASY_BLOCK("Init Sdl Engine");
 #endif
-    logDebug("Current path: " + GetCurrentPath());
-    jobSystem_.Init();
+	logDebug("Current path: " + GetCurrentPath());
+	jobSystem_.Init();
 
-    assert(window_ != nullptr);
-    SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER);
-    window_->Init();
+	assert(window_ != nullptr);
+	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER);
+	window_->Init();
 
-    initAction_.Execute();
+	initAction_.Execute();
+	inputManager_.Init();
 }
 
 void SdlEngine::Destroy()
 {
-    BasicEngine::Destroy();
+	BasicEngine::Destroy();
 
-    // Shutdown SDL 2
-    SDL_Quit();
+	// Shutdown SDL 2
+	SDL_Quit();
 }
 
 void SdlEngine::ManageEvent()
 {
-    
 #ifdef EASY_PROFILE_USE
-    EASY_BLOCK("Manage Event");
+	EASY_BLOCK("Manage Event");
 #endif
-    SDL_Event event;
-    while (SDL_PollEvent(&event))
-    {
-        if (event.type == SDL_QUIT)
-        {
-            isRunning_ = false;
-        }
+	inputManager_.OnPreUserInput();
 
-        if (event.type == SDL_WINDOWEVENT)
-        {
-            if (event.window.event == SDL_WINDOWEVENT_RESIZED)
-            {
-                logDebug(fmt::format("Windows resized with new size: ({},{})", 
-                    event.window.data1, event.window.data2));
-                config_.windowSize = Vec2u(event.window.data1, event.window.data2);
-                window_->OnResize(config_.windowSize);
-            }
-        }
-        onEventAction_.Execute(event);
-    }
+	SDL_Event event;
+	while (SDL_PollEvent(&event))
+	{
+		if (event.type == SDL_QUIT) isRunning_ = false;
+		if (event.type == SDL_WINDOWEVENT)
+		{
+			if (event.window.event == SDL_WINDOWEVENT_RESIZED)
+			{
+				logDebug(fmt::format("Windows resized with new size: ({},{})",
+					event.window.data1,
+					event.window.data2));
+				config_.windowSize = Vec2u(event.window.data1, event.window.data2);
+				window_->OnResize(config_.windowSize);
+			}
+		}
+
+		inputManager_.OnEvent(event);
+		onEventAction_.Execute(event);
+	}
+
+	//if (ImGui::GetCurrentContext()) ImGui::GetIO().KeyMods = ImGui::GetMergedKeyModFlags();
 }
 
-void SdlEngine::GenerateUiFrame()
-{
-    window_->GenerateUiFrame();
-    BasicEngine::GenerateUiFrame();
-}
+void SdlEngine::GenerateUiFrame() { BasicEngine::GenerateUiFrame(); }
 
 void SdlEngine::RegisterOnEvent(SdlEventSystemInterface& eventInterface)
 {
-    onEventAction_.RegisterCallback([&eventInterface](const SDL_Event& event){eventInterface.OnEvent(event);});
+	onEventAction_.RegisterCallback(
+		[&eventInterface](const SDL_Event& event) { eventInterface.OnEvent(event); });
 }
 
-}
+}    // namespace neko::sdl

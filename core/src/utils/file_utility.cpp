@@ -21,43 +21,38 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
  */
-#include <utils/file_utility.h>
+#include "utils/file_utility.h"
+
 #include <sstream>
-#include <functional>
-#include "engine/log.h"
 
 #include <fmt/format.h>
 
+#include "engine/log.h"
 
 #ifdef EASY_PROFILE_USE
 #include "easy/profiler.h"
 #endif
 
 #if defined(__ANDROID__)
-#include <jni.h>
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
-
+#include <jni.h>
 
 static AAssetManager* assetManager = nullptr;
 
 extern "C"
 {
-JNIEXPORT void JNICALL
-Java_swiss_sae_gpr5300_MainActivity_load(JNIEnv *env, [[maybe_unused]] jclass clazz, jobject mgr) {
-	assetManager = AAssetManager_fromJava(env, mgr);
-	logDebug("Asset Manager from JNI loaded!");
-}
+	JNIEXPORT void JNICALL Java_swiss_sae_gpr5300_MainActivity_load(
+		JNIEnv* env, [[maybe_unused]] jclass clazz, jobject mgr)
+	{
+		assetManager = AAssetManager_fromJava(env, mgr);
+		logDebug("Asset Manager from JNI loaded!");
+	}
 }
 namespace neko
 {
-ResourceJob::ResourceJob() : Job([this]{bufferFile_.Load(filePath_);})
-{
-}
-void ResourceJob::SetFilePath(std::string_view path)
-{
-    filePath_ = path;
-}
+ResourceJob::ResourceJob() : Job([this] { bufferFile_.Load(filePath_); }) {}
+void ResourceJob::SetFilePath(std::string_view path) { filePath_ = path; }
 
 bool FileExists(const std::string_view path)
 {
@@ -67,9 +62,8 @@ bool FileExists(const std::string_view path)
 		logDebug(oss.str());
 	}
 	AAsset* file = AAssetManager_open(assetManager, path.data(), AASSET_MODE_STREAMING);
-	bool exist = file != nullptr;
-	if (exist)
-		AAsset_close(file);
+	bool exist   = file != nullptr;
+	if (exist) AAsset_close(file);
 	return exist;
 }
 std::string GetFilenameExtension(const std::string_view path)
@@ -77,17 +71,13 @@ std::string GetFilenameExtension(const std::string_view path)
 	const std::string extension = path.data();
 	return extension.substr(extension.find_last_of("."));
 }
-std::string GetCurrentPath()
-{
-	return "";
-}
+std::string GetCurrentPath() { return ""; }
 const std::string LoadFile(const std::string& path)
 {
 	AAsset* file = AAssetManager_open(assetManager, path.c_str(), AASSET_MODE_BUFFER);
-	if (file == nullptr)
-		return "";
+	if (file == nullptr) return "";
 	// Get the file length
-	const  size_t fileLength = static_cast<const size_t>(AAsset_getLength64(file));
+	const size_t fileLength = static_cast<const size_t>(AAsset_getLength64(file));
 
 	// Allocate memory to read your file
 	char* fileContent = new char[fileLength + 1];
@@ -101,17 +91,15 @@ const std::string LoadFile(const std::string& path)
 	return str;
 }
 
-
 void BufferFile::Load(std::string_view path)
 {
 	AAsset* file = AAssetManager_open(assetManager, path.data(), AASSET_MODE_BUFFER);
-	if (file == nullptr)
-		return;
+	if (file == nullptr) return;
 	// Get the file length
 	dataLength = static_cast<const size_t>(AAsset_getLength64(file));
 
 	// Allocate memory to read your file
-	dataBuffer = new unsigned char[dataLength + 1];
+	dataBuffer             = new unsigned char[dataLength + 1];
 	dataBuffer[dataLength] = '\0';
 
 	// Read your file
@@ -126,41 +114,28 @@ void BufferFile::Destroy()
 	dataLength = 0;
 }
 
-
-BufferFile::~BufferFile()
-{
-	Destroy();
-}
+BufferFile::~BufferFile() { Destroy(); }
 
 void ResourceJob::Reset()
 {
 	Job::Reset();
 	bufferFile_.Destroy();
 }
-}
-
+}    // namespace neko
 #else
-
 #ifdef __APPLE__
-
 #include <boost/filesystem.hpp>
 namespace fs = boost::filesystem;
-#endif
-
-#ifdef WIN32
+#elif WIN32
 #include <filesystem>
 namespace fs = std::filesystem;
-#endif
-
-#if defined(__linux__) || defined (EMSCRIPTEN)
+#elif defined(__linux__) || defined(EMSCRIPTEN)
 #include <filesystem>
 namespace fs = std::filesystem;
 #endif
 
 namespace neko
 {
-
-
 bool FileExists(const std::string_view filename)
 {
 #ifdef __APPLE__
@@ -179,7 +154,6 @@ bool IsRegularFile(const std::string_view filename)
 	const fs::path p = filename;
 #endif
 	return fs::is_regular_file(p);
-
 }
 
 bool IsDirectory(const std::string_view filename)
@@ -192,38 +166,13 @@ bool IsDirectory(const std::string_view filename)
 	return fs::is_directory(p);
 }
 
-void IterateDirectory(const std::string_view dirname, std::function<void(const std::string_view)> func, bool recursive)
-{
-
-	if (IsDirectory(dirname))
-	{
-#ifdef __APPLE__
-		for (auto& p : fs::directory_iterator(std::string(dirname)))
-#else
-		for (auto& p : fs::directory_iterator(dirname))
-#endif
-		{
-			if (IsRegularFile(p.path().generic_string()))
-			{
-				func(p.path().generic_string());
-			}
-			else if (recursive && IsDirectory(p.path().generic_string()))
-			{
-				IterateDirectory(p.path().generic_string(), func, recursive);
-			}
-		}
-	}
-	else
-	{
-		logDebug(fmt::format("[Error] Path: {}  is not a directory!", dirname));
-	}
-}
-
 size_t CalculateFileSize(const std::string& filename)
 {
 	std::ifstream in(filename, std::ifstream::binary | std::ifstream::ate);
 	return static_cast<size_t>(in.tellg());
 }
+
+std::string GetCurrentPath() { return fs::current_path().string(); }
 
 bool CreateDirectory(const std::string_view dirname)
 {
@@ -238,7 +187,7 @@ bool RemoveDirectory(const std::string_view dirname, bool removeAll)
 {
 	if (removeAll)
 	{
-#ifdef  __APPLE__
+#ifdef __APPLE__
 		return fs::remove_all(std::string(dirname));
 #else
 		return fs::remove_all(dirname);
@@ -252,65 +201,45 @@ bool RemoveDirectory(const std::string_view dirname, bool removeAll)
 		return fs::remove(dirname);
 #endif
 	}
+}
+
+void IterateDirectory(const std::string_view dirname,
+	const std::function<void(const std::string_view)>& func,
+	bool recursive)
+{
+	if (IsDirectory(dirname))
+	{
+#ifdef __APPLE__
+		for (auto& p : fs::directory_iterator(std::string(dirname)))
+#else
+		for (auto& p : fs::directory_iterator(dirname))
+#endif
+		{
+			if (IsRegularFile(p.path().generic_string())) { func(p.path().generic_string()); }
+			else if (recursive && IsDirectory(p.path().generic_string()))
+			{
+				IterateDirectory(p.path().generic_string(), func, recursive);
+			}
+		}
 	}
-
-
-std::string GetFilenameExtension(const std::string_view path)
-{
-	const fs::path p = path;
-	return p.extension().string();
+	else
+	{
+		logDebug(fmt::format("[Error] Path: {}  is not a directory!", dirname));
+	}
 }
 
-std::string GetFileParentPath(const std::string_view path)
+std::string LoadFile(const std::string_view path)
 {
-#ifdef __APPLE__
-	fs::path p = std::string(path);
-#else
-	fs::path p = fs::path(path);
-#endif
-	return p.parent_path().string();
+	std::ifstream t(path.data());
+	std::string str((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
+	return str;
 }
 
-std::string LinkFolderAndFile(const std::string_view folderPath, const std::string_view filePath)
+std::string LoadBinaries(const std::string_view path)
 {
-
-#ifdef __APPLE__
-	fs::path f = std::string(folderPath);
-	fs::path p = std::string(filePath);
-#else
-	const fs::path f = fs::path(folderPath);
-	const fs::path p = fs::path(filePath);
-#endif
-	const fs::path l = f / p;
-
-	return MakeGeneric(l.string());
-}
-
-void WriteStringToFile(const std::string& path, const std::string_view content)
-{
-	std::ofstream t(path);
-	t << content;
-
-}
-
-std::string GetFilename(const std::string_view path)
-{
-	const fs::path p = path;
-	return p.filename().string();
-}
-
-std::string GetStem(const std::string_view path)
-{
-	const fs::path p = path;
-	return p.stem().string();
-}
-
-std::string MakeGeneric(const std::string_view path)
-{
-	std::string p = path.data();
-	std::replace_if(p.begin(), p.end(),
-		[](char separator) {return separator == '\\'; }, '/');
-	return p;
+	std::ifstream t(path.data(), std::ios::binary);
+	std::string str((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
+	return str;
 }
 
 std::string GetRelativePath(const std::string_view path, const std::string_view relative)
@@ -320,25 +249,61 @@ std::string GetRelativePath(const std::string_view path, const std::string_view 
 	return MakeGeneric(fs::relative(p, relative).string());
 }
 
-std::string GetCurrentPath()
+std::string GetFileParentPath(const std::string_view path)
 {
-	return fs::current_path().string();
-}
-
-const std::string LoadFile(const std::string& path)
-{
-	std::ifstream t(path);
-	std::string str((std::istreambuf_iterator<char>(t)),
-		std::istreambuf_iterator<char>());
-	return str;
-}
-
-
-}
+#ifdef __APPLE__
+	fs::path p = std::string(path);
+#else
+	fs::path p       = fs::path(path);
 #endif
+	return p.parent_path().string();
+}
 
-namespace neko
+std::string GetStem(const std::string_view path)
+{
+	const fs::path p = path;
+	return p.stem().string();
+}
+
+std::string GetFilename(const std::string_view path)
+{
+	const fs::path p = path;
+	return p.filename().string();
+}
+
+std::string GetFilenameExtension(const std::string_view path)
+{
+	const fs::path p = path;
+	return p.extension().string();
+}
+
+std::string LinkFolderAndFile(const std::string_view folderPath, const std::string_view filePath)
 {
 
+#ifdef __APPLE__
+	fs::path f       = std::string(folderPath);
+	fs::path p       = std::string(filePath);
+#else
+	const fs::path f = fs::path(folderPath);
+	const fs::path p = fs::path(filePath);
+#endif
+	const fs::path l = f / p;
 
+	return MakeGeneric(l.string());
 }
+
+std::string MakeGeneric(const std::string_view path)
+{
+	std::string p = path.data();
+	std::replace_if(
+		p.begin(), p.end(), [](char separator) { return separator == '\\'; }, '/');
+	return p;
+}
+
+void WriteStringToFile(const std::string& path, const std::string_view content)
+{
+	std::ofstream t(path);
+	t << content;
+}
+}    // namespace neko
+#endif

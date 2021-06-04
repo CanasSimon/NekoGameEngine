@@ -22,41 +22,40 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
  */
-#include <queue>
 #include <map>
+#include <queue>
 
-#include <xxhash.hpp>
 #include <sole.hpp>
 
-#include <engine/assert.h>
-#include <engine/log.h>
-#include <utils/service_locator.h>
-#include <mathematics/vector.h>
-#include <engine/filesystem.h>
+#include "engine/assert.h"
+#include "engine/filesystem.h"
+#include "engine/log.h"
+#include "mathematics/hash.h"
+#include "mathematics/vector.h"
+#include "utils/service_locator.h"
 
 namespace neko
 {
-
 /**
  * \brief Image stores the data from a image file.
  * Used for PNG JPG and other basic image format.
  */
 struct Image
 {
-    Image() = default;
-    ~Image();
-    Image(Image&& image) noexcept;
+	Image() = default;
+	~Image();
+	Image(Image&& image) noexcept;
 
-    Image& operator=(Image&& image) noexcept;
-    Image(const Image&) = delete;
-    Image& operator= (const Image&) = delete;
+	Image& operator     =(Image&& image) noexcept;
+	Image(const Image&) = delete;
+	Image& operator=(const Image&) = delete;
 
-
-    unsigned char* data = nullptr;
-    int width = -1, height = -1;
-    int nbChannels = 0;
-    void Destroy();
+	unsigned char* data = nullptr;
+	int width = -1, height = -1;
+	int nbChannels = 0;
+	void Destroy();
 };
+
 /**
  * \brief Simple function decompressing an image for disk to an Image
  * @param imageFile
@@ -64,6 +63,5 @@ struct Image
  * @param hdr
  * @return
  */
-Image StbImageConvert(const BufferFile& imageFile, bool flipY=false, bool hdr = false);
-
-}
+Image StbImageConvert(const BufferFile& imageFile, bool flipY = false, bool hdr = false);
+}    // namespace neko

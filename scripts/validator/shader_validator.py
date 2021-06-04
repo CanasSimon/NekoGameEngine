@@ -1,16 +1,10 @@
 #!/usr/bin/env python3
-
 import platform
 import subprocess
 import os
+from os import environ
 from enum import Enum
 from pathlib import Path
-
-if platform.system() == 'Windows':
-    vulkan_path = os.getenv("VULKAN_SDK")
-    program = '{}\\Bin\\glslangValidator.exe'.format(vulkan_path)
-else:
-    program = 'glslangValidator'
 
 
 class ShaderType(Enum):
@@ -30,14 +24,13 @@ class UniformObject:
 
 
 def validate_shader(data_src, data_out, meta_content):
-    args = []
-    is_vulkan = False
-    if "vulkan" in meta_content:
-        is_vulkan = True
-    if is_vulkan:
-        status = subprocess.run([program,"-V", data_src, "-o", data_out+".spv"])
-    else:
-        status = subprocess.run([program, data_src])
+    global glslang_exe
+    glslang_exe = environ.get("GLSLANG_VALIDATOR_EXE")
+    if glslang_exe is None:
+        sys.stderr.write("Could not find glslangValidator executable\n")
+        exit(1)
+        
+    status = subprocess.run([glslang_exe, data_src])
     if status.returncode != 0:
         exit(1)
     path = Path(data_out)
@@ -81,8 +74,12 @@ def validate_shader(data_src, data_out, meta_content):
                 if index > comment_index:
                     continue
                 in_variable = {}
-                in_variable["type"] = split_line[index+1]
-                in_variable["name"] = split_line[index+2]
+                if len(split_line) == 2:
+                    in_variable["type"] = "Interface Block"
+                    in_variable["name"] = split_line[index+1]
+                else:
+                    in_variable["type"] = split_line[index+1]
+                    in_variable["name"] = split_line[index+2]
                 in_attributes.append(in_variable)
             if "out" in split_line:
                 comment_index = len(split_line)
@@ -93,8 +90,12 @@ def validate_shader(data_src, data_out, meta_content):
                     continue
                 index = split_line.index('out')
                 out_variable = {}
-                out_variable["type"] = split_line[index+1]
-                out_variable["name"] = split_line[index+2]
+                if len(split_line) == 2:
+                    out_variable["type"] = "Interface Block"
+                    out_variable["name"] = split_line[index+1]
+                else:
+                    out_variable["type"] = split_line[index+1]
+                    out_variable["name"] = split_line[index+2]
                 out_attributes.append(out_variable)
     meta_content["uniforms"] = uniforms
     meta_content["in_attributes"] = in_attributes

@@ -35,11 +35,11 @@ void DrawSystem::Init()
 	EASY_BLOCK("DrawSystem::Init");
 #endif
 	Camera3D camera;
-	camera.position         = Vec3f::forward * 2.0f;
+	camera.position         = Vec3f::forward * 2.0f + Vec3f::up * 2.0f;
 	camera.reverseDirection = Vec3f::forward;
-	camera.fovY             = degree_t(100.0f);
+	camera.fovY             = degree_t(70.0f);
 	camera.nearPlane        = 0.1f;
-	camera.farPlane         = 1'000'000.0f;
+	camera.farPlane         = 1'000.0f;
 	camera_.SetCameras(camera);
 	CameraLocator::provide(&camera_.GetCamera(0));
 

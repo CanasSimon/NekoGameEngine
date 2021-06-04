@@ -73,7 +73,7 @@ EQUALS = =
 CMAKE_SOURCE_DIR = /media/Data/Repos/NekoGameEngine
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /media/Data/Repos/NekoGameEngine/cmake-build-release
+CMAKE_BINARY_DIR = /media/Data/Repos/NekoGameEngine/cmake-build-debug
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -116,7 +116,7 @@ install/fast: preinstall/fast
 
 # Special rule for the target list_install_components
 list_install_components:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Available install components are: \"Devel\" \"Unspecified\" \"assimp-dev\" \"dev\" \"headers\" \"libassimp5.0.0-dev\" \"library\" \"pkgconfig\" \"tools\""
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Available install components are: \"Devel\" \"Unspecified\" \"assimp-dev\" \"headers\" \"libassimp5.0.0-dev\" \"pkgconfig\""
 .PHONY : list_install_components
 
 # Special rule for the target list_install_components
@@ -138,7 +138,7 @@ rebuild_cache/fast: rebuild_cache
 # Special rule for the target package_source
 package_source:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Run CPack packaging tool for source..."
-	cd /media/Data/Repos/NekoGameEngine/cmake-build-release && /opt/clion/bin/cmake/linux/bin/cpack --config ./CPackSourceConfig.cmake /media/Data/Repos/NekoGameEngine/cmake-build-release/CPackSourceConfig.cmake
+	cd /media/Data/Repos/NekoGameEngine/cmake-build-debug && /opt/clion/bin/cmake/linux/bin/cpack --config ./CPackSourceConfig.cmake /media/Data/Repos/NekoGameEngine/cmake-build-debug/CPackSourceConfig.cmake
 .PHONY : package_source
 
 # Special rule for the target package_source
@@ -160,7 +160,7 @@ edit_cache/fast: edit_cache
 # Special rule for the target package
 package: preinstall
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Run CPack packaging tool..."
-	cd /media/Data/Repos/NekoGameEngine/cmake-build-release && /opt/clion/bin/cmake/linux/bin/cpack --config ./CPackConfig.cmake
+	cd /media/Data/Repos/NekoGameEngine/cmake-build-debug && /opt/clion/bin/cmake/linux/bin/cpack --config ./CPackConfig.cmake
 .PHONY : package
 
 # Special rule for the target package
@@ -181,14 +181,14 @@ test/fast: test
 
 # The main all target
 all: cmake_check_build_system
-	cd /media/Data/Repos/NekoGameEngine/cmake-build-release && $(CMAKE_COMMAND) -E cmake_progress_start /media/Data/Repos/NekoGameEngine/cmake-build-release/CMakeFiles /media/Data/Repos/NekoGameEngine/externals/PhysX-4.1//CMakeFiles/progress.marks
-	cd /media/Data/Repos/NekoGameEngine/cmake-build-release && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ../externals/PhysX-4.1/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /media/Data/Repos/NekoGameEngine/cmake-build-release/CMakeFiles 0
+	cd /media/Data/Repos/NekoGameEngine/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_progress_start /media/Data/Repos/NekoGameEngine/cmake-build-debug/CMakeFiles /media/Data/Repos/NekoGameEngine/externals/PhysX-4.1//CMakeFiles/progress.marks
+	cd /media/Data/Repos/NekoGameEngine/cmake-build-debug && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ../externals/PhysX-4.1/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /media/Data/Repos/NekoGameEngine/cmake-build-debug/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /media/Data/Repos/NekoGameEngine/cmake-build-release && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ../externals/PhysX-4.1/clean
+	cd /media/Data/Repos/NekoGameEngine/cmake-build-debug && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ../externals/PhysX-4.1/clean
 .PHONY : clean
 
 # The main clean target
@@ -198,17 +198,17 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /media/Data/Repos/NekoGameEngine/cmake-build-release && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ../externals/PhysX-4.1/preinstall
+	cd /media/Data/Repos/NekoGameEngine/cmake-build-debug && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ../externals/PhysX-4.1/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /media/Data/Repos/NekoGameEngine/cmake-build-release && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ../externals/PhysX-4.1/preinstall
+	cd /media/Data/Repos/NekoGameEngine/cmake-build-debug && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ../externals/PhysX-4.1/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /media/Data/Repos/NekoGameEngine/cmake-build-release && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /media/Data/Repos/NekoGameEngine/cmake-build-debug && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Help Target
@@ -237,6 +237,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /media/Data/Repos/NekoGameEngine/cmake-build-release && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /media/Data/Repos/NekoGameEngine/cmake-build-debug && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

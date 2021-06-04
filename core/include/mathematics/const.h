@@ -22,15 +22,17 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
  */
+#include <cmath>
+
 #ifdef WIN32
 #define _USE_MATH_DEFINES
 #include <corecrt_math_defines.h>
 #endif
 
-#include <cmath>
 namespace neko
 {
-const float PI = static_cast<float>(M_PI);
-
-
-}
+constexpr float PI = static_cast<float>(M_PI);
+#ifndef linux
+constexpr float MAXFLOAT = std::numeric_limits<float>::infinity();
+#endif
+}    // namespace neko

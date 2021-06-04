@@ -22,15 +22,17 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
  */
-#include "graphics.h"
+#include <string_view>
+
+#include <sole.hpp>
+
+#include "graphics/graphics.h"
 #include "graphics/color.h"
 #include "mathematics/vector.h"
 
-#include <string_view>
 namespace neko
 {
-
-using FontId = sole::uuid;
+using FontId                 = sole::uuid;
 const FontId INVALID_FONT_ID = sole::uuid();
 
 enum class TextAnchor
@@ -38,9 +40,11 @@ enum class TextAnchor
     TOP_LEFT,
     TOP,
     TOP_RIGHT,
+
     CENTER_LEFT,
     CENTER,
     CENTER_RIGHT,
+
     BOTTOM_LEFT,
     BOTTOM,
     BOTTOM_RIGHT
@@ -49,12 +53,24 @@ enum class TextAnchor
 class FontManager : public RenderCommandInterface
 {
 public:
-  virtual ~FontManager() = default;
-  virtual void Init() = 0;
-  virtual FontId LoadFont(std::string_view fontName, int pixelHeight) = 0;
-  virtual void
-  RenderText(FontId font, std::string_view text, Vec2f position, TextAnchor anchor, float scale, Color4 color) = 0;
-  virtual void DestroyFont(FontId font) = 0;
-  virtual void Destroy() = 0;
+    virtual ~FontManager() = default;
+
+    virtual void Init()                                                 = 0;
+    virtual FontId LoadFont(std::string_view fontPath, int pixelHeight) = 0;
+
+    virtual void RenderText(const FontId fontId,
+                            const std::string text,
+                            const Vec2i position,
+                            const TextAnchor anchor,
+                            const float scale,
+                            const Color4& color) = 0;
+
+    virtual void SetWindowSize(const Vec2f& windowSize) = 0;
+
+    virtual void DestroyFont(FontId font) = 0;
+    virtual void Destroy()                = 0;
+
+    [[nodiscard]] virtual Vec2i CalculateTextSize(
+        FontId fontId, std::string_view text, float scale) = 0;
 };
 }

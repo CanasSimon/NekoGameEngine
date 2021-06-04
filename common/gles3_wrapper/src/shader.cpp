@@ -22,18 +22,27 @@
  SOFTWARE.
  */
 #include "gl/shader.h"
-#include <utils/file_utility.h>
-#include <sstream>
-#include <engine/log.h>
-#include <fmt/format.h>
+
 namespace neko::gl
 {
+Shader::Shader() : filesystem_(BasicEngine::GetInstance()->GetFilesystem()) {}
+
+Shader::~Shader() { Destroy(); }
+
+void Shader::Destroy()
+{
+    if(shaderProgram_ != 0)
+    {
+        glDeleteProgram(shaderProgram_);
+        shaderProgram_ = 0;
+    }
+}
 
 void Shader::LoadFromFile(const std::string_view vertexShaderPath, const std::string_view fragmentShaderPath)
 {
     BufferFile vertexFile = filesystem_.LoadFile(vertexShaderPath);
 
-    const GLuint vertexShader = LoadShader(vertexFile, GL_VERTEX_SHADER);
+    GLuint vertexShader = LoadShader(vertexFile, GL_VERTEX_SHADER);
     vertexFile.Destroy();
     if (vertexShader == INVALID_SHADER)
     {
@@ -42,7 +51,7 @@ void Shader::LoadFromFile(const std::string_view vertexShaderPath, const std::st
     }
     BufferFile fragmentFile = filesystem_.LoadFile(fragmentShaderPath);
 
-    const GLuint fragmentShader = LoadShader(fragmentFile, GL_FRAGMENT_SHADER);
+    GLuint fragmentShader = LoadShader(fragmentFile, GL_FRAGMENT_SHADER);
     fragmentFile.Destroy();
     if (fragmentShader == INVALID_SHADER)
     {
@@ -52,13 +61,17 @@ void Shader::LoadFromFile(const std::string_view vertexShaderPath, const std::st
     }
 
     shaderProgram_ = CreateShaderProgram(vertexShader, fragmentShader);
-    if(shaderProgram_ == 0)
+    if (shaderProgram_ == 0)
     {
         logDebug(fmt::format("[Error] Loading shader program with vertex: {} and fragment {}",
-                             vertexShaderPath, fragmentShaderPath));
+                             vertexShaderPath,
+                             fragmentShaderPath));
     }
+
     DeleteShader(vertexShader);
     DeleteShader(fragmentShader);
+
+    glGenBuffers(3, ubos_);
 }
 
 void Shader::Bind() const
@@ -67,11 +80,18 @@ void Shader::Bind() const
     glCheckError();
 }
 
-GLuint Shader::GetProgram() const
+void Shader::BindUbo(const uint64_t& size, std::uint8_t binding)
 {
-    return shaderProgram_;
+    //const unsigned uniform = glGetUniformBlockIndex(shaderProgram_, uboName.data());
+    //glUniformBlockBinding(shaderProgram_, uniform, binding);
+
+    glBindBuffer(GL_UNIFORM_BUFFER, ubos_[binding]);
+    glBufferData(GL_UNIFORM_BUFFER, size, nullptr, GL_STATIC_DRAW);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+    glBindBufferBase(GL_UNIFORM_BUFFER, binding, ubos_[binding]);
 }
 
+GLuint Shader::GetProgram() const { return shaderProgram_; }
 
 void Shader::SetBool(const std::string_view attributeName, bool value) const
 {
@@ -82,6 +102,12 @@ void Shader::SetBool(const std::string_view attributeName, bool value) const
 void Shader::SetInt(const std::string_view attributeName, int value) const
 {
     glUniform1i(glGetUniformLocation(shaderProgram_, attributeName.data()), value);
+    glCheckError();
+}
+
+void Shader::SetUInt(std::string_view attributeName, uint32_t value) const
+{
+    glUniform1ui(glGetUniformLocation(shaderProgram_, attributeName.data()), value);
     glCheckError();
 }
 
@@ -130,41 +156,23 @@ void Shader::SetVec4(const std::string_view name, const Vec4f& value) const
     glCheckError();
 }
 
-void Shader::SetVec4(const std::string_view name, float x, float y, float z, float w)
+void Shader::SetVec4(const std::string_view name, float x, float y, float z, float w) const
 {
     glUniform4f(glGetUniformLocation(shaderProgram_, name.data()), x, y, z, w);
     glCheckError();
 }
 
-void Shader::Destroy()
-{
-    if(shaderProgram_ != 0)
-    {
-        glDeleteProgram(shaderProgram_);
-        shaderProgram_ = 0;
-    }
-}
-
-/*
 // ------------------------------------------------------------------------
-void Shader::SetMat2(const std::string& name, const glm::mat2& mat) const
-{
-    glUniformMatrix2fv(glGetUniformLocation(shaderProgram_, name.data()), 1, GL_FALSE, &mat[0][0]);
-}
-
-// ------------------------------------------------------------------------
-void Shader::SetMat3(const std::string& name, const glm::mat3& mat) const
+void Shader::SetMat3(const std::string_view name, const Mat3f& mat) const
 {
     glUniformMatrix3fv(glGetUniformLocation(shaderProgram_, name.data()), 1, GL_FALSE, &mat[0][0]);
 }
-*/
-// ------------------------------------------------------------------------
+
 void Shader::SetMat4(const std::string_view name, const Mat4f& mat) const
 {
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram_, name.data()), 1, GL_FALSE, &mat[0][0]);
     glCheckError();
 }
-
 
 void Shader::SetTexture(const std::string_view name, TextureName texture, unsigned slot) const
 {
@@ -173,7 +181,6 @@ void Shader::SetTexture(const std::string_view name, TextureName texture, unsign
     glBindTexture(GL_TEXTURE_2D, texture);
 }
 
-
 void Shader::SetCubemap(const std::string_view name, TextureName texture, unsigned slot) const
 {
     glUniform1i(glGetUniformLocation(shaderProgram_, name.data()), slot);
@@ -181,60 +188,62 @@ void Shader::SetCubemap(const std::string_view name, TextureName texture, unsign
     glBindTexture(GL_TEXTURE_CUBE_MAP, texture);
 }
 
-Shader::~Shader()
+void Shader::SetUbo(const std::uint32_t size,
+	const std::uint32_t offset,
+	const void* data,
+	std::uint8_t binding) const
 {
-    Destroy();
-}
-
-Shader::Shader() : filesystem_(BasicEngine::GetInstance()->GetFilesystem())
-{
-
+	if (ubos_[binding] != INVALID_SHADER)
+	{
+		glBindBuffer(GL_UNIFORM_BUFFER, ubos_[binding]);
+		glBufferSubData(GL_UNIFORM_BUFFER, offset, size, data);
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	}
+	glCheckError();
 }
 
 GLuint LoadShader(const BufferFile& shaderfile, GLenum shaderType)
 {
-    if(shaderfile.dataBuffer == nullptr)
-        return INVALID_SHADER;
-    return LoadShader(reinterpret_cast<char*>(shaderfile.dataBuffer), shaderType);
+	if (shaderfile.dataBuffer == nullptr) return INVALID_SHADER;
+	return LoadShader(reinterpret_cast<char*>(shaderfile.dataBuffer), shaderType);
 }
 
-GLuint CreateShaderProgram(GLuint vertexShader, GLuint fragmentShader, GLuint computeShader, GLuint geometryShader,
-                           GLuint tesselationControlShader, GLuint tesselationEvaluationShader)
+GLuint CreateShaderProgram(GLuint vertexShader,
+	GLuint fragmentShader,
+	GLuint computeShader,
+	GLuint geometryShader,
+	GLuint tesselationControlShader,
+	GLuint tesselationEvaluationShader)
 {
-    GLuint program = glCreateProgram();
-    glAttachShader(program, vertexShader);
-    glAttachShader(program, fragmentShader);
-    if(computeShader != INVALID_SHADER)
-    {
-        glAttachShader(program, computeShader);
-    }
-    if(geometryShader != INVALID_SHADER)
-    {
-        glAttachShader(program, geometryShader);
-    }
-    if(tesselationControlShader != INVALID_SHADER)
-    {
-        glAttachShader(program, tesselationControlShader);
-    }
-    if(tesselationEvaluationShader != INVALID_SHADER)
-    {
-        glAttachShader(program, tesselationEvaluationShader);
-    }
-    glLinkProgram(program);
-    //Check if shader program was linked correctly
-    GLint success;
-    char infoLog[512];
-    glGetProgramiv(program, GL_LINK_STATUS, &success);
-    if (!success)
-    {
-        glGetProgramInfoLog(program, 512, nullptr, infoLog);
-        logDebug(fmt::format("[Error] Shader program with vertex {} and fragment {}: LINK_FAILED with infoLog:\n{}",
-                             vertexShader,
-                             fragmentShader,
-                             infoLog));
-        return 0;
-    }
-    return program;
+	GLuint program = glCreateProgram();
+	glAttachShader(program, vertexShader);
+	glAttachShader(program, fragmentShader);
+	if (computeShader != INVALID_SHADER) { glAttachShader(program, computeShader); }
+	if (geometryShader != INVALID_SHADER) { glAttachShader(program, geometryShader); }
+	if (tesselationControlShader != INVALID_SHADER)
+	{
+		glAttachShader(program, tesselationControlShader);
+	}
+	if (tesselationEvaluationShader != INVALID_SHADER)
+	{
+		glAttachShader(program, tesselationEvaluationShader);
+	}
+	glLinkProgram(program);
+	//Check if shader program was linked correctly
+	GLint success;
+	char infoLog[512];
+	glGetProgramiv(program, GL_LINK_STATUS, &success);
+	if (!success)
+	{
+		glGetProgramInfoLog(program, 512, nullptr, infoLog);
+		logDebug(fmt::format(
+			"[Error] Shader program with vertex {} and fragment {}: LINK_FAILED with infoLog:\n{}",
+			vertexShader,
+			fragmentShader,
+			infoLog));
+		return 0;
+	}
+	return program;
 }
 
 GLuint LoadShader(char* shaderContent, GLenum shaderType)
@@ -242,7 +251,6 @@ GLuint LoadShader(char* shaderContent, GLenum shaderType)
     glCheckError();
     const GLuint shader = glCreateShader(shaderType);
     glCheckError();
-
 
     glShaderSource(shader, 1, &shaderContent, nullptr);
     glCompileShader(shader);
@@ -253,16 +261,14 @@ GLuint LoadShader(char* shaderContent, GLenum shaderType)
     if (!success)
     {
         glGetShaderInfoLog(shader, 512, nullptr, infoLog);
-        logDebug(fmt::format("[Error] Shader compilation failed with this log:\n{}\nShader content:\n{}",
-                             infoLog,
-                             shaderContent));
+        logDebug(
+            fmt::format("[Error] Shader compilation failed with this log:\n{}\nShader content:\n{}",
+                        infoLog,
+                        shaderContent));
         return 0;
     }
     return shader;
 }
 
-void DeleteShader(GLuint shader)
-{
-    glDeleteShader(shader);
-}
+void DeleteShader(GLuint shader) { glDeleteShader(shader); }
 }

@@ -22,49 +22,49 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
  */
-#include <mathematics/vector.h>
 #include <graphics/shape.h>
+#include <mathematics/vector.h>
 
 namespace neko::gl
 {
 struct VertexArrayObject
 {
-    unsigned int VAO = 0;
-    unsigned int EBO = 0;
-    unsigned int VBO[4]{};
-};
-
-class RenderCircle : public neko::RenderCircle, public VertexArrayObject
-{
-public:
-    using neko::RenderCircle::RenderCircle;
-    void Init() override;
-
-    void Draw() const override;
-
-    void Destroy() override;
+	unsigned int VAO = 0;
+	unsigned int EBO = 0;
+	unsigned int VBO[4] {};
 };
 
 class RenderQuad : public neko::RenderQuad, public VertexArrayObject
 {
 public:
-    using neko::RenderQuad::RenderQuad;
-    void Init() override;
+	using neko::RenderQuad::RenderQuad;
+	void Init() override;
 
-    void Draw() const override;
+	void Draw() const override;
 
-    void Destroy() override;
+	void Destroy() override;
 };
 
 class RenderCuboid : public neko::RenderCuboid, public VertexArrayObject
 {
 public:
-    using neko::RenderCuboid::RenderCuboid;
-    void Init() override;
+	using neko::RenderCuboid::RenderCuboid;
+	void Init() override;
 
-    void Draw() const override;
+	void Draw() const override;
 
-    void Destroy() override;
+	void Destroy() override;
+};
+
+class RenderCircle : public neko::RenderCircle, public VertexArrayObject
+{
+public:
+	using neko::RenderCircle::RenderCircle;
+	void Init() override;
+
+	void Draw() const override;
+
+	void Destroy() override;
 };
 
 class RenderSphere : public neko::RenderSphere, public VertexArrayObject
@@ -72,14 +72,48 @@ class RenderSphere : public neko::RenderSphere, public VertexArrayObject
 public:
 	explicit RenderSphere(Vec3f offset, float radius, size_t segment = 64);
 
-    void Init() override;
+	void Init() override;
 
-    void Draw() const override;
+	void Draw() const override;
 
-    void Destroy() override;
-    [[nodiscard]] size_t GetIndicesNmb() const;
+	void Destroy() override;
+
 protected:
-    size_t segment_ = 0;
+	size_t segment_    = 0;
 	size_t indexCount_ = 0;
 };
-}
+
+class RenderWireFrameCuboid final : public neko::RenderWireFrameCuboid, public VertexArrayObject
+{
+public:
+	using neko::RenderWireFrameCuboid::RenderWireFrameCuboid;
+	void Init() override;
+
+	void Draw() const override;
+
+	void Destroy() override;
+};
+
+class RenderLine3d final : public neko::RenderLine3d, public VertexArrayObject
+{
+public:
+	using neko::RenderLine3d::RenderLine3d;
+	void Init() override;
+
+	void Draw() const override;
+
+	void Destroy() override;
+};
+
+class RenderWireFrameSphere : public neko::RenderWireFrameSphere, public VertexArrayObject
+{
+public:
+	explicit RenderWireFrameSphere(Vec3f offset, float radius);
+
+	void Init() override;
+
+	void Draw() const override;
+
+	void Destroy() override;
+};
+}    // namespace neko::gl

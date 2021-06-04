@@ -22,7 +22,6 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
  */
-
 #include <functional>
 
 #include <string>
@@ -30,7 +29,6 @@
 #include <fstream>
 
 #include "engine/jobsystem.h"
-
 
 #if defined(__ANDROID__)
 #include <jni.h>
@@ -43,31 +41,40 @@ Java_swiss_sae_gpr5300_MainActivity_load(JNIEnv *env, [[maybe_unused]] jclass cl
 
 namespace neko
 {
+constexpr char GetOsSeparator()
+{
+#ifdef WIN32
+    return '\\';
+#else
+    return '/';
+#endif
+}
 
-
-
-void IterateDirectory(const std::string_view dirname, std::function<void(const std::string_view)> func, bool recursive=false);
+bool FileExists(std::string_view filename);
+bool IsRegularFile(std::string_view filename);
+bool IsDirectory(std::string_view filename);
 
 size_t CalculateFileSize(const std::string& filename);
 
 std::string GetCurrentPath();
 
-bool CreateDirectory(const std::string_view dirname);
+bool CreateDirectory(std::string_view dirname);
+bool RemoveDirectory(std::string_view dirname, bool removeAll = true);
+void IterateDirectory(std::string_view dirname,
+	const std::function<void(const std::string_view)>& func,
+	bool recursive = false);
 
-bool RemoveDirectory(const std::string_view dirname, bool removeAll = true);
+std::string LoadFile(std::string_view path);
+std::string LoadBinaries(std::string_view path);
 
-const std::string LoadFile(const std::string& path);
+std::string GetRelativePath(std::string_view path, std::string_view relative);
+std::string GetFileParentPath(std::string_view path);
+std::string GetStem(std::string_view path);
 
+std::string GetFilename(std::string_view path);
+std::string GetFilenameExtension(std::string_view path);
 
-std::string LinkFolderAndFile(const std::string_view folderPath, const std::string_view filePath);
-std::string GetRelativePath(const std::string_view path, const std::string_view relative);
-std::string GetFilenameExtension(const std::string_view path);
-
-std::string GetFileParentPath(const std::string_view path);
-std::string GetFilename(const std::string_view path);
-std::string GetStem(const std::string_view path);
-
-std::string MakeGeneric(const std::string_view path);
-
-void WriteStringToFile(const std::string& path, const std::string_view content);
-}
+std::string LinkFolderAndFile(std::string_view folderPath, std::string_view filePath);
+std::string MakeGeneric(std::string_view path);
+void WriteStringToFile(const std::string& path, std::string_view content);
+}    // namespace neko

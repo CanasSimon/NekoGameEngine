@@ -23,27 +23,35 @@
  SOFTWARE.
  */
 
-#include <string>
 #include <memory>
- //Externals includes
-#include <json.hpp>
-#include "mathematics/vector.h"
-#include "mathematics/rect.h"
+#include <string>
 
-using json = nlohmann::json;
+#include <json.hpp>
+
+#include "mathematics/rect.h"
+#include "mathematics/vector.h"
+
+using json         = nlohmann::json;
+using ordered_json = nlohmann::ordered_json;
 
 namespace neko
 {
 bool IsJsonValueNumeric(const json::value_type& jsonValue);
 
-bool CheckJsonExists(const json& jsonObject, std::string parameterName);
+bool CheckJsonExists(const json& jsonObject, const std::string& parameterName);
+bool CheckJsonParameter(
+	const json& jsonObject, const std::string& parameterName, json::value_t expectedType);
+bool CheckJsonNumber(const json& jsonObject, const std::string& parameterName);
 
-bool CheckJsonParameter(const json& jsonObject, std::string parameterName, json::value_t expectedType);
+Vec2f GetVector2FromJson(const json& jsonObject, const std::string& parameterName);
+Vec3f GetVector3FromJson(const json& jsonObject, const std::string& parameterName);
+Vec4f GetVector4FromJson(const json& jsonObject, const std::string& parameterName);
 
-bool CheckJsonNumber(const json& jsonObject, std::string parameterName);
-Vec2f GetVectorFromJson(const json& jsonObject, std::string parameterName);
-
+json GetJsonFromVector2(const Vec2f& vector);
+json GetJsonFromVector3(const Vec3f& vector);
+json GetJsonFromVector4(const Vec4f& vector);
 
 Rect2f GetRectFromJson(const json& jsonObject, std::string parameterName);
-json LoadJson(const std::string_view jsonPath);
+
+json LoadJson(std::string_view jsonPath);
 }

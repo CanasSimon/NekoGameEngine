@@ -49,7 +49,7 @@ private:
 	Transform3dManager transform3dManager_;
 	//ImGui Viewer
 	EntityViewer entityViewer_;
-	Transform3dViewer transformViewer_;
+	Transform3dSerializer transformViewer_;
 
 	//Initialization data
 	const size_t initEntityNmb_ = 10;

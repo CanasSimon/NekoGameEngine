@@ -26,22 +26,25 @@
 
 namespace neko
 {
-
 using Color3 = Vec3f;
 using Color4 = Vec4f;
 
 namespace Color
 {
-    constexpr static Color3 black = Color3(0.0f,0.0f,0.0f);
-    constexpr static Color3 blue = Color3(0.0f,0.0f,1.0f);
-    constexpr static Color4 transparent = Color4(0.0f,0.0f,0.0f,0.0f);
-    constexpr static Color3 cyan = Color3(0.0f,1.0f,1.0f);
-    constexpr static Color3 gray = Color3(0.5f, 0.5f,0.5f);
-    constexpr static Color3 green = Color3(0,1,0);
-    constexpr static Color3 grey = gray;
-    constexpr static Color3 magenta = Color3(1,0,1);
-    constexpr static Color3 red = Color3(1,0,0);
-    constexpr static Color3 white = Color3(1,1,1);
-    constexpr static Color3 yellow = Color3(1,0.92f, 0.016f);
+const static Color4 white = Color4(1.0f, 1.0f, 1.0f, 1.0f);
+const static Color4 grey = Color4(0.5f, 0.5f, 0.5f, 1.0f);
+const static Color4 gray = grey;
+const static Color4 black = Color4(0.0f, 0.0f, 0.0f, 1.0f);
+
+const static Color4 red = Color4(1.0f, 0.0f, 0.0f, 1.0f);
+const static Color4 green = Color4(0.0f, 1.0f, 0.0f, 1.0f);
+const static Color4 blue = Color4(0.0f, 0.0f, 1.0f, 1.0f);
+
+const static Color4 orange = Color4(1.0f, 0.62f, 0.13f, 1.0f);
+const static Color4 yellow = Color4(1.0f, 0.92f, 0.016f, 1.0f);
+const static Color4 cyan = Color4(0.0f, 1.0f, 1.0f, 1.0f);
+const static Color4 magenta = Color4(1.0f, 0.0f, 1.0f, 1.0f);
+
+const static Color4 clear = Color4::zero;
 }
 }

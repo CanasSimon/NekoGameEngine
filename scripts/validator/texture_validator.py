@@ -86,7 +86,7 @@ def convert_to_ktx(img, img_out, meta_data):
 
     # get image format
     command = [img_format_exe, img]
-    status = subprocess.run(command, capture_output=True)
+    status = subprocess.run(command, capture_output = True)
     if status.returncode != 0:
         sys.stderr.write("Error while read image format file\n")
         return status.returncode
@@ -144,6 +144,7 @@ def convert_to_ktx(img, img_out, meta_data):
         sys.stderr.write("[Error] Unsupported noumber of channels: {}\n".format(channel_count))
         return 1
     print("Command format: {} with transcoder {} ".format(output_format, transcoder))
+    
     # convert to basis in tmp folder
     img_name = Path(img).stem+".basis"
     basis_path = os.path.join(tmp_folder, img_name)
@@ -154,6 +155,7 @@ def convert_to_ktx(img, img_out, meta_data):
     if status.returncode != 0:
         sys.stderr.write("[Error] Could not generate basis file\n")
         return status.returncode
+        
     # convert to final ktx BC1 if RGB, BC3 if RGBA
     # command = [basisu_exe, "-file", basis_path, "-unpack", "-no_png", "-output_path", tmp_folder+"/"]
     command = [basisu_exe, "-file", basis_path, "-unpack", "-no_png", "-output_file", img_out]
@@ -187,5 +189,5 @@ def validate_texture(img_src, img_out, meta_data):
         else:
             do_ktx = True
         if do_ktx:
-            status = convert_to_ktx(img_out, img_out+".ktx", meta_data)
+            status = convert_to_ktx(img_out, img_out + ".ktx", meta_data)
             meta_data["ktx"] = status == 0

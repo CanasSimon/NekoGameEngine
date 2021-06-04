@@ -1,108 +1,132 @@
-#include <vk/vk_imgui.h>
-#include <vk/vk_window.h>
-#include <vk/graphics.h>
-#include <engine/assert.h>
+#include "vk/vk_imgui.h"
 
+#include <imgui_impl_sdl.h>
+#include <imgui_impl_vulkan.h>
+
+#include "engine/resource_locations.h"
+
+#include "vk/vk_resources.h"
 
 namespace neko::vk
 {
-
-VkImGUI::VkImGUI(VkWindow& window) : window_(window)
+void VkImGui::Init()
 {
+	const VkResources* vkObj = VkResources::Inst;
+
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+
+	// Dimensions
+	ImGuiIO& io = ImGui::GetIO();
+	(void) io;
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+#ifdef NN_NINTENDO_SDK
+	io.IniFilename = NULL;
+#endif
+
+	ImGui::StyleColorsDark();
+
+	VkDescriptorPoolSize poolSizes[] = {
+		{VK_DESCRIPTOR_TYPE_SAMPLER, 128},
+		{VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 128},
+		{VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 128},
+		{VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 128},
+		{VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER, 128},
+		{VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER, 128},
+		{VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 128},
+		{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 128},
+		{VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 128},
+		{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 128},
+		{VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 128},
+	};
+
+	VkDescriptorPoolCreateInfo poolInfo = {};
+	poolInfo.sType                      = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+	poolInfo.flags                      = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
+	poolInfo.maxSets                    = 128 * IM_ARRAYSIZE(poolSizes);
+	poolInfo.poolSizeCount              = static_cast<uint32_t>(IM_ARRAYSIZE(poolSizes));
+	poolInfo.pPoolSizes                 = poolSizes;
+	vkCreateDescriptorPool(VkDevice(vkObj->device), &poolInfo, nullptr, &descriptorPool_);
+
+	ImGui_ImplSDL2_InitForVulkan(vkObj->vkWindow->GetWindow());
+	QueueFamilyIndices queueFamilyIndices = VkResources::Inst->gpu.GetQueueFamilyIndices();
+	const auto surfaceCapabilities        = vkObj->surface.GetCapabilities();
+
+	// Init Imgui
+	ImGui_ImplVulkan_InitInfo initInfo = {};
+	initInfo.Instance                  = VkInstance(vkObj->instance);
+	initInfo.PhysicalDevice            = VkPhysicalDevice(vkObj->gpu);
+	initInfo.Device                    = VkDevice(vkObj->device);
+	initInfo.QueueFamily               = queueFamilyIndices.graphicsFamily;
+	initInfo.Queue                     = vkObj->device.GetPresentQueue();
+	initInfo.PipelineCache             = VK_NULL_HANDLE;
+	initInfo.DescriptorPool            = descriptorPool_;
+	initInfo.Allocator                 = nullptr;
+	initInfo.MinImageCount             = surfaceCapabilities.minImageCount;
+	initInfo.ImageCount                = vkObj->swapchain.GetImageCount();
+	initInfo.CheckVkResultFn           = nullptr;
+	ImGui_ImplVulkan_Init(&initInfo, vkObj->GetRenderPass());
+
+	// Create font texture
+	ImFontConfig fontConfig;
+	fontConfig.OversampleH = 2;
+	fontConfig.OversampleV = 2;
+	fontConfig.PixelSnapH  = true;
+
+	const float fontSizeInPixels = 16.0f;
+	const std::string path       = GetFontsFolderPath() + "droid_sans.ttf";
+	io.Fonts->AddFontFromFileTTF(path.c_str(), fontSizeInPixels, &fontConfig);
+
+	// Upload Fonts
+	{
+		// Use any command queue
+		CommandBuffer commandBuffer(true);
+		ImGui_ImplVulkan_CreateFontsTexture(commandBuffer);
+		commandBuffer.SubmitIdle();
+
+		vkDeviceWaitIdle(vkObj->device);
+		ImGui_ImplVulkan_DestroyFontUploadObjects();
+	}
+
+	//Start drawing
+	ImGui_ImplVulkan_NewFrame();
+	ImGui_ImplSDL2_NewFrame(vkObj->vkWindow->GetWindow());
+	ImGui::NewFrame();
 }
 
-void VkImGUI::Init()
+void VkImGui::Destroy() const
 {
-    auto& driver = window_.GetDriver();
-    auto& swapchain = window_.GetSwapchain();
-    auto& renderer = *VkWindow::GetRenderer();
-    // Create Descriptor Pool
-    {
-        VkDescriptorPoolSize pool_sizes[] =
-        {
-            { VK_DESCRIPTOR_TYPE_SAMPLER, 1000 },
-            { VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1000 },
-            { VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 1000 },
-            { VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1000 },
-            { VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER, 1000 },
-            { VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER, 1000 },
-            { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1000 },
-            { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1000 },
-            { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1000 },
-            { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 1000 },
-            { VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1000 }
-        };
-        VkDescriptorPoolCreateInfo pool_info = {};
-        pool_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-        pool_info.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
-        pool_info.maxSets = 1000 * IM_ARRAYSIZE(pool_sizes);
-        pool_info.poolSizeCount = (uint32_t)IM_ARRAYSIZE(pool_sizes);
-        pool_info.pPoolSizes = pool_sizes;
-        const auto status = vkCreateDescriptorPool(driver.device, &pool_info, nullptr, &descriptorPool_);
-        if(status != VK_SUCCESS)
-        {
-            logDebug("[Error] Could not create descriptor pool for ImGui");
-            neko_assert("", false);
-        }
-    }
+	ImGui_ImplVulkan_Shutdown();
+	ImGui_ImplSDL2_Shutdown();
+	ImGui::DestroyContext();
 
-    CreateSwapChain();
+	vkDestroyDescriptorPool(VkResources::Inst->device, descriptorPool_, nullptr);
 }
 
-void VkImGUI::Update(seconds dt)
+void VkImGui::Render(const CommandBuffer& commandBuffer)
 {
+	//End drawing
+	ImGui::Render();
+	ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), commandBuffer);
+	ImGui::GetDrawData()->Clear();
 
+	//Start drawing
+	ImGui_ImplVulkan_NewFrame();
+	ImGui_ImplSDL2_NewFrame(VkResources::Inst->vkWindow->GetWindow());
+	ImGui::NewFrame();
 }
 
-void VkImGUI::Render()
+void VkImGui::OnWindowResize()
 {
-    
-    auto& renderer = *VkWindow::GetRenderer();
-    const auto imageIndex = renderer.GetImageIndex();
-    auto commandBuffer = renderer.GetCommandBuffers()[imageIndex];
-   
-    ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), commandBuffer);
-    ImGui::GetDrawData()->Clear();
-    
+	//End drawing
+	ImGui::Render();
+	ImGui::GetDrawData()->Clear();
+
+	//Start drawing
+	ImGui_ImplVulkan_NewFrame();
+	ImGui_ImplSDL2_NewFrame(VkResources::Inst->vkWindow->GetWindow());
+	ImGui::NewFrame();
 }
-
-void VkImGUI::CleanupSwapChain()
-{
-    ImGui_ImplVulkan_Shutdown();
-}
-
-void VkImGUI::CreateSwapChain()
-{
-    auto& driver = window_.GetDriver();
-    auto& swapchain = window_.GetSwapchain();
-    auto& renderer = *VkWindow::GetRenderer();
-
-    ImGui_ImplVulkan_InitInfo imguiInfo{};
-    imguiInfo.Instance = driver.instance;
-    imguiInfo.PhysicalDevice = driver.physicalDevice;
-    imguiInfo.Device = driver.device;
-    imguiInfo.Queue = driver.graphicsQueue;
-    imguiInfo.DescriptorPool = descriptorPool_;
-    imguiInfo.MinImageCount = swapchain.minImageCount;
-    imguiInfo.ImageCount = swapchain.imageCount;
-
-    ImGui_ImplVulkan_Init(&imguiInfo, renderer.GetRenderPass());
-
-
-    //Upload Font to GPU
-    VkCommandBuffer commandBuffer = renderer.BeginSingleTimeCommands();
-    ImGui_ImplVulkan_CreateFontsTexture(commandBuffer);
-    renderer.EndSingleTimeCommands(commandBuffer);
-
-    ImGui_ImplVulkan_DestroyFontUploadObjects();
-}
-
-void VkImGUI::Destroy()
-{
-    auto& driver = window_.GetDriver();
-    auto& swapchain = window_.GetSwapchain();
-    ImGui_ImplVulkan_Shutdown();
-    
-    vkDestroyDescriptorPool(driver.device, descriptorPool_, nullptr);
-}
-}
+}    // namespace neko::vk

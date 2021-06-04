@@ -75,7 +75,7 @@ private:
 
 	Job preRender_;
 
-	std::string skyboxFolder_ = "aer_skybox/";
+	std::string skyboxFolder_ = "skybox/";
 	gl::TextureName skyboxTexture_ {};
 	gl::Shader skyboxShader_ {};
 	gl::RenderCuboid skybox_ {Vec3f::zero, Vec3f::one};

@@ -22,21 +22,19 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
  */
-#include "vector.h"
+#include "mathematics/vector.h"
 
 namespace neko
 {
-
 struct Circle
 {
-	Vec2f center_;
-	float radius_;
+	Vec2f center = Vec2f::zero;
+	float radius = 0.0f;
 };
 
 struct Sphere
 {
-	Vec3f center_;
-	float radius_;
+	Vec3f center = Vec3f::zero;
+	float radius = 0.0f;
 };
-
-}
+}    // namespace neko

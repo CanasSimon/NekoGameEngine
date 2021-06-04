@@ -5,16 +5,13 @@
 *.slo
 *.lo
 *.o
-*.obj
 
 # Precompiled Headers
 *.gch
 *.pch
 
 # Compiled Dynamic libraries
-*.so
 *.dylib
-*.dll
 
 # Fortran module files
 *.mod
@@ -27,20 +24,48 @@
 *.lai
 *.la
 *.a
-*.lib
 
 # Executables
 *.exe
 *.out
 *.app
 
-#clion generation files
-cmake-build-debug/*
-cmake-build-release/*
-cmake-build-relwithdebinfo/*
+# clion generation files
+**/.idea/**
+**/.vs/**
+**/venv/**
 CMakeSettings.json
+Folder.DotSettings.user
+
+# build folders
+[Bb]uild/*
+cmake-build-*/*
 out/*
-.vs/*
-build/*
-Build/*
 web_build/*
+
+# cmake files
+**/CMakeFiles/**
+
+# glsl validator temp files
+**/__pycache__/**
+
+# log files
+/data/logs/*
+
+# tmp files
+/tmp/*
+
+# physx build files
+**/PhysX-4.1/**/CMakeCache.txt
+**/PhysX-4.1/**/cmake_install.cmake
+**/PhysX-4.1/**/CTestTestfile.cmake
+**/PhysX-4.1/**/Makefile*
+**/PhysX-4.1/**/PxConfig.h
+**/PhysX-4.1/**/*.cbp
+**/PhysX-4.1/**/*.sln
+**/PhysX-4.1/**/*.vcxproj
+**/PhysX-4.1/**/*.vcxproj.filters
+!**/libGLEW.a
+!**/libGLEWmx.a
+
+.clang-format

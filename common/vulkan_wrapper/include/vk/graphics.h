@@ -1,6 +1,5 @@
 #pragma once
-
-/*
+/* ----------------------------------------------------
  MIT License
 
  Copyright (c) 2020 SAE Institute Switzerland AG
@@ -22,53 +21,65 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
- */
 
+ Author : Simon
+ Co-Author :
+---------------------------------------------------------- */
 #include "graphics/graphics.h"
-#include "vk/vk_window.h"
-#include <vulkan/vulkan.h>
+
+#include "vk/vk_resources.h"
 
 namespace neko::vk
 {
-
-class VkRenderer : public Renderer, public RecreateSwapchainInterface
+/// Handles all the rendering from Vulkan
+class VkRenderer final : public neko::Renderer, public VkResources
 {
 public:
-    VkRenderer(VkWindow& window);
-    void Init();
-    void Destroy();
+	/// Inits the Vulkan Objects necessary
+    explicit VkRenderer(sdl::VulkanWindow* window);
+
+	/// Currently unused
     void ClearScreen() override;
 
-    VkCommandBuffer BeginSingleTimeCommands();
-    void EndSingleTimeCommands(VkCommandBuffer commandBuffer);
+	/// Executes commands before the render loop starts
+    void BeforeRenderLoop() override;
 
-    VkRenderPass GetRenderPass() { return renderPass_; }
-    VkSemaphore GetRenderFinishedSemaphore() { return renderFinishedSemaphore_; }
-    std::uint32_t GetImageIndex() const { return imageIndex_; }
-    VkSemaphore GetImageAvailableSemaphore() { return imageAvailableSemaphore_; }
-    const std::vector<VkFramebuffer>& GetFramebuffers()const { return framebuffers_; }
-    VkCommandPool GetCommandPool() { return commandPool_; }
-    std::vector<VkCommandBuffer> GetCommandBuffers() { return commandBuffers_; }
-    void CleanupSwapChain() override;
-    void CreateSwapChain() override;
-protected:
-    void BeforeRender() override;
-    void AfterRender() override;
+	/// Executes commands after the render loop has ended
+    void AfterRenderLoop() override;
+
+	/// Sets the window used by the renderer
+    void SetWindow(std::unique_ptr<sdl::VulkanWindow> window);
+
+	/// Sets the renderer to use
+    void SetRenderer(std::unique_ptr<IRenderer>&& newRenderer);
+
+	void Destroy() override;
 private:
-    void CreateRenderPass();
-    void CreateSemaphores();
-    void CreateFramebuffers();
-    void CreateCommandPool();
+	/// Recreates the render pass if needed and starts it
+	bool StartRenderPass(RenderStage& renderStage);
 
-    void CreateCommandBuffers();
-    VkWindow& window_;
-    VkRenderPass renderPass_;
-    VkSemaphore imageAvailableSemaphore_;
-    VkSemaphore renderFinishedSemaphore_;
-    std::uint32_t imageIndex_ = 0;
-    std::vector<VkFramebuffer> framebuffers_;
-    VkCommandPool commandPool_;
-    std::vector<VkCommandBuffer> commandBuffers_;
+	/// Ends the render pass and submits the render data to the queue
+    void EndRenderPass(const RenderStage& renderStage);
+
+	/// Rebuilds the swapchain, command buffers (if needed), the render stage and the image attachments
+    void ResetRenderStages();
+
+	/// Recreates the swapchain (e.g.: when the screen changes size)
+    void RecreateSwapChain();
+
+	/// Recreates the command buffers (e.g.: when the number of images in the swapchain changes)
+    void RecreateCommandBuffers();
+
+	/// Recreate the render pass (e.g.: when it is out of date)
+    void RecreatePass(RenderStage& renderStage);
+
+	/// Recreate the image attachments
+    void RecreateAttachments();
+
+	/// Creates the pipeline cache
+    void CreatePipelineCache();
+
+	/// Starts the rendering
+	void RenderAll() override;
 };
-
 }

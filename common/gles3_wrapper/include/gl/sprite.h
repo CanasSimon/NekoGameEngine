@@ -22,60 +22,57 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
  */
-
-#include "gl/shader.h"
-#include "gl/shape.h"
 #include "engine/transform.h"
 #include "graphics/color.h"
 
+#include "gl/shader.h"
+#include "gl/shape.h"
 
 namespace neko::gl
 {
-
 struct Sprite
 {
-    Sprite() = default;
-    ~Sprite() = default;
-    Color4 color = Color4(Color::white, 1.0f);
-    TextureId textureId = INVALID_TEXTURE_ID;
-    Texture texture{};
+	Sprite()            = default;
+	~Sprite()           = default;
+	Color4 color        = Color::white;
+	TextureId textureId = INVALID_TEXTURE_ID;
+	Texture texture {};
 };
 
-class SpriteManagerInterface :
-        public ComponentManager<Sprite, EntityMask(ComponentType::SPRITE2D)>,
-        public SystemInterface,
-        public RenderCommandInterface
+class SpriteManagerInterface : public ComponentManager<Sprite, EntityMask(ComponentType::SPRITE2D)>,
+							   public SystemInterface,
+							   public RenderCommandInterface
 {
 public:
-    explicit SpriteManagerInterface (
-            EntityManager& entityManager,
-            TextureManagerInterface& textureManager,
-            Transform2dManager& transformManager) :
-            ComponentManager(entityManager),
-            textureManager_(textureManager),
-            transformManager_(transformManager)
-    {}
+	explicit SpriteManagerInterface(EntityManager& entityManager,
+		TextureManagerInterface& textureManager,
+		Transform2dManager& transformManager)
+	   : ComponentManager(entityManager),
+		 textureManager_(textureManager),
+		 transformManager_(transformManager)
+	{}
 
-    void Update(seconds dt) override;
-    void SetTexture(Entity entity, TextureId textureId);
+	void Update(seconds dt) override;
+	void SetTexture(Entity entity, TextureId textureId);
+
 protected:
-    TextureManagerInterface& textureManager_;
-    Transform2dManager& transformManager_;
+	TextureManagerInterface& textureManager_;
+	Transform2dManager& transformManager_;
 };
+
 class SpriteManager : public SpriteManagerInterface
 {
 public:
-    explicit SpriteManager(
-            EntityManager& entityManager,
-            TextureManagerInterface& textureManager,
-            Transform2dManager& transformManager);
-    void Init() override;
-    void Destroy() override;
+	explicit SpriteManager(EntityManager& entityManager,
+		TextureManagerInterface& textureManager,
+		Transform2dManager& transformManager);
+	void Init() override;
+	void Destroy() override;
 
-    void Render() override;
-	
+	void Render() override;
+
 private:
-    gl::Shader spriteShader_;
-    gl::RenderQuad spriteQuad_{Vec3f::zero, Vec2f::one};
+	gl::Shader spriteShader_;
+	gl::RenderQuad spriteQuad_ {Vec3f::zero, Vec2f::one};
 };
-}
+}    // namespace neko::gl

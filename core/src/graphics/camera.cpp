@@ -21,89 +21,116 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
  */
-
 #include "graphics/camera.h"
-#include "engine/log.h"
+
+#include "engine/assert.h"
+#include "engine/engine.h"
 
 namespace neko
 {
-neko::Mat4f NullCamera::GenerateProjectionMatrix() const
+//-----------------------------------------------------------------------------
+// Camera
+//-----------------------------------------------------------------------------
+void Camera::Init()
 {
-    neko_assert(false, "[Error] No camera defined in CameraLocator!");
-    logDebug("[Error] No camera defined in CameraLocator!");
-    return neko::Mat4f();
+	const Vec2f winSize = Vec2f(BasicEngine::GetInstance()->GetConfig().windowSize);
+	SetAspect(winSize.x, winSize.y);
 }
 
-neko::Mat4f Camera::GenerateViewMatrix() const
+void Camera::WorldLookAt(const Vec3f& target)
 {
+	const Vec3f direction = position - target;
+	reverseDirection      = direction.Normalized();
+}
 
-    const Mat4f rotation(std::array<Vec4f, 4>{
-            Vec4f(rightDir.x, upDir.x, reverseDir.x, 0.0f),
-            Vec4f(rightDir.y, upDir.y, reverseDir.y, 0.0f),
-            Vec4f(rightDir.z, upDir.z, reverseDir.z, 0.0f),
-            Vec4f(0.0f, 0.0f, 0.0f, 1.0f)
-    });
-    const Mat4f translation(std::array<Vec4f, 4>{
-            Vec4f(1, 0, 0, 0),
-            Vec4f(0, 1, 0, 0),
-            Vec4f(0, 0, 1, 0),
-            Vec4f(-position.x, -position.y, -position.z, 1),
-    });
-    return rotation * translation;
+Vec3f Camera::GetRight() const
+{
+	if (reverseDirection.x == 0.0f && reverseDirection.z == 0.0f)
+		return Vec3f::Cross(Vec3f::forward, reverseDirection).Normalized();
+	return Vec3f::Cross(Vec3f::up, reverseDirection).Normalized();
+}
+
+Vec3f Camera::GetUp() const
+{
+	const Vec3f right = GetRight();
+	return Vec3f::Cross(reverseDirection, right).Normalized();
+}
+
+EulerAngles Camera::GetRotation() const
+{
+	const auto inverseView = GenerateViewMatrix().Inverse();
+	return EulerAngles(Atan2(inverseView[1][2], inverseView[2][2]),
+		Atan2(-inverseView[0][2],
+			Sqrt(inverseView[1][2] * inverseView[1][2] + inverseView[2][2] * inverseView[2][2])),
+		Atan2(inverseView[0][1], inverseView[0][0]));
+}
+
+Mat4f Camera::GetRotationMat() const
+{
+	const Vec3f right = GetRight();
+	const Vec3f up    = GetUp();
+	return Mat4f(std::array<Vec4f, 4> {Vec4f(right.x, up.x, reverseDirection.x, 0),
+		Vec4f(right.y, up.y, reverseDirection.y, 0),
+		Vec4f(right.z, up.z, reverseDirection.z, 0),
+		Vec4f(0, 0, 0, 1)});
+}
+
+Mat4f Camera::GenerateViewMatrix() const
+{
+	const Mat4f rotation    = GetRotationMat();
+	const Mat4f translation = Transform3d::Translate(Mat4f::Identity, -position);
+	return rotation * translation;
 }
 
 void Camera::SetDirectionFromEuler(const EulerAngles& angles)
 {
-    const Quaternion q = Quaternion::FromEuler(angles);
-    reverseDir = Vec3f(Transform3d::RotationMatrixFrom(q)*Vec4f(0,0,1,0));
+	const Quaternion q = Quaternion::FromEuler(angles);
+	reverseDirection   = Vec3f(Transform3d::RotationMatrixFrom(q) * Vec4f(0, 0, 1, 0));
 }
 
 void Camera::Rotate(const EulerAngles& angles)
 {
-    const auto pitch = Quaternion::AngleAxis(angles.x, rightDir);
-    const auto yaw = Quaternion::AngleAxis(angles.y, upDir);
-    const auto roll = Quaternion::AngleAxis(angles.z, reverseDir);
-    reverseDir = Vec3f(Transform3d::RotationMatrixFrom(pitch*yaw*roll) * Vec4f(reverseDir)).Normalized();
-    WorldLookAt(-reverseDir+position);
+	const Quaternion pitch    = Quaternion::AngleAxis(angles.x, GetRight());
+	const Quaternion yaw      = Quaternion::AngleAxis(angles.y, GetUp());
+	const Quaternion roll     = Quaternion::AngleAxis(angles.z, reverseDirection);
+	const Quaternion rotation = pitch * yaw * roll;
+	reverseDirection = Vec3f(Transform3d::RotationMatrixFrom(rotation) * Vec4f(reverseDirection));
 }
 
-void Camera::WorldLookAt(Vec3f target, Vec3f lookUp)
-{
-    reverseDir = (position - target).Normalized();
-    rightDir = Vec3f::Cross(reverseDir, lookUp).Normalized();
-    upDir = Vec3f::Cross(reverseDir, rightDir).Normalized();
-
-}
-
-void Camera2D::SetExtends(Vec2f size)
-{
-    left = -size.x;
-    right = size.x;
-    top = size.y;
-    bottom = -size.y;
-}
-
+//-----------------------------------------------------------------------------
+// Camera2D
+//-----------------------------------------------------------------------------
 Mat4f Camera2D::GenerateProjectionMatrix() const
 {
-    return Transform3d::Orthographic(left, right, bottom, top, nearPlane, farPlane);
+	const float top    = size;
+	const float bottom = -top;
+	const float right  = size * aspect_;
+	const float left   = -right;
+
+	return Transform3d::Orthographic(left, right, bottom, top, nearPlane, farPlane);
+}
+
+//-----------------------------------------------------------------------------
+// Camera3D
+//-----------------------------------------------------------------------------
+void Camera3D::Init()
+{
+	Camera::Init();
+	CameraLocator::provide(this);
 }
 
 Mat4f Camera3D::GenerateProjectionMatrix() const
 {
-    return Transform3d::Perspective(
-            fovY,
-            aspect,
-            nearPlane,
-            farPlane);
+	return Transform3d::Perspective(fovY, aspect_, nearPlane, farPlane);
 }
 
-void Camera3D::SetAspect(int width, int height)
-{
-    aspect = static_cast<float>(width) / static_cast<float>(height);
-}
+radian_t Camera3D::GetFovX() const { return 2.0f * Atan(Tan(fovY * 0.5f) * aspect_); }
 
-radian_t Camera3D::GetFovX() const
+//-----------------------------------------------------------------------------
+// NullCamera
+//-----------------------------------------------------------------------------
+neko::Mat4f NullCamera::GenerateProjectionMatrix() const
 {
-    return 2.0f*Atan(Tan(fovY*0.5f) * aspect);
+	neko_assert(false, "[Error] No camera defined in CameraLocator!");
 }
-}
+}    // namespace neko

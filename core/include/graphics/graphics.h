@@ -22,29 +22,25 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
  */
-
-#include <condition_variable>
 #include <array>
-#include <vector>
+#include <condition_variable>
 #include <thread>
-#include <utils/service_locator.h>
+#include <vector>
 
-#include "engine/system.h"
-#include "engine/log.h"
 #include "engine/jobsystem.h"
+#include "engine/log.h"
+#include "engine/system.h"
 #include "utils/action_utility.h"
+#include "utils/service_locator.h"
 
 namespace neko
 {
 class SyncBuffersInterface;
 class Job;
-	class Window;
-const size_t MAX_COMMAND_NMB = 8'192;
+class Window;
+constexpr size_t MAX_COMMAND_NMB = 8'192;
 
-
-/**
- * \brief abstraction of a graphic command send to the render thread
- */
+/// Abstraction of a graphic command send to the render thread
 class RenderCommandInterface
 {
 public:
@@ -54,103 +50,88 @@ public:
     virtual void Render() = 0;
 };
 
-/**
- * \brief Abstraction of a a graphic command that can be initialized, destroyed and update
- * Warning! Update can be run concurrently to Render!
- */
+/// Abstraction of a a graphic command that can be initialized, destroyed and update
+/// Warning! Update can be run concurrently to Render!
 class RenderProgram : public RenderCommandInterface, public SystemInterface
-{
-};
-
+{};
 
 class RendererInterface
 {
 public:
-    virtual void Render(RenderCommandInterface* command) = 0;
-    virtual void AddPreRenderJob(Job* job) = 0;
-    virtual void RegisterSyncBuffersFunction(SyncBuffersInterface* syncBuffersInterface) = 0;
+	virtual void Render(RenderCommandInterface*)                    = 0;
+	virtual void AddPreRenderJob(Job*)                              = 0;
+	virtual void RegisterSyncBuffersFunction(SyncBuffersInterface*) = 0;
 };
 
 class NullRenderer final : public RendererInterface
 {
 public:
-    void Render([[maybe_unused]]RenderCommandInterface* command) override
-    {};
-	void AddPreRenderJob([[maybe_unused]] Job* job) override {}
-    void RegisterSyncBuffersFunction([[maybe_unused]] SyncBuffersInterface* syncBuffersInterface) override {}
-
+	void Render([[maybe_unused]] RenderCommandInterface* command) override {};
+	void AddPreRenderJob(Job*) override {}
+	void RegisterSyncBuffersFunction(SyncBuffersInterface*) override {}
 };
 
 class Renderer : public RendererInterface
 {
 public:
-    enum RendererFlag : std::uint8_t
-    {
-        IS_RUNNING = 1u << 0u,
-        IS_APP_WAITING = 1u << 1u,
-        IS_RENDERING_UI = 1u << 2u,
-    	IS_APP_SWAPPING = 1u << 3u
-    };
+	enum RendererFlag : std::uint8_t
+	{
+		IS_RUNNING      = 1u << 0u,
+		IS_APP_WAITING  = 1u << 1u,
+		IS_RENDERING_UI = 1u << 2u,
+		IS_APP_SWAPPING = 1u << 3u
+	};
 
-    Renderer();
-
+	Renderer();
     virtual ~Renderer() = default;
 
-    /**
-     * \brief Send the RenderCommand to the queue for next frame
-     */
-    void Render(RenderCommandInterface* command) override;
+	/// Send the RenderCommand to the queue for next frame
+	void Render(RenderCommandInterface* command) override;
 
+	void Destroy();
 
-
-    void Destroy();
-
-    void SetFlag(RendererFlag flag);
-    std::uint8_t GetFlag() const;
-    void SetWindow(Window* window);
+	void SetFlag(RendererFlag flag);
+	std::uint8_t GetFlag() const;
+	void SetWindow(Window* window);
 
 	void AddPreRenderJob(Job* job) override;
+	Job* GetSyncJob() { return &syncJob_; }
+	Job* GetRenderAllJob() { return &renderAllJob_; }
+	void ScheduleJobs();
+	void ResetJobs();
 
-    virtual void ClearScreen() = 0;
+	virtual void ClearScreen() = 0;
 
+	void RegisterSyncBuffersFunction(
+		[[maybe_unused]] SyncBuffersInterface* syncBuffersInterface) override;
 
-    void ResetJobs();
-    Job* GetSyncJob() { return &syncJob_; }
-    Job* GetRenderAllJob() { return &renderAllJob_; }
-    void ScheduleJobs();
-    void RegisterSyncBuffersFunction([[maybe_unused]] SyncBuffersInterface* syncBuffersInterface) override;
 protected:
-    /**
-	 * \brief Called from Engine Loop to sync with the Render Loop
-	 */
+	/// Called from Engine Loop to sync with the Render Loop
     void SyncBuffers();
-	/**
-	 * \brief Run the first job in the queue
-	 */
-    void PreRender();
-    virtual void RenderAll();
-    virtual void BeforeRender(){}
 
-    virtual void AfterRender(){}
+	/// Run the first job in the queue
+	void PreRender();
 
-    Action<> syncBuffersAction_;
-	
-    Job renderAllJob_;
-    Job syncJob_{ [this] {SyncBuffers(); } };
+	virtual void RenderAll();
+	virtual void BeforeRender() {}
+	virtual void AfterRender() {}
 
-    std::mutex preRenderJobsMutex_;
-    std::vector<Job*> preRenderJobs_;
+	Action<> syncBuffersAction_;
 
+	Job renderAllJob_;
+	Job syncJob_ {[this] { SyncBuffers(); }};
 
-    Window* window_ = nullptr;
+	std::mutex preRenderJobsMutex_;
+	std::vector<Job*> preRenderJobs_;
 
-    mutable std::mutex statusMutex_;
-    std::uint8_t flags_{IS_RENDERING_UI};
-	
-    std::vector<RenderCommandInterface*> currentCommandBuffer_ = {};
-    std::vector<RenderCommandInterface*> nextCommandBuffer_ = {};
+	Window* window_ = nullptr;
+
+	mutable std::mutex statusMutex_;
+	std::uint8_t flags_ {IS_RENDERING_UI};
+
+	std::vector<RenderCommandInterface*> currentCommandBuffer_ = {};
+	std::vector<RenderCommandInterface*> nextCommandBuffer_    = {};
 };
 
 using RendererLocator = Locator<RendererInterface, NullRenderer>;
-
-}
+}    // namespace neko

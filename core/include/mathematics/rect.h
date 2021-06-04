@@ -22,7 +22,6 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
  */
-
 #include "mathematics/vector.h"
 
 namespace neko
@@ -30,20 +29,19 @@ namespace neko
 template<class T = Vec2f>
 struct Rect
 {
-    Rect() : center(T()), halfSize(T()) { }
-    explicit Rect(T Center, T HalfSize) : center(Center), halfSize(HalfSize) { }
+	Rect() : center(T()), halfSize(T()) {}
+	explicit Rect(T Center, T HalfSize) : center(Center), halfSize(HalfSize) {}
 
-    template<typename U = float>
-    U GetRadius()
-    {
-        return halfSize.Magnitude();
-    }
+	template<typename U = float>
+	U GetRadius()
+	{
+		return halfSize.Magnitude();
+	}
 
-    T center;
-    T halfSize;
+	T center;
+	T halfSize;
 };
-
 
 using Rect2f = Rect<Vec2f>;
 using Rect3f = Rect<Vec3f>;
-}
+}    // namespace neko

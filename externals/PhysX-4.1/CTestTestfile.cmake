@@ -4,4 +4,4 @@
 # 
 # This file includes the relevant testing commands required for 
 # testing this directory and lists subdirectories to be tested as well.
-subdirs("../../cmake-build-release/externals/PhysX-4.1/sdk_source_bin")
+subdirs("../../cmake-build-debug/externals/PhysX-4.1/sdk_source_bin")

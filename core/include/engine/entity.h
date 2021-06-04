@@ -22,171 +22,110 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
  */
-
 #include <unordered_map>
 #include <vector>
-#include <engine/globals.h>
-#include <xxhash.hpp>
-#include "utils/action_utility.h"
+
+#include "engine/globals.h"
 #include "engine/system.h"
+#include "mathematics/hash.h"
+#include "utils/action_utility.h"
 
 namespace neko
 {
 class OnChangeParentInterface;
-/**
- * \brief Entity start at 0 and goes to N
- */
-using Entity = Index;
-/**
- * Use to find a specific entity
- */
-using EntityHash = xxh::hash_t<64>;
-/**
- * \brief EntityMask is a bitmask representation of the activated components
- */
+
+using Entity     = Index;
 using EntityMask = std::uint32_t;
-const Entity INVALID_ENTITY = std::numeric_limits<Index>::max();
-const EntityMask INVALID_ENTITY_MASK = 0u;
-const EntityHash INVALID_ENTITY_HASH = EntityHash(0);
+
+constexpr Entity INVALID_ENTITY          = std::numeric_limits<Index>::max();
+constexpr EntityMask INVALID_ENTITY_MASK = 0u;
 enum class ComponentType : std::uint32_t;
 
 template<typename T, EntityMask componentType>
 class ComponentManager;
 
-/**
- * \brief Used in an Entity-Component-System to store all entities and what components they have
- */
-class EntityManager 
+/// Used in an Entity-Component-System to store all entities and what components they have
+class EntityManager
 {
 public:
-    explicit EntityManager();
+	explicit EntityManager();
 
-    EntityMask GetMask(Entity entity);
-    /**
-     * \brief create an empty entity (non-null EntityMask)
-     */
-    Entity CreateEntity(Entity entity = INVALID_ENTITY);
-
-    Entity GetLastEntity();
-
-    void DestroyEntity(Entity entity);
-    /**
-     *
-     */
-    [[nodiscard]] bool HasComponent(Entity entity, EntityMask componentType) const;
-
-    [[nodiscard]] bool IsPrefab(Entity entity) const;
-
-    [[nodiscard]] bool EntityExists(Entity entity) const;
-
-    [[nodiscard]] size_t GetEntitiesNmb(EntityMask filterComponents = INVALID_ENTITY_MASK);
-
-    [[nodiscard]] size_t GetEntitiesSize() const;
-
-    [[nodiscard]] std::vector<Entity> FilterEntities(EntityMask filterComponents = INVALID_ENTITY_MASK) const;
-
-    void AddComponentType(Entity entity, EntityMask componentType);
-
-    void RemoveComponentType(Entity entity, EntityMask componentType);
-
-    void SetEntityName(Entity entity, const std::string& entityName);
-
-    void SetEntityNameHash(Entity entity, EntityHash entityHash);
-
-    [[nodiscard]] EntityHash GetEntityNameHash(Entity entity);
-
-    [[nodiscard]] Entity FindEntityByHash(EntityHash entityHash);
-
-    [[nodiscard]] Entity FindEntityByName(const std::string& entityName);
+	EntityMask GetMask(Entity entity);
 
     template<typename T, EntityMask componentType>
     void RegisterComponentManager(ComponentManager<T, componentType>& componentManager)
     {
         onDestroyEntity.RegisterCallback(
-                [&componentManager](Entity entity) { componentManager.DestroyComponent(entity); });
+            [&componentManager](Entity entity) { componentManager.DestroyComponent(entity); });
     }
 
     void RegisterOnChangeParent(OnChangeParentInterface* onChangeInterface);
 
-    Entity GetEntityParent(Entity entity) const;
+    /// Create an empty entity (non-null EntityMask)
+	Entity CreateEntity(Entity entity = INVALID_ENTITY);
+	Entity GetLastEntity();
+    void DestroyEntity(Entity entity, bool destroyChildren = true);
 
-	/**
-	 * \brief Set the entity parent and check if child is not recursive parent.
-	 */
-    bool SetEntityParent(Entity child, Entity parent);
+	void Clear();
 
-    static EntityHash HashEntityName(const std::string& entityName);
-    /**
-    * \brief Return the first root existing entity or INVALID_ENTITY
-    */
+    void AddComponentType(Entity entity, EntityMask componentType);
+    void RemoveComponentType(Entity entity, EntityMask componentType);
+
+	[[nodiscard]] size_t GetEntitiesNmb(EntityMask filterComponents = INVALID_ENTITY_MASK);
+	[[nodiscard]] size_t GetEntitiesSize() const;
+	[[nodiscard]] std::vector<Entity> FilterEntities(
+		EntityMask filterComponents = INVALID_ENTITY_MASK) const;
+
+    [[nodiscard]] std::string_view GetEntityName(Entity entity) const;
+
+    [[nodiscard]] Entity GetParent(Entity entity) const;
+
+    /// Return the first root existing entity or INVALID_ENTITY
     [[nodiscard]] Entity GetFirstRoot() const;
 
+	void SetEntityName(Entity entity, std::string_view entityName);
+
+    /// Set the entity parent and check if child is not recursive parent
+    bool SetParent(Entity child, Entity parent);
+
+    [[nodiscard]] bool HasComponent(Entity entity, EntityMask componentType) const;
+    [[nodiscard]] bool IsPrefab(Entity entity) const;
+    [[nodiscard]] bool EntityExists(Entity entity) const;
+
 private:
-    Action<Entity> onDestroyEntity;
-    Action<Entity, Entity, Entity> onChangeParent;
-    std::vector<Entity> parentEntities_;
-    std::vector<EntityMask> entityMaskArray_;
-    std::vector<EntityHash> entityHashArray_;
+	Action<Entity> onDestroyEntity;
+	Action<Entity, Entity, Entity> onChangeParent;
+	std::vector<Entity> parentEntities_;
+	std::vector<EntityMask> entityMasks_;
+	std::vector<std::string> entityNames_;
 };
 
 class DirtyManager
 {
 public:
-    explicit DirtyManager(EntityManager& entityManager);
-    DirtyManager( const DirtyManager & ) = default;
-    void SetDirty(Entity entity);
+	explicit DirtyManager(EntityManager& entityManager);
 
-    void UpdateDirtyEntities();
-	
-    template<typename T, EntityMask componentType>
-    void RegisterComponentManager(ComponentManager<T, componentType>* componentManager)
-    {
-        updateDirtyEntity.RegisterCallback(
-            [componentManager](Entity entity) { componentManager->UpdateDirtyComponent(entity); });
-    }
-	
+	void UpdateDirtyEntities();
+
+	template<typename T, EntityMask componentType>
+	void RegisterComponentManager(ComponentManager<T, componentType>* componentManager)
+	{
+		updateDirtyEntity.RegisterCallback(
+			[componentManager](Entity entity) { componentManager->UpdateDirtyComponent(entity); });
+	}
+
+	void SetDirty(Entity entity);
+
 private:
-	
-    std::reference_wrapper<EntityManager> entityManager_;
-    Action<Entity> updateDirtyEntity;
-    std::vector<Entity> dirtyEntities_;
+	std::reference_wrapper<EntityManager> entityManager_;
+	Action<Entity> updateDirtyEntity;
+	std::vector<Entity> dirtyEntities_;
 };
 
 class OnChangeParentInterface
 {
 public:
-	virtual ~OnChangeParentInterface() = default;
+	virtual ~OnChangeParentInterface()                                             = default;
 	virtual void OnChangeParent(Entity entity, Entity newParent, Entity oldParent) = 0;
 };
-
-class EntityHierarchy : public OnChangeParentInterface
-{
-public:
-    explicit EntityHierarchy(EntityManager& entityManager);
-    void OnChangeParent(Entity entity, Entity newParent, Entity oldParent) override;
-    const std::vector<Entity>& GetChildren(Entity entity);
-    [[nodiscard]] bool HasChildren(Entity entity);
-private:
-    EntityManager& entityManager_;
-    std::unordered_map<Entity, std::vector<Entity>> entityHierarchyMap_;
-};
-
-/**
- * ImGui class that allows to show the active entities and select them
- */
-class EntityViewer : public DrawImGuiInterface
-{
-public:
-    explicit EntityViewer(EntityManager& entityManager, EntityHierarchy& entityHierarchy);
-    [[nodiscard]] Entity GetSelectedEntity() const { return selectedEntity_; }
-	void DrawImGui() override;
-protected:
-    void DrawEntityHierarchy(neko::Entity entity,
-                             bool draw,
-                             bool destroy);
-    EntityHierarchy& entityHierarchy_;
-    EntityManager& entityManager_;
-    Entity selectedEntity_ = INVALID_ENTITY;
-};
-
-}
+}    // namespace neko

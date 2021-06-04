@@ -1,4 +1,4 @@
-/*
+/* ----------------------------------------------------
  MIT License
 
  Copyright (c) 2020 SAE Institute Switzerland AG
@@ -20,321 +20,282 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
- */
 
-#include <vk/graphics.h>
+ Author : Simon
+ Co-Author :
+ Date :
+---------------------------------------------------------- */
+#include "vk/graphics.h"
 
-#include "engine/assert.h"
-#include "vk/vk_utility.h"
+#include "vk/subrenderers/subrenderer_opaque.h"
+
+#ifdef EASY_PROFILE_USE
+#include "easy/profiler.h"
+#endif
 
 namespace neko::vk
 {
-
-VkRenderer::VkRenderer(VkWindow& window) : window_(window)
+VkRenderer::VkRenderer(sdl::VulkanWindow* window) : Renderer(), VkResources(window)
 {
+	instance.Init();
+	surface.Init(*window->GetWindow());
+	gpu.Init();
+	surface.SetFormat();
+	device.Init();
 
-}
+	commandPools_.emplace(std::this_thread::get_id(), CommandPool());
 
-void VkRenderer::Init()
-{
-    CreateRenderPass();
-    CreateFramebuffers();
-    CreateCommandPool();
-    CreateCommandBuffers();
-    CreateSemaphores();
-}
+	CreatePipelineCache();
 
-void VkRenderer::Destroy()
-{
-    auto& driver = window_.GetDriver();
-
-    vkDeviceWaitIdle(driver.device);
-    for (size_t i = 0; i <framebuffers_.size(); i++)
-    {
-        vkDestroyFramebuffer(driver.device, framebuffers_[i], nullptr);
-    }
-    vkFreeCommandBuffers(driver.device, commandPool_, static_cast<uint32_t>(commandBuffers_.size()), commandBuffers_.data());
-
-    vkDestroyCommandPool(driver.device, commandPool_, nullptr);
-    vkDestroySemaphore(driver.device, renderFinishedSemaphore_, nullptr);
-    vkDestroySemaphore(driver.device, imageAvailableSemaphore_, nullptr);
-    vkDestroyRenderPass(driver.device, renderPass_, nullptr);
+	swapchain.Init(swapchain);
 }
 
 void VkRenderer::ClearScreen()
 {
-
+#ifdef EASY_PROFILE_USE
+	EASY_BLOCK("Clear Screen");
+#endif
 }
 
-VkCommandBuffer VkRenderer::BeginSingleTimeCommands()
+void VkRenderer::BeforeRenderLoop()
 {
-    auto& driver = window_.GetDriver();
-    VkCommandBufferAllocateInfo allocInfo{};
-    allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-    allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    allocInfo.commandPool = commandPool_;
-    allocInfo.commandBufferCount = 1;
+	const std::uint32_t windowFlags = SDL_GetWindowFlags(vkWindow->GetWindow());
+	if (renderer_ == nullptr || windowFlags & SDL_WINDOW_MINIMIZED) return;
 
-    VkCommandBuffer commandBuffer;
-    vkAllocateCommandBuffers(driver.device, &allocInfo, &commandBuffer);
+	if (!renderer_->HasStarted())
+	{
+		ResetRenderStages();
+		renderer_->Start();
+		imgui_.Init();
+	}
 
-    VkCommandBufferBeginInfo beginInfo{};
-    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-    beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+	const VkResult res = swapchain.AcquireNextImage(
+		availableSemaphores_[currentFrame_], inFlightFences_[currentFrame_]);
+	if (res == VK_ERROR_OUT_OF_DATE_KHR)
+	{
+		RecreateSwapChain();
+		return;
+	}
 
-    vkBeginCommandBuffer(commandBuffer, &beginInfo);
+	if (res != VK_SUCCESS && res != VK_SUBOPTIMAL_KHR) return;
 
-    return commandBuffer;
+	RenderStage& renderStage = renderer_->GetRenderStage();
+	renderStage.Update();
+
+	renderer_->GetRendererContainer().Get<SubrendererOpaque>().GetUniformScene(0).Push(
+		kProjHash, Mat4f::Identity);
+
+	if (!StartRenderPass(renderStage)) return;
+
+	Renderer::BeforeRenderLoop();
 }
 
-void VkRenderer::EndSingleTimeCommands(VkCommandBuffer commandBuffer)
+void VkRenderer::AfterRenderLoop()
 {
-    auto& driver = window_.GetDriver();
-    vkEndCommandBuffer(commandBuffer);
+	Renderer::AfterRenderLoop();
 
-    VkSubmitInfo submitInfo{};
-    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-    submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers = &commandBuffer;
+	PipelineStage stage;
+	RenderStage& renderStage = renderer_->GetRenderStage();
+	CommandBuffer& commandBuffer = GetCurrentCmdBuffer();
+	for (const auto& subpass : renderStage.GetSubpasses())
+	{
+		stage.subPassId = subpass.binding;
 
-    vkQueueSubmit(driver.graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
-    vkQueueWaitIdle(driver.graphicsQueue);
+		// Renders subpass subrender pipelines.
+		renderer_->GetRendererContainer().RenderStage(stage, commandBuffer);
 
-    vkFreeCommandBuffers(driver.device, commandPool_, 1, &commandBuffer);
+		if (subpass.binding != renderStage.GetSubpasses().back().binding)
+			vkCmdNextSubpass(commandBuffer, VK_SUBPASS_CONTENTS_INLINE);
+	}
+
+	VkImGui::Render(commandBuffer);
+	EndRenderPass(renderStage);
+
+	lightCommandBuffer.Clear();
+	stage.renderPassId++;
 }
 
-void VkRenderer::CleanupSwapChain()
+bool VkRenderer::StartRenderPass(RenderStage& renderStage)
 {
-    auto& driver = window_.GetDriver();
-    for (size_t i = 0; i < framebuffers_.size(); i++)
-    {
-        vkDestroyFramebuffer(driver.device, framebuffers_[i], nullptr);
-    }
-    vkFreeCommandBuffers(driver.device, commandPool_, static_cast<uint32_t>(commandBuffers_.size()), commandBuffers_.data());
+	if (renderStage.IsOutOfDate())
+	{
+		RecreatePass(renderStage);
+		return false;
+	}
 
-    vkDestroyRenderPass(driver.device, renderPass_, nullptr);
+	CommandBuffer& currentCmdBuffer = GetCurrentCmdBuffer();
+	if (!currentCmdBuffer.IsRunning())
+	{
+		vkWaitForFences(device,
+			1,
+			&inFlightFences_[currentFrame_],
+			VK_TRUE,
+			std::numeric_limits<uint64_t>::max());
+		currentCmdBuffer.Begin(VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT);
+	}
+
+	VkRect2D renderArea;
+	renderArea.offset = {0, 0};
+	renderArea.extent = {static_cast<uint32_t>(renderStage.GetSize().x),
+		static_cast<uint32_t>(renderStage.GetSize().y)};
+
+	VkRect2D scissor;
+	scissor.offset = {0, 0};
+	scissor.extent = renderArea.extent;
+	vkCmdSetScissor(currentCmdBuffer, 0, 1, &scissor);
+
+	auto clearValues                     = renderStage.GetClearValues();
+	VkRenderPassBeginInfo renderPassInfo = {};
+	renderPassInfo.sType                 = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+	renderPassInfo.renderPass            = renderStage.GetRenderPass();
+	renderPassInfo.framebuffer =
+		renderStage.GetActiveFramebuffer(swapchain.GetCurrentImageIndex());
+	renderPassInfo.renderArea      = renderArea;
+	renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+	renderPassInfo.pClearValues    = clearValues.data();
+	vkCmdBeginRenderPass(currentCmdBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+	return true;
 }
 
-void VkRenderer::CreateSwapChain()
+void VkRenderer::EndRenderPass(const RenderStage& renderStage)
 {
-    CreateRenderPass();
-    CreateFramebuffers();
-    CreateCommandBuffers();
+	VkQueue presentQueue           = device.GetPresentQueue();
+	CommandBuffer& currentCmdBuffer = GetCurrentCmdBuffer();
+	vkCmdEndRenderPass(currentCmdBuffer);
+
+	if (!renderStage.HasSwapchain()) return;
+
+	currentCmdBuffer.End();
+	currentCmdBuffer.Submit(availableSemaphores_[currentFrame_],
+		finishedSemaphores_[currentFrame_],
+		inFlightFences_[currentFrame_]);
+
+	const VkResult res = swapchain.QueuePresent(presentQueue, finishedSemaphores_[currentFrame_]);
+	vkCheckError(res, "Failed to presents swapchain image");
+
+	if (res == VK_ERROR_OUT_OF_DATE_KHR || res == VK_SUBOPTIMAL_KHR) isFramebufferResized_ = true;
+	currentFrame_ = (currentFrame_ + 1) % swapchain.GetImageCount();
 }
 
-void VkRenderer::BeforeRender()
+void VkRenderer::ResetRenderStages()
 {
-    auto& driver = window_.GetDriver();
-    auto& swapchain = window_.GetSwapchain();
+	RecreateSwapChain();
 
-    const auto result = vkAcquireNextImageKHR(
-        driver.device,
-        swapchain.swapChain,
-        UINT64_MAX,
-        imageAvailableSemaphore_,
-        VK_NULL_HANDLE,
-        &imageIndex_);
-    if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
-    {
-        logDebug("[Error] Failed to acquire swap chain image!");
-        neko_assert(false, "");
-    }
+	if (inFlightFences_.size() != swapchain.GetImageCount()) RecreateCommandBuffers();
 
-    VkCommandBufferBeginInfo beginInfo{};
-    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-    beginInfo.flags = 0; // Optional
-    beginInfo.pInheritanceInfo = nullptr; // Optional
+	renderer_->GetRenderStage().Rebuild(swapchain);
 
-    if (vkBeginCommandBuffer(commandBuffers_[imageIndex_], &beginInfo) != VK_SUCCESS)
-    {
-        logDebug("[Error] failed to begin recording command buffer!");
-        neko_assert(false, "");
-    }
-
-    VkRenderPassBeginInfo renderPassInfo{};
-    renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-    renderPassInfo.renderPass = renderPass_;
-    renderPassInfo.framebuffer = framebuffers_[imageIndex_];
-    renderPassInfo.renderArea.offset = { 0, 0 };
-    renderPassInfo.renderArea.extent = swapchain.extent;
-
-    VkClearValue clearColor = { 0.0f, 0.0f, 0.0f, 1.0f };
-    renderPassInfo.clearValueCount = 1;
-    renderPassInfo.pClearValues = &clearColor;
-
-    vkCmdBeginRenderPass(commandBuffers_[imageIndex_], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-
-
+	RecreateAttachments();
 }
-void VkRenderer::AfterRender()
+
+void VkRenderer::RecreateSwapChain()
 {
-    auto& driver = window_.GetDriver();
-    auto& swapchain = window_.GetSwapchain();
+	vkWindow->MinimizedLoop();
 
-    vkCmdEndRenderPass(commandBuffers_[imageIndex_]);
+	vkDeviceWaitIdle(device);
 
-    if (vkEndCommandBuffer(commandBuffers_[imageIndex_]) != VK_SUCCESS)
-    {
-        logDebug("[Error] failed to record command buffer!");
-        neko_assert(false, "");
-    }
-    
+	swapchain.Init(swapchain);
 
-    VkSubmitInfo submitInfo{};
-    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+	RecreateCommandBuffers();
 
-    VkSemaphore waitSemaphores[] = { imageAvailableSemaphore_ };
-    VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
-    submitInfo.waitSemaphoreCount = 1;
-    submitInfo.pWaitSemaphores = waitSemaphores;
-    submitInfo.pWaitDstStageMask = waitStages;
-    submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers = &commandBuffers_[imageIndex_];
-    VkSemaphore signalSemaphores[] = { renderFinishedSemaphore_ };
-    submitInfo.signalSemaphoreCount = 1;
-    submitInfo.pSignalSemaphores = signalSemaphores;
-    if (vkQueueSubmit(driver.graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE) != VK_SUCCESS)
-    {
-        logDebug("[Error] failed to submit draw command buffer!");
-        neko_assert(false, "");
-    }
-
-    VkPresentInfoKHR presentInfo{};
-    presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-
-    presentInfo.waitSemaphoreCount = 1;
-    presentInfo.pWaitSemaphores = signalSemaphores;
-    VkSwapchainKHR swapChains[] = { swapchain.swapChain };
-    presentInfo.swapchainCount = 1;
-    presentInfo.pSwapchains = swapChains;
-    presentInfo.pImageIndices = &imageIndex_;
-    presentInfo.pResults = nullptr; // Optional
-    vkQueuePresentKHR(driver.presentQueue, &presentInfo);
-
-    vkDeviceWaitIdle(driver.device);
+	if (ImGui::GetCurrentContext()) VkImGui::OnWindowResize();
 }
 
-void VkRenderer::CreateRenderPass()
+void VkRenderer::RecreateCommandBuffers()
 {
-    auto& driver = window_.GetDriver();
-    auto& swapchain = window_.GetSwapchain();
+	for (size_t i = 0; i < inFlightFences_.size(); i++)
+	{
+		vkDestroyFence(device, inFlightFences_[i], nullptr);
+		vkDestroySemaphore(device, availableSemaphores_[i], nullptr);
+		vkDestroySemaphore(device, finishedSemaphores_[i], nullptr);
+	}
 
-    VkAttachmentDescription colorAttachment{};
-    colorAttachment.format = swapchain.imageFormat;
-    colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-    colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-    colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-    colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-    colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-    colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-    colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+	const std::size_t imageCount = swapchain.GetImageCount();
+	availableSemaphores_.resize(imageCount);
+	finishedSemaphores_.resize(imageCount);
+	inFlightFences_.resize(imageCount);
+	commandBuffers_.clear();
+	commandBuffers_.reserve(imageCount);
 
-    VkAttachmentReference colorAttachmentRef{};
-    colorAttachmentRef.attachment = 0;
-    colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+	VkSemaphoreCreateInfo semaphoreInfo {};
+	semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
-    VkSubpassDescription subpass{};
-    subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-    subpass.colorAttachmentCount = 1;
-    subpass.pColorAttachments = &colorAttachmentRef;
+	VkFenceCreateInfo fenceInfo {};
+	fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+	fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+	for (size_t i = 0; i < inFlightFences_.size(); i++)
+	{
+		VkResult res = vkCreateSemaphore(device, &semaphoreInfo, nullptr, &availableSemaphores_[i]);
+		vkCheckError(res, "Could not create semaphore!");
 
-    VkSubpassDependency dependency{};
-    dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
-    dependency.dstSubpass = 0;
-    dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-    dependency.srcAccessMask = 0;
-    dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-    dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+		res = vkCreateSemaphore(device, &semaphoreInfo, nullptr, &finishedSemaphores_[i]);
+		vkCheckError(res, "Could not create semaphore!");
 
-    VkRenderPassCreateInfo renderPassInfo{};
-    renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-    renderPassInfo.attachmentCount = 1;
-    renderPassInfo.pAttachments = &colorAttachment;
-    renderPassInfo.subpassCount = 1;
-    renderPassInfo.pSubpasses = &subpass;
-    renderPassInfo.dependencyCount = 1;
-    renderPassInfo.pDependencies = &dependency;
+		res = vkCreateFence(device, &fenceInfo, nullptr, &inFlightFences_[i]);
+		vkCheckError(res, "Could not create fence!");
 
-    if (vkCreateRenderPass(driver.device, &renderPassInfo, nullptr, &renderPass_) != VK_SUCCESS)
-    {
-        logDebug("[Error] failed to create render pass!");
-        neko_assert(false, "");
-    }
+		commandBuffers_.emplace_back(false);
+	}
 }
 
-void VkRenderer::CreateSemaphores()
+void VkRenderer::RecreatePass(RenderStage& renderStage)
 {
-    auto& driver = window_.GetDriver();
-    VkSemaphoreCreateInfo semaphoreInfo{};
-    semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-    if (vkCreateSemaphore(driver.device, &semaphoreInfo, nullptr, &imageAvailableSemaphore_) != VK_SUCCESS ||
-        vkCreateSemaphore(driver.device, &semaphoreInfo, nullptr, &renderFinishedSemaphore_) != VK_SUCCESS)
-    {
+	VkQueue graphicQueue           = device.GetGraphicsQueue();
+	const Vec2u& size              = BasicEngine::GetInstance()->GetConfig().windowSize;
+	const VkExtent2D displayExtent = {static_cast<uint32_t>(size.x), static_cast<uint32_t>(size.y)};
 
-        logDebug("[Error] failed to create semaphores!");
-        neko_assert(false, "");
-    }
+	vkQueueWaitIdle(graphicQueue);
+
+	if (renderStage.HasSwapchain() &&
+		(isFramebufferResized_ || !swapchain.CompareExtent(displayExtent)))
+	{
+		RecreateSwapChain();
+	}
+
+	renderStage.Rebuild(swapchain);
+	RecreateAttachments();
 }
 
-void VkRenderer::CreateFramebuffers()
+void VkRenderer::RecreateAttachments()
 {
-    auto& driver = window_.GetDriver();
-    auto& swapchain = window_.GetSwapchain();
-    framebuffers_.resize(swapchain.imageViews.size());
-    for (size_t i = 0; i < swapchain.imageViews.size(); i++)
-    {
-        VkImageView attachments[] = {
-                swapchain.imageViews[i]
-        };
+	attachments_.clear();
 
-        VkFramebufferCreateInfo framebufferInfo{};
-        framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-        framebufferInfo.renderPass = renderPass_;
-        framebufferInfo.attachmentCount = 1;
-        framebufferInfo.pAttachments = attachments;
-        framebufferInfo.width = swapchain.extent.width;
-        framebufferInfo.height = swapchain.extent.height;
-        framebufferInfo.layers = 1;
-
-        if (vkCreateFramebuffer(driver.device, &framebufferInfo, nullptr, &framebuffers_[i]) != VK_SUCCESS)
-        {
-            logDebug("failed to create framebuffer!");
-            neko_assert(false, "");
-        }
-    }
+	const auto& descriptors = renderer_->GetRenderStage().GetDescriptors();
+	attachments_.insert(descriptors.begin(), descriptors.end());
 }
 
-void VkRenderer::CreateCommandPool()
+void VkRenderer::CreatePipelineCache()
 {
-    auto& driver = window_.GetDriver();
-    QueueFamilyIndices queueFamilyIndices = FindQueueFamilies(driver.physicalDevice, driver.surface);
-
-    VkCommandPoolCreateInfo poolInfo{};
-    poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-    poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily.value();
-    poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT; // Optional
-    if (vkCreateCommandPool(driver.device, &poolInfo, nullptr, &commandPool_) != VK_SUCCESS)
-    {
-        logDebug("[Error] failed to create command pool!");
-        neko_assert(false, "");
-    }
+	VkPipelineCacheCreateInfo pipelineCacheCreateInfo {};
+	pipelineCacheCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO;
+	vkCreatePipelineCache(device, &pipelineCacheCreateInfo, nullptr, &pipelineCache);
 }
 
-void VkRenderer::CreateCommandBuffers()
+void VkRenderer::RenderAll()
 {
-    auto& driver = window_.GetDriver();
-    commandBuffers_.resize(framebuffers_.size());
-
-    VkCommandBufferAllocateInfo allocInfo{};
-    allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-    allocInfo.commandPool = commandPool_;
-    allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    allocInfo.commandBufferCount = static_cast<uint32_t>(commandBuffers_.size());
-
-    if (vkAllocateCommandBuffers(driver.device, &allocInfo, commandBuffers_.data()) != VK_SUCCESS)
-    {
-        logDebug("[Error] failed to allocate command buffers!\n");
-        neko_assert(false, "");
-    }
+#ifdef EASY_PROFILE_USE
+	EASY_BLOCK("RenderAllCPU");
+#endif
+	BeforeRenderLoop();
+	for (auto* renderCommand : currentCommandBuffer_) renderCommand->Render();
+	AfterRenderLoop();
 }
+
+void VkRenderer::SetWindow(std::unique_ptr<sdl::VulkanWindow> window)
+{
+	vkWindow = std::move(window);
 }
+
+void VkRenderer::SetRenderer(std::unique_ptr<IRenderer>&& newRenderer)
+{
+	renderer_ = std::move(newRenderer);
+	renderer_->Init();
+}
+
+void VkRenderer::Destroy()
+{
+	Renderer::Destroy();
+	DestroyResources();
+}
+}    // namespace neko::vk

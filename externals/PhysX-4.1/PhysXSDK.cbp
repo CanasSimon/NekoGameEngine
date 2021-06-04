@@ -5,7 +5,7 @@
 		<Option title="PhysXSDK"/>
 		<Option makefile_is_custom="1"/>
 		<Option compiler="clang"/>
-		<Option virtualFolders="CMake Files\;CMake Files\externals\;CMake Files\externals\assimp-5.0.1\;CMake Files\externals\assimp-5.0.1\cmake\;CMake Files\externals\assimp-5.0.1\include\;CMake Files\externals\assimp-5.0.1\include\assimp\;CMake Files\externals\assimp-5.0.1\cmake-modules\;CMake Files\externals\assimp-5.0.1\contrib\;CMake Files\externals\assimp-5.0.1\contrib\irrXML\;CMake Files\externals\assimp-5.0.1\code\;CMake Files\externals\KTX-Software\;CMake Files\externals\KTX-Software\cmake\;CMake Files\externals\KTX-Software\cmake\modules\;CMake Files\externals\KTX-Software\interface\;CMake Files\externals\KTX-Software\interface\basisu_c_binding\;CMake Files\externals\KTX-Software\tools\;CMake Files\externals\KTX-Software\tools\ktx2check\;CMake Files\externals\KTX-Software\tools\ktxinfo\;CMake Files\externals\KTX-Software\tools\ktxsc\;CMake Files\externals\KTX-Software\tools\toktx\;CMake Files\externals\googletest-1.8.1\;CMake Files\externals\googletest-1.8.1\googletest\;CMake Files\externals\googletest-1.8.1\googletest\cmake\;CMake Files\externals\FMOD\;CMake Files\externals\freetype-2.10.0\;CMake Files\externals\freetype-2.10.0\builds\;CMake Files\externals\freetype-2.10.0\builds\cmake\;CMake Files\externals\glad\;CMake Files\externals\imgui-1.79WIP\;CMake Files\externals\physfs-3.0.2\;CMake Files\externals\physfs-3.0.2\extras\;CMake Files\externals\PhysX-4.1\;CMake Files\externals\PhysX-4.1\physx\;CMake Files\externals\PhysX-4.1\physx\compiler\;CMake Files\externals\PhysX-4.1\physx\compiler\public\;CMake Files\externals\PhysX-4.1\physx\source\;CMake Files\externals\PhysX-4.1\physx\source\compiler\;CMake Files\externals\PhysX-4.1\physx\source\compiler\cmake\;CMake Files\externals\PhysX-4.1\physx\source\compiler\cmake\linux\;CMake Files\externals\PhysX-4.1\externals\;CMake Files\externals\PhysX-4.1\externals\cmakemodules\;CMake Files\externals\PhysX-4.1\externals\cmakemodules\template\;CMake Files\externals\SDL2-2.0.12\;CMake Files\externals\SDL2-2.0.12\cmake\;CMake Files\externals\SDL2-2.0.12\include\;CMake Files\cmake\;CMake Files\cmake\platforms\;CMake Files\common\;CMake Files\common\fmod_wrapper\;CMake Files\common\gles3_wrapper\;CMake Files\common\physfs_wrapper\;CMake Files\common\physx_wrapper\;CMake Files\common\sdl_engine\;CMake Files\common\aer_lib\;CMake Files\core\;CMake Files\main\;CMake Files\main\aer_editor\;CMake Files\main\aer_game\;CMake Files\main\comp_graph\;CMake Files\main\feature_dev\;CMake Files\main\vulkan_engine\;CMake Files\tools\;CMake Files\tools\basis_universal\;CMake Files\tools\image_format\;CMake Files\tools\validate_json\;"/>
+		<Option virtualFolders="CMake Files\;CMake Files\externals\;CMake Files\externals\assimp-5.0.1\;CMake Files\externals\assimp-5.0.1\cmake\;CMake Files\externals\assimp-5.0.1\include\;CMake Files\externals\assimp-5.0.1\include\assimp\;CMake Files\externals\assimp-5.0.1\cmake-modules\;CMake Files\externals\assimp-5.0.1\contrib\;CMake Files\externals\assimp-5.0.1\contrib\irrXML\;CMake Files\externals\assimp-5.0.1\code\;CMake Files\externals\googletest-1.8.1\;CMake Files\externals\googletest-1.8.1\googletest\;CMake Files\externals\googletest-1.8.1\googletest\cmake\;CMake Files\externals\FMOD\;CMake Files\externals\freetype-2.10.0\;CMake Files\externals\freetype-2.10.0\builds\;CMake Files\externals\freetype-2.10.0\builds\cmake\;CMake Files\externals\glad\;CMake Files\externals\imgui-1.79WIP\;CMake Files\externals\physfs-3.0.2\;CMake Files\externals\physfs-3.0.2\extras\;CMake Files\externals\PhysX-4.1\;CMake Files\externals\PhysX-4.1\physx\;CMake Files\externals\PhysX-4.1\physx\compiler\;CMake Files\externals\PhysX-4.1\physx\compiler\public\;CMake Files\externals\PhysX-4.1\physx\source\;CMake Files\externals\PhysX-4.1\physx\source\compiler\;CMake Files\externals\PhysX-4.1\physx\source\compiler\cmake\;CMake Files\externals\PhysX-4.1\physx\source\compiler\cmake\linux\;CMake Files\externals\PhysX-4.1\externals\;CMake Files\externals\PhysX-4.1\externals\cmakemodules\;CMake Files\externals\PhysX-4.1\externals\cmakemodules\template\;CMake Files\externals\SDL2-2.0.12\;CMake Files\externals\SDL2-2.0.12\cmake\;CMake Files\externals\SDL2-2.0.12\include\;CMake Files\cmake\;CMake Files\cmake\platforms\;CMake Files\common\;CMake Files\common\fmod_wrapper\;CMake Files\common\gles3_wrapper\;CMake Files\common\physfs_wrapper\;CMake Files\common\physx_wrapper\;CMake Files\common\sdl_engine\;CMake Files\common\aer_lib\;CMake Files\core\;CMake Files\main\;CMake Files\main\aer_editor\;CMake Files\main\aer_game\;CMake Files\main\comp_graph\;CMake Files\main\feature_dev\;CMake Files\main\vulkan_engine\;CMake Files\tools\;CMake Files\tools\basis_universal\;CMake Files\tools\image_format\;CMake Files\tools\validate_json\;"/>
 		<Build>
 			<Target title="all">
 				<Option working_dir="/media/Data/Repos/NekoGameEngine/externals/PhysX-4.1"/>
@@ -34,7 +34,6 @@
 					<Add option="-DNEKO_ASSERT=1"/>
 					<Add option="-DNEKO_FMOD=1"/>
 					<Add option="-DNEKO_FREETYPE=1"/>
-					<Add option="-DNEKO_KTX=1"/>
 					<Add option="-DTINYOBJLOADER_IMPLEMENTATION=1"/>
 					<Add option="-DNEKO_GLES3=1"/>
 					<Add option="-DNEKO_IMGUI=1"/>
@@ -84,7 +83,6 @@
 					<Add option="-DNEKO_ASSERT=1"/>
 					<Add option="-DNEKO_FMOD=1"/>
 					<Add option="-DNEKO_FREETYPE=1"/>
-					<Add option="-DNEKO_KTX=1"/>
 					<Add option="-DTINYOBJLOADER_IMPLEMENTATION=1"/>
 					<Add option="-DNEKO_GLES3=1"/>
 					<Add option="-DNEKO_IMGUI=1"/>
@@ -135,7 +133,6 @@
 					<Add option="-DNEKO_ASSERT=1"/>
 					<Add option="-DNEKO_FMOD=1"/>
 					<Add option="-DNEKO_FREETYPE=1"/>
-					<Add option="-DNEKO_KTX=1"/>
 					<Add option="-DTINYOBJLOADER_IMPLEMENTATION=1"/>
 					<Add option="-DNEKO_GLES3=1"/>
 					<Add option="-DNEKO_IMGUI=1"/>
@@ -196,7 +193,6 @@
 					<Add option="-DNEKO_ASSERT=1"/>
 					<Add option="-DNEKO_FMOD=1"/>
 					<Add option="-DNEKO_FREETYPE=1"/>
-					<Add option="-DNEKO_KTX=1"/>
 					<Add option="-DTINYOBJLOADER_IMPLEMENTATION=1"/>
 					<Add option="-DNEKO_GLES3=1"/>
 					<Add option="-DNEKO_IMGUI=1"/>
@@ -256,7 +252,6 @@
 					<Add option="-DNEKO_ASSERT=1"/>
 					<Add option="-DNEKO_FMOD=1"/>
 					<Add option="-DNEKO_FREETYPE=1"/>
-					<Add option="-DNEKO_KTX=1"/>
 					<Add option="-DTINYOBJLOADER_IMPLEMENTATION=1"/>
 					<Add option="-DNEKO_GLES3=1"/>
 					<Add option="-DNEKO_IMGUI=1"/>
@@ -314,7 +309,6 @@
 					<Add option="-DNEKO_ASSERT=1"/>
 					<Add option="-DNEKO_FMOD=1"/>
 					<Add option="-DNEKO_FREETYPE=1"/>
-					<Add option="-DNEKO_KTX=1"/>
 					<Add option="-DTINYOBJLOADER_IMPLEMENTATION=1"/>
 					<Add option="-DNEKO_GLES3=1"/>
 					<Add option="-DNEKO_IMGUI=1"/>
@@ -372,7 +366,6 @@
 					<Add option="-DNEKO_ASSERT=1"/>
 					<Add option="-DNEKO_FMOD=1"/>
 					<Add option="-DNEKO_FREETYPE=1"/>
-					<Add option="-DNEKO_KTX=1"/>
 					<Add option="-DTINYOBJLOADER_IMPLEMENTATION=1"/>
 					<Add option="-DNEKO_GLES3=1"/>
 					<Add option="-DNEKO_IMGUI=1"/>
@@ -438,7 +431,6 @@
 					<Add option="-DNEKO_ASSERT=1"/>
 					<Add option="-DNEKO_FMOD=1"/>
 					<Add option="-DNEKO_FREETYPE=1"/>
-					<Add option="-DNEKO_KTX=1"/>
 					<Add option="-DTINYOBJLOADER_IMPLEMENTATION=1"/>
 					<Add option="-DNEKO_GLES3=1"/>
 					<Add option="-DNEKO_IMGUI=1"/>
@@ -503,7 +495,6 @@
 					<Add option="-DNEKO_ASSERT=1"/>
 					<Add option="-DNEKO_FMOD=1"/>
 					<Add option="-DNEKO_FREETYPE=1"/>
-					<Add option="-DNEKO_KTX=1"/>
 					<Add option="-DTINYOBJLOADER_IMPLEMENTATION=1"/>
 					<Add option="-DNEKO_GLES3=1"/>
 					<Add option="-DNEKO_IMGUI=1"/>
@@ -556,7 +547,6 @@
 					<Add option="-DNEKO_ASSERT=1"/>
 					<Add option="-DNEKO_FMOD=1"/>
 					<Add option="-DNEKO_FREETYPE=1"/>
-					<Add option="-DNEKO_KTX=1"/>
 					<Add option="-DTINYOBJLOADER_IMPLEMENTATION=1"/>
 					<Add option="-DNEKO_GLES3=1"/>
 					<Add option="-DNEKO_IMGUI=1"/>
@@ -610,7 +600,6 @@
 					<Add option="-DNEKO_ASSERT=1"/>
 					<Add option="-DNEKO_FMOD=1"/>
 					<Add option="-DNEKO_FREETYPE=1"/>
-					<Add option="-DNEKO_KTX=1"/>
 					<Add option="-DTINYOBJLOADER_IMPLEMENTATION=1"/>
 					<Add option="-DNEKO_GLES3=1"/>
 					<Add option="-DNEKO_IMGUI=1"/>
@@ -653,7 +642,6 @@
 					<Add option="-DNEKO_ASSERT=1"/>
 					<Add option="-DNEKO_FMOD=1"/>
 					<Add option="-DNEKO_FREETYPE=1"/>
-					<Add option="-DNEKO_KTX=1"/>
 					<Add option="-DTINYOBJLOADER_IMPLEMENTATION=1"/>
 					<Add option="-DNEKO_GLES3=1"/>
 					<Add option="-DNEKO_IMGUI=1"/>
@@ -697,7 +685,6 @@
 					<Add option="-DNEKO_ASSERT=1"/>
 					<Add option="-DNEKO_FMOD=1"/>
 					<Add option="-DNEKO_FREETYPE=1"/>
-					<Add option="-DNEKO_KTX=1"/>
 					<Add option="-DTINYOBJLOADER_IMPLEMENTATION=1"/>
 					<Add option="-DNEKO_GLES3=1"/>
 					<Add option="-DNEKO_IMGUI=1"/>
@@ -772,7 +759,6 @@
 					<Add option="-DNEKO_ASSERT=1"/>
 					<Add option="-DNEKO_FMOD=1"/>
 					<Add option="-DNEKO_FREETYPE=1"/>
-					<Add option="-DNEKO_KTX=1"/>
 					<Add option="-DTINYOBJLOADER_IMPLEMENTATION=1"/>
 					<Add option="-DNEKO_GLES3=1"/>
 					<Add option="-DNEKO_IMGUI=1"/>
@@ -845,7 +831,6 @@
 					<Add option="-DNEKO_ASSERT=1"/>
 					<Add option="-DNEKO_FMOD=1"/>
 					<Add option="-DNEKO_FREETYPE=1"/>
-					<Add option="-DNEKO_KTX=1"/>
 					<Add option="-DTINYOBJLOADER_IMPLEMENTATION=1"/>
 					<Add option="-DNEKO_GLES3=1"/>
 					<Add option="-DNEKO_IMGUI=1"/>
@@ -886,7 +871,6 @@
 					<Add option="-DNEKO_ASSERT=1"/>
 					<Add option="-DNEKO_FMOD=1"/>
 					<Add option="-DNEKO_FREETYPE=1"/>
-					<Add option="-DNEKO_KTX=1"/>
 					<Add option="-DTINYOBJLOADER_IMPLEMENTATION=1"/>
 					<Add option="-DNEKO_GLES3=1"/>
 					<Add option="-DNEKO_IMGUI=1"/>
@@ -927,7 +911,6 @@
 					<Add option="-DNEKO_ASSERT=1"/>
 					<Add option="-DNEKO_FMOD=1"/>
 					<Add option="-DNEKO_FREETYPE=1"/>
-					<Add option="-DNEKO_KTX=1"/>
 					<Add option="-DTINYOBJLOADER_IMPLEMENTATION=1"/>
 					<Add option="-DNEKO_GLES3=1"/>
 					<Add option="-DNEKO_IMGUI=1"/>
@@ -968,7 +951,6 @@
 					<Add option="-DNEKO_ASSERT=1"/>
 					<Add option="-DNEKO_FMOD=1"/>
 					<Add option="-DNEKO_FREETYPE=1"/>
-					<Add option="-DNEKO_KTX=1"/>
 					<Add option="-DTINYOBJLOADER_IMPLEMENTATION=1"/>
 					<Add option="-DNEKO_GLES3=1"/>
 					<Add option="-DNEKO_IMGUI=1"/>
@@ -1010,7 +992,6 @@
 					<Add option="-DNEKO_ASSERT=1"/>
 					<Add option="-DNEKO_FMOD=1"/>
 					<Add option="-DNEKO_FREETYPE=1"/>
-					<Add option="-DNEKO_KTX=1"/>
 					<Add option="-DTINYOBJLOADER_IMPLEMENTATION=1"/>
 					<Add option="-DNEKO_GLES3=1"/>
 					<Add option="-DNEKO_IMGUI=1"/>
@@ -1078,7 +1059,6 @@
 					<Add option="-DNEKO_ASSERT=1"/>
 					<Add option="-DNEKO_FMOD=1"/>
 					<Add option="-DNEKO_FREETYPE=1"/>
-					<Add option="-DNEKO_KTX=1"/>
 					<Add option="-DTINYOBJLOADER_IMPLEMENTATION=1"/>
 					<Add option="-DNEKO_GLES3=1"/>
 					<Add option="-DNEKO_IMGUI=1"/>
@@ -1146,7 +1126,6 @@
 					<Add option="-DNEKO_ASSERT=1"/>
 					<Add option="-DNEKO_FMOD=1"/>
 					<Add option="-DNEKO_FREETYPE=1"/>
-					<Add option="-DNEKO_KTX=1"/>
 					<Add option="-DTINYOBJLOADER_IMPLEMENTATION=1"/>
 					<Add option="-DNEKO_GLES3=1"/>
 					<Add option="-DNEKO_IMGUI=1"/>
@@ -1200,7 +1179,6 @@
 					<Add option="-DNEKO_ASSERT=1"/>
 					<Add option="-DNEKO_FMOD=1"/>
 					<Add option="-DNEKO_FREETYPE=1"/>
-					<Add option="-DNEKO_KTX=1"/>
 					<Add option="-DTINYOBJLOADER_IMPLEMENTATION=1"/>
 					<Add option="-DNEKO_GLES3=1"/>
 					<Add option="-DNEKO_IMGUI=1"/>
@@ -1254,7 +1232,6 @@
 					<Add option="-DNEKO_ASSERT=1"/>
 					<Add option="-DNEKO_FMOD=1"/>
 					<Add option="-DNEKO_FREETYPE=1"/>
-					<Add option="-DNEKO_KTX=1"/>
 					<Add option="-DTINYOBJLOADER_IMPLEMENTATION=1"/>
 					<Add option="-DNEKO_GLES3=1"/>
 					<Add option="-DNEKO_IMGUI=1"/>
@@ -1317,7 +1294,6 @@
 					<Add option="-DNEKO_ASSERT=1"/>
 					<Add option="-DNEKO_FMOD=1"/>
 					<Add option="-DNEKO_FREETYPE=1"/>
-					<Add option="-DNEKO_KTX=1"/>
 					<Add option="-DTINYOBJLOADER_IMPLEMENTATION=1"/>
 					<Add option="-DNEKO_GLES3=1"/>
 					<Add option="-DNEKO_IMGUI=1"/>
@@ -1380,7 +1356,6 @@
 					<Add option="-DNEKO_ASSERT=1"/>
 					<Add option="-DNEKO_FMOD=1"/>
 					<Add option="-DNEKO_FREETYPE=1"/>
-					<Add option="-DNEKO_KTX=1"/>
 					<Add option="-DTINYOBJLOADER_IMPLEMENTATION=1"/>
 					<Add option="-DNEKO_GLES3=1"/>
 					<Add option="-DNEKO_IMGUI=1"/>
@@ -1449,7 +1424,6 @@
 					<Add option="-DNEKO_ASSERT=1"/>
 					<Add option="-DNEKO_FMOD=1"/>
 					<Add option="-DNEKO_FREETYPE=1"/>
-					<Add option="-DNEKO_KTX=1"/>
 					<Add option="-DTINYOBJLOADER_IMPLEMENTATION=1"/>
 					<Add option="-DNEKO_GLES3=1"/>
 					<Add option="-DNEKO_IMGUI=1"/>
@@ -1518,7 +1492,6 @@
 					<Add option="-DNEKO_ASSERT=1"/>
 					<Add option="-DNEKO_FMOD=1"/>
 					<Add option="-DNEKO_FREETYPE=1"/>
-					<Add option="-DNEKO_KTX=1"/>
 					<Add option="-DTINYOBJLOADER_IMPLEMENTATION=1"/>
 					<Add option="-DNEKO_GLES3=1"/>
 					<Add option="-DNEKO_IMGUI=1"/>
@@ -1573,7 +1546,6 @@
 					<Add option="-DNEKO_ASSERT=1"/>
 					<Add option="-DNEKO_FMOD=1"/>
 					<Add option="-DNEKO_FREETYPE=1"/>
-					<Add option="-DNEKO_KTX=1"/>
 					<Add option="-DTINYOBJLOADER_IMPLEMENTATION=1"/>
 					<Add option="-DNEKO_GLES3=1"/>
 					<Add option="-DNEKO_IMGUI=1"/>
@@ -1628,7 +1600,6 @@
 					<Add option="-DNEKO_ASSERT=1"/>
 					<Add option="-DNEKO_FMOD=1"/>
 					<Add option="-DNEKO_FREETYPE=1"/>
-					<Add option="-DNEKO_KTX=1"/>
 					<Add option="-DTINYOBJLOADER_IMPLEMENTATION=1"/>
 					<Add option="-DNEKO_GLES3=1"/>
 					<Add option="-DNEKO_IMGUI=1"/>
@@ -1670,7 +1641,6 @@
 					<Add option="-DNEKO_ASSERT=1"/>
 					<Add option="-DNEKO_FMOD=1"/>
 					<Add option="-DNEKO_FREETYPE=1"/>
-					<Add option="-DNEKO_KTX=1"/>
 					<Add option="-DTINYOBJLOADER_IMPLEMENTATION=1"/>
 					<Add option="-DNEKO_GLES3=1"/>
 					<Add option="-DNEKO_IMGUI=1"/>
@@ -5629,45 +5599,6 @@
 		</Unit>
 		<Unit filename="/media/Data/Repos/NekoGameEngine/externals/assimp-5.0.1/code/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\externals\assimp-5.0.1\code\"/>
-		</Unit>
-		<Unit filename="/media/Data/Repos/NekoGameEngine/externals/KTX-Software/CMakeLists.txt">
-			<Option virtualFolder="CMake Files\externals\KTX-Software\"/>
-		</Unit>
-		<Unit filename="/media/Data/Repos/NekoGameEngine/externals/KTX-Software/cmake/mkvk.cmake">
-			<Option virtualFolder="CMake Files\externals\KTX-Software\cmake\"/>
-		</Unit>
-		<Unit filename="/media/Data/Repos/NekoGameEngine/externals/KTX-Software/cmake/version.cmake">
-			<Option virtualFolder="CMake Files\externals\KTX-Software\cmake\"/>
-		</Unit>
-		<Unit filename="/media/Data/Repos/NekoGameEngine/externals/KTX-Software/cmake/xcode.cmake">
-			<Option virtualFolder="CMake Files\externals\KTX-Software\cmake\"/>
-		</Unit>
-		<Unit filename="/media/Data/Repos/NekoGameEngine/externals/KTX-Software/cmake/modules/FindBash.cmake">
-			<Option virtualFolder="CMake Files\externals\KTX-Software\cmake\modules\"/>
-		</Unit>
-		<Unit filename="/media/Data/Repos/NekoGameEngine/externals/KTX-Software/cmake/modules/Findzstd.cmake">
-			<Option virtualFolder="CMake Files\externals\KTX-Software\cmake\modules\"/>
-		</Unit>
-		<Unit filename="/media/Data/Repos/NekoGameEngine/externals/KTX-Software/cmake/modules/GetGitRevisionDescription.cmake">
-			<Option virtualFolder="CMake Files\externals\KTX-Software\cmake\modules\"/>
-		</Unit>
-		<Unit filename="/media/Data/Repos/NekoGameEngine/externals/KTX-Software/interface/basisu_c_binding/CMakeLists.txt">
-			<Option virtualFolder="CMake Files\externals\KTX-Software\interface\basisu_c_binding\"/>
-		</Unit>
-		<Unit filename="/media/Data/Repos/NekoGameEngine/externals/KTX-Software/tools/CMakeLists.txt">
-			<Option virtualFolder="CMake Files\externals\KTX-Software\tools\"/>
-		</Unit>
-		<Unit filename="/media/Data/Repos/NekoGameEngine/externals/KTX-Software/tools/ktx2check/CMakeLists.txt">
-			<Option virtualFolder="CMake Files\externals\KTX-Software\tools\ktx2check\"/>
-		</Unit>
-		<Unit filename="/media/Data/Repos/NekoGameEngine/externals/KTX-Software/tools/ktxinfo/CMakeLists.txt">
-			<Option virtualFolder="CMake Files\externals\KTX-Software\tools\ktxinfo\"/>
-		</Unit>
-		<Unit filename="/media/Data/Repos/NekoGameEngine/externals/KTX-Software/tools/ktxsc/CMakeLists.txt">
-			<Option virtualFolder="CMake Files\externals\KTX-Software\tools\ktxsc\"/>
-		</Unit>
-		<Unit filename="/media/Data/Repos/NekoGameEngine/externals/KTX-Software/tools/toktx/CMakeLists.txt">
-			<Option virtualFolder="CMake Files\externals\KTX-Software\tools\toktx\"/>
 		</Unit>
 		<Unit filename="/media/Data/Repos/NekoGameEngine/externals/googletest-1.8.1/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\externals\googletest-1.8.1\"/>
