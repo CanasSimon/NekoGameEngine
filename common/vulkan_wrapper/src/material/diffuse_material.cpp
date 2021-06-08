@@ -45,7 +45,7 @@ DiffuseMaterial::DiffuseMaterial(std::string_view name,
 
 bool DiffuseMaterial::operator==(const DiffuseMaterial& other) const
 {
-	return /*shaderPath_ == other.shaderPath_ && */ color_ == other.color_ &&
+	return color_ == other.color_ &&
 	       ((diffuse_ && other.diffuse_ && &diffuse_.value() == &other.diffuse_.value()) ||
 			   (!diffuse_ && !other.diffuse_)) &&
 	       ((specular_ && other.specular_ && &specular_.value() == &other.specular_.value()) ||
@@ -66,7 +66,7 @@ std::string DiffuseMaterial::GetShaderPath() const
 	std::string shaderName = "lights";
 	if (diffuse_) shaderName += "_d";
 	if (specular_) shaderName += "_s";
-	if (normal_) shaderName = "_n";
+	if (normal_) shaderName += "_n";
 
 	return GetVkShadersFolderPath() + shaderName + ".aershader";
 }

@@ -18,6 +18,7 @@ DrawSystem::DrawSystem(AerEngine& engine)
 	if (engine.GetMode() != ModeEnum::TEST)
 	{
 		engine.RegisterSystem(camera_);
+		engine.RegisterOnEvent(camera_);
 
 #ifdef NEKO_OPENGL
 		gizmosRenderer_ = std::make_unique<GizmoRenderer>(&camera_.GetCamera(0));
@@ -41,7 +42,7 @@ void DrawSystem::Init()
 	camera.nearPlane        = 0.1f;
 	camera.farPlane         = 1'000.0f;
 	camera_.SetCameras(camera);
-	CameraLocator::provide(&camera_.GetCamera(0));
+	sdl::MultiCameraLocator::provide(&camera_);
 
 #ifdef NEKO_OPENGL
 	gizmosRenderer_->SetCamera(&camera_.GetCamera(0));

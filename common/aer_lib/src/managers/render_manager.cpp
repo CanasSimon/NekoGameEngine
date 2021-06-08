@@ -1,6 +1,5 @@
 #include "aer/managers/render_manager.h"
 
-#include "engine/engine.h"
 #include "engine/resource_locations.h"
 #include "graphics/camera.h"
 #include "utils/file_utility.h"
@@ -32,7 +31,10 @@ RenderManager::RenderManager(EntityManager& entityManager,
 	 lightManager_(lightManager)
 {
 	DirectionalLight::Instance = &dirLight_;
+
+#ifdef NEKO_OPENGL
 	instancesMap_.reserve(32);
+#endif
 }
 
 void RenderManager::Init()

@@ -1,4 +1,8 @@
 #ifdef NEKO_ASSERT
+#include "vk/vk_error_handler.h"
+
+#include <fmt/format.h>
+
 namespace neko::vk
 {
 void CheckVkError(VkResult err, const char* msg, const char* file, int line)

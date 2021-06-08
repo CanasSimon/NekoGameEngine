@@ -41,12 +41,6 @@ public:
 	/// Currently unused
     void ClearScreen() override;
 
-	/// Executes commands before the render loop starts
-    void BeforeRenderLoop() override;
-
-	/// Executes commands after the render loop has ended
-    void AfterRenderLoop() override;
-
 	/// Sets the window used by the renderer
     void SetWindow(std::unique_ptr<sdl::VulkanWindow> window);
 
@@ -54,6 +48,7 @@ public:
     void SetRenderer(std::unique_ptr<IRenderer>&& newRenderer);
 
 	void Destroy() override;
+
 private:
 	/// Recreates the render pass if needed and starts it
 	bool StartRenderPass(RenderStage& renderStage);
@@ -79,7 +74,10 @@ private:
 	/// Creates the pipeline cache
     void CreatePipelineCache();
 
-	/// Starts the rendering
-	void RenderAll() override;
+    /// Executes commands before the render loop starts
+    void BeforeRender() override;
+
+    /// Executes commands after the render loop has ended
+    void AfterRender() override;
 };
 }

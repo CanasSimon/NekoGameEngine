@@ -67,8 +67,7 @@ void ModelLoader::Update()
 				}
 			}
 
-			if (loadedTextures == textureMaps_)
-				isLoaded++;
+			if (loadedTextures == textureMaps_) isLoaded++;
 		}
 
 		if (isLoaded == model_.meshes_.size()) flags_ |= LOADED;
@@ -185,14 +184,15 @@ void ModelLoader::LoadMaterialTextures(const tinyobj::material_t& mat,
 	auto& textureManager = TextureManagerLocator::get();
 	auto& materialManager = MaterialManagerLocator::get();
 	{
-		if (materialManager.IsMaterialLoaded(mat.name))
+		const MaterialId materialId = sole::rebuild(HashString(path_), HashString(texName));
+		if (materialManager.IsMaterialLoaded(materialId))
 		{
-			mesh.materialId_ = HashString(mat.name);
+			mesh.materialId_ = materialId;
 			return;
 		}
 
 		const Vec3f diffuseCol = {mat.diffuse[0], mat.diffuse[1], mat.diffuse[2]};
-		mesh.materialId_       = materialManager.AddNewMaterial(mat.name, MaterialType::DIFFUSE);
+		mesh.materialId_       = materialManager.AddNewMaterial(MaterialType::DIFFUSE, materialId);
 		materialManager.GetDiffuseMaterial(mesh.materialId_).SetShininess(mat.shininess);
 		materialManager.GetDiffuseMaterial(mesh.materialId_).SetColor(Vec4f(diffuseCol, 1.0f));
 
@@ -216,11 +216,5 @@ void ModelLoader::LoadMaterialTextures(const tinyobj::material_t& mat,
 			default: logDebug("Unsupported texture type"); break;
 		}
 	}
-
-	/*auto& texture        = mesh.textures_.emplace_back();
-	texture.type         = textureType;
-	texture.sName        = matName;
-
-	texture.textureId = textureManager.LoadTexture(directory_ + matName.data());*/
 }
 }    // namespace neko::vk

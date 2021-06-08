@@ -27,12 +27,14 @@
 ---------------------------------------------------------- */
 
 #ifdef NEKO_VULKAN
-	#include "imgui.h"
-	#include "sdl_engine/sdl_camera.h"
-	#include "vk/images/image2d.h"
-	#include "vk/models/model.h"
-	#include "vk/shaders/shader.h"
-	#include "vk/vk_include.h"
+#include "imgui.h"
+#include "sdl_engine/sdl_camera.h"
+
+#include "vk/vk_include.h"
+
+#include "vk/images/image2d.h"
+#include "vk/models/model.h"
+#include "vk/shaders/shader.h"
 #endif
 
 #ifdef EASY_PROFILE_USE

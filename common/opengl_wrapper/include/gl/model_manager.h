@@ -41,15 +41,15 @@ public:
 	/**
 	 * \brief Nb of models hat has been loaded
 	 */
-	[[nodiscard]] virtual int CountModelLoaded() const = 0;
+	[[nodiscard]] virtual std::size_t GetLoadedModelsCount() const = 0;
 	/**
 	 * \brief Nb of models hat has been loaded
 	 */
-	[[nodiscard]] virtual int CountModelNotLoaded() const = 0;
+	[[nodiscard]] virtual std::size_t GetNonLoadedModelsCount() const = 0;
 	/**
 	 * \brief Nb of models in total
 	 */
-	[[nodiscard]] virtual int CountOfAllModel() const = 0;
+	[[nodiscard]] virtual std::size_t GetModelsCount() const = 0;
 };
 
 class NullModelManager : public IModelManager
@@ -62,9 +62,9 @@ public:
 
 	[[nodiscard]] bool IsLoaded(ModelId) const override { return false; }
 	ModelId LoadModel(std::string_view) override { return INVALID_MODEL_ID; }
-	[[nodiscard]] int CountModelLoaded() const override { return 0; }
-	[[nodiscard]] int CountModelNotLoaded() const override { return 0; }
-	[[nodiscard]] int CountOfAllModel() const override { return 0; }
+	[[nodiscard]] std::size_t GetLoadedModelsCount() const override { return 0; }
+	[[nodiscard]] std::size_t GetNonLoadedModelsCount() const override { return 0; }
+	[[nodiscard]] std::size_t GetModelsCount() const override { return 0; }
 };
 
 class ModelManager : public IModelManager, public SystemInterface
@@ -83,21 +83,15 @@ public:
 
 	[[nodiscard]] bool IsLoaded(ModelId modelId) const override { return GetModel(modelId); }
 	ModelId LoadModel(std::string_view path) override;
-	[[nodiscard]] int CountModelLoaded() const override { return modelMapSize_; }
-	[[nodiscard]] int CountModelNotLoaded() const override { return modelLoadersSize_; }
-	[[nodiscard]] int CountOfAllModel() const override { return modelPathMapSize_; }
 
-	void SetTexture(ModelId modelId,
-		const std::string& texturelPath,
-		gl::Mesh::Texture::Type textureType);
+    [[nodiscard]] std::size_t GetModelsCount() const override { return pathMap_.size(); }
+	[[nodiscard]] std::size_t GetLoadedModelsCount() const override { return models_.size(); }
+	[[nodiscard]] std::size_t GetNonLoadedModelsCount() const override { return loaders_.size(); }
 
 private:
-	std::map<std::string, ModelId> modelPathMap_ {};
-	std::map<ModelId, Model> modelMap_ {};
-	std::queue<ModelLoader> modelLoaders_ {};
-	size_t modelMapSize_;
-	size_t modelPathMapSize_;
-	size_t modelLoadersSize_;
+	std::map<std::string, ModelId> pathMap_ {};
+	std::map<ModelId, Model> models_ {};
+	std::queue<ModelLoader> loaders_ {};
 };
 
 using ModelManagerLocator = Locator<IModelManager, NullModelManager>;

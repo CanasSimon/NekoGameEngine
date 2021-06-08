@@ -232,25 +232,32 @@ void EditorToolManager::DrawImGui()
 				if (ImGui::Button("Physics inactive")) engine_.GetPhysicsEngine().StartPhysic();
 			}
 			ImGui::PopStyleColor();
-			
 
+            // Loading progress
+            const auto& textureManager       = engine_.GetResourceManagerContainer().textureManager;
+            const auto& modelManager         = engine_.GetResourceManagerContainer().modelManager;
+            const std::size_t totalTextures  = textureManager.GetTexturesCount();
+            const std::size_t loadedTextures = textureManager.GetLoadedTexturesCount();
+            const std::size_t totalModels    = modelManager.GetModelsCount();
+            const std::size_t loadedModels   = modelManager.GetLoadedModelsCount();
+            if (loadedTextures != totalTextures || loadedModels != totalModels)
+            {
+                const std::size_t total       = totalTextures + totalModels;
+                const std::size_t totalLoaded = loadedTextures + loadedModels;
+                const float fraction = static_cast<float>(totalLoaded) / static_cast<float>(total);
+
+                const Vec2f size   = Vec2f(200.0f, 0.0f);
+                const float barPos = (ImGui::GetWindowWidth() - size.x) * 0.5f;
+                ImGui::SetCursorPosX(barPos);
+                ImGui::ProgressBar(fraction, size);
+            }
+
+            // FPS Display
 			const auto fpsText = fmt::format("{:.0f} FPS", 1.0f / dt_.count());
 			const float spacing = ImGui::GetStyle().ItemSpacing.x + ImGui::GetStyle().FramePadding.x;
-			const float nextPos = ImGui::GetWindowWidth() - ImGui::CalcTextSize(fpsText.c_str()).x - spacing;
-			ImGui::SetCursorPosX(nextPos);
+			const float textPos = ImGui::GetWindowWidth() - ImGui::CalcTextSize(fpsText.c_str()).x - spacing;
+			ImGui::SetCursorPosX(textPos);
 			ImGui::Text("%s", fpsText.c_str());
-
-			auto& textureManager = engine_.GetResourceManagerContainer().textureManager;
-			const auto loadingTextureText = fmt::format("{}/{} Textures Loaded", textureManager.CountTextureLoaded(), textureManager.CountAllTexture());
-			const float nextPosLoadingTexture= nextPos - ImGui::CalcTextSize(loadingTextureText.c_str()).x - spacing;
-			ImGui::SetCursorPosX(nextPosLoadingTexture);
-			ImGui::Text("%s", loadingTextureText.c_str());
-
-			auto& modelManager = engine_.GetResourceManagerContainer().modelManager;
-			const auto loadingModelText = fmt::format("{}/{} Models Loaded", modelManager.CountModelLoaded(), modelManager.CountOfAllModel());
-			const float nextPosLoadingModel = nextPosLoadingTexture - ImGui::CalcTextSize(loadingModelText.c_str()).x - spacing;
-			ImGui::SetCursorPosX(nextPosLoadingModel);
-			ImGui::Text("%s", loadingModelText.c_str());
 
 			ImGui::EndMenuBar();
 		}

@@ -1,9 +1,10 @@
 #pragma once
 #include "vk/images/image2d.h"
+#include "vk/images/texture.h"
 
 namespace neko::vk
 {
-constexpr StringHash INVALID_TEXTURE_ID = 0;
+constexpr ResourceHash INVALID_TEXTURE_ID = 0;
 
 class TextureLoader
 {
@@ -16,7 +17,7 @@ public:
 		UPLOAD_TO_GPU_ERROR = 3u
 	};
 
-	TextureLoader(std::string_view path, StringHash textureId, Texture::TextureFlags flags);
+	TextureLoader(std::string_view path, ResourceHash textureId, Texture::Flags flags);
 
 	TextureLoader(const TextureLoader&) = delete;
 	TextureLoader(TextureLoader&& other) noexcept;
@@ -27,7 +28,7 @@ public:
 	void Start();
 
 	std::string_view GetPath() const { return path_; }
-	[[nodiscard]] StringHash GetTextureId() const { return textureId_; }
+	[[nodiscard]] ResourceHash GetTextureId() const { return textureId_; }
 	[[nodiscard]] const Image2d& GetTexture() const { return texture_; }
 	[[nodiscard]] TextureLoaderError GetErrors() const { return error_; }
 
@@ -41,7 +42,7 @@ private:
 
 	friend class TextureManager;
 	std::reference_wrapper<const FilesystemInterface> filesystem_;
-	Texture::TextureFlags flags_ = Texture::DEFAULT;
+	Texture::Flags flags_ = Texture::DEFAULT;
 
 	Job loadingTextureJob_ {};
 	Job decompressTextureJob_ {};
@@ -52,8 +53,8 @@ private:
 	neko::Image image_ {};
 
 	Image2d texture_ {};
-	StringHash textureId_ {};
+	ResourceHash textureId_ {};
 
 	TextureLoaderError error_ = TextureLoaderError::NONE;
 };
-}
+}    // namespace neko::vk

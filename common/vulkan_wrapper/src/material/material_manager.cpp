@@ -21,11 +21,11 @@ void MaterialManager::Clear()
 	diffuseMaterials_[kDefaultMaterialId].CreatePipeline(Vertex::GetVertexInput(0));
 }
 
-ResourceHash MaterialManager::AddMaterial(std::string_view materialPath)
+MaterialId MaterialManager::AddMaterial(std::string_view materialPath)
 {
 	const json materialJson         = LoadJson(materialPath);
 	const MaterialType materialType = materialJson["type"];
-	const ResourceHash resourceId   = HashString(materialJson["name"].get<std::string_view>());
+	const MaterialId resourceId     = sole::uuid0();
 	switch (materialType)
 	{
 		case MaterialType::DIFFUSE:
@@ -53,28 +53,23 @@ ResourceHash MaterialManager::AddMaterial(std::string_view materialPath)
 	return resourceId;
 }
 
-ResourceHash MaterialManager::AddNewMaterial(std::string_view name, MaterialType materialType)
+MaterialId MaterialManager::AddNewMaterial(MaterialType materialType, MaterialId id)
 {
-	const ResourceHash resourceId = HashString(name);
+	if (id == MaterialId()) id = sole::uuid0();
 	switch (materialType)
 	{
 		case MaterialType::DIFFUSE:
 		{
-			if (diffuseMaterials_.find(resourceId) != diffuseMaterials_.cend()) return resourceId;
-			diffuseMaterials_.emplace(resourceId, DiffuseMaterial());
+			if (diffuseMaterials_.find(id) != diffuseMaterials_.cend()) return id;
+			diffuseMaterials_.emplace(id, DiffuseMaterial());
 			break;
 		}
 	}
 
-	return resourceId;
+	return id;
 }
 
-Material& MaterialManager::GetMaterial(std::string_view materialName)
-{
-	return GetMaterial(HashString(materialName));
-}
-
-Material& MaterialManager::GetMaterial(const ResourceHash resourceId)
+Material& MaterialManager::GetMaterial(const MaterialId resourceId)
 {
 	if (resourceId == kDefaultMaterialId &&
 		diffuseMaterials_.find(resourceId) == diffuseMaterials_.cend())
@@ -99,15 +94,10 @@ Material& MaterialManager::GetMaterial(const ResourceHash resourceId)
 	//for (size_t i = 0; i < skyboxMaterialIDs_.size(); i++)
 	//	if (skyboxMaterialIDs_[i] == resourceID) return skyboxMaterials_[i];
 
-	return diffuseMaterials_[0];
+	return diffuseMaterials_[kDefaultMaterialId];
 }
 
-DiffuseMaterial& MaterialManager::GetDiffuseMaterial(std::string_view materialName)
-{
-	return GetDiffuseMaterial(HashString(materialName));
-}
-
-DiffuseMaterial& MaterialManager::GetDiffuseMaterial(ResourceHash resourceId)
+DiffuseMaterial& MaterialManager::GetDiffuseMaterial(MaterialId resourceId)
 {
 	if (resourceId == kDefaultMaterialId &&
 	    diffuseMaterials_.find(resourceId) == diffuseMaterials_.cend())
@@ -119,12 +109,7 @@ DiffuseMaterial& MaterialManager::GetDiffuseMaterial(ResourceHash resourceId)
 	return diffuseMaterials_[resourceId];
 }
 
-bool MaterialManager::IsMaterialLoaded(std::string_view materialName)
-{
-	return IsMaterialLoaded(HashString(materialName));
-}
-
-bool MaterialManager::IsMaterialLoaded(ResourceHash resourceId)
+bool MaterialManager::IsMaterialLoaded(MaterialId resourceId)
 {
 	if (diffuseMaterials_.find(resourceId) != diffuseMaterials_.cend()) return true;
 

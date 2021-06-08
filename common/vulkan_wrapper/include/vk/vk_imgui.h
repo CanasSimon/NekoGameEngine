@@ -25,6 +25,7 @@
  Author: Canas Simon
  Date:
 ---------------------------------------------------------- */
+#include "vk/commands/command_buffer.h"
 #include "vk/vk_include.h"
 
 namespace neko::vk

@@ -8,9 +8,9 @@ void TextureManager::Init() {}
 
 void TextureManager::Update(seconds)
 {
-	while (!textureLoaders_.empty())
+	while (!loaders_.empty())
 	{
-		auto& textureLoader = textureLoaders_.front();
+		auto& textureLoader = loaders_.front();
 		if (textureLoader.HasErrors())
 		{
 			switch (textureLoader.error_)
@@ -29,12 +29,12 @@ void TextureManager::Update(seconds)
 					break;
 				default: break;
 			}
-			textureLoaders_.pop();
+			loaders_.pop();
 		}
 		else if (textureLoader.IsDone())
 		{
-			textureMap_[textureLoader.textureId_] = textureLoader.texture_;
-			textureLoaders_.pop();
+			textures_[textureLoader.textureId_] = textureLoader.texture_;
+			loaders_.pop();
 		}
 		else
 		{
@@ -45,7 +45,7 @@ void TextureManager::Update(seconds)
 
 void TextureManager::Destroy()
 {
-	for (auto& textureName : textureMap_) textureName.second.Destroy();
+	for (auto& textureName : textures_) textureName.second.Destroy();
 }
 
 ResourceHash TextureManager::AddTexture(std::string_view path)
@@ -53,11 +53,11 @@ ResourceHash TextureManager::AddTexture(std::string_view path)
 	return AddTexture(path, Texture::DEFAULT);
 }
 
-ResourceHash TextureManager::AddTexture(std::string_view path, Texture::TextureFlags flags)
+ResourceHash TextureManager::AddTexture(std::string_view path, Texture::Flags flags)
 {
 	const ResourceHash textureId = HashString(path);
-	const auto it                = textureMap_.find(textureId);
-	if (it != textureMap_.end()) return it->first;
+	const auto it                = textures_.find(textureId);
+	if (it != textures_.end()) return it->first;
 
 	//const std::string metaPath = fmt::format("{}.meta", path.substr(0, path.size() - 4));
 	//const json metaJson = LoadJson(metaPath);
@@ -67,8 +67,8 @@ ResourceHash TextureManager::AddTexture(std::string_view path, Texture::TextureF
 		return textureId;
 	}
 
-	textureLoaders_.push({path, textureId, flags});
-	textureLoaders_.back().Start();
+	loaders_.push({path, textureId, flags});
+	loaders_.back().Start();
 	return textureId;
 }
 
@@ -79,11 +79,11 @@ const Image2d* TextureManager::GetTexture(std::string_view texturePath) const
 
 const Image2d* TextureManager::GetTexture(ResourceHash resourceId) const
 {
-	const auto it = textureMap_.find(resourceId);
-	if (it != textureMap_.end()) { return &it->second; }
+	const auto it = textures_.find(resourceId);
+	if (it != textures_.end()) { return &it->second; }
 ;
 	return nullptr;
 }
 
-void TextureManager::Clear() { textureMap_.clear(); }
+void TextureManager::Clear() { textures_.clear(); }
 }    // namespace neko::vk

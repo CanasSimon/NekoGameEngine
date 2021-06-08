@@ -91,7 +91,7 @@ void SdlEngine::ManageEvent()
 		onEventAction_.Execute(event);
 	}
 
-	//if (ImGui::GetCurrentContext()) ImGui::GetIO().KeyMods = ImGui::GetMergedKeyModFlags();
+	if (ImGui::GetCurrentContext()) ImGui::GetIO().KeyMods = ImGui::GetMergedKeyModFlags();
 }
 
 void SdlEngine::GenerateUiFrame() { BasicEngine::GenerateUiFrame(); }

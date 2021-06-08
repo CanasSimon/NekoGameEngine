@@ -25,19 +25,20 @@
  Author: Canas Simon
  Date:
 ---------------------------------------------------------- */
+#include "vk/images/texture.h"
 #include "vk/material/material.h"
 
 namespace neko::vk
 {
-constexpr std::string_view kDiffuseName  = ("diffuseMap");
-constexpr std::string_view kSpecularName = ("specularMap");
-constexpr std::string_view kNormalName   = ("normalMap");
-constexpr std::string_view kColorName    = ("color");
-constexpr std::string_view kShininessName = ("shininess");
-constexpr StringHash kDiffuseHash        = HashString(kDiffuseName);
-constexpr StringHash kSpecularHash       = HashString(kSpecularName);
-constexpr StringHash kNormalHash         = HashString(kNormalName);
-constexpr StringHash kColorHash          = HashString(kColorName);
+constexpr std::string_view kDiffuseName   = "diffuseMap";
+constexpr std::string_view kSpecularName  = "specularMap";
+constexpr std::string_view kNormalName    = "normalMap";
+constexpr std::string_view kColorName     = "color";
+constexpr std::string_view kShininessName = "shininess";
+constexpr StringHash kDiffuseHash         = HashString(kDiffuseName);
+constexpr StringHash kSpecularHash        = HashString(kSpecularName);
+constexpr StringHash kNormalHash          = HashString(kNormalName);
+constexpr StringHash kColorHash           = HashString(kColorName);
 constexpr StringHash kShininessHash       = HashString(kShininessName);
 
 class DiffuseMaterial : public Material
@@ -51,7 +52,7 @@ public:
 		EMISSIVE = 1u << 3u,
 	};
 
-	DiffuseMaterial(std::string_view name                       = "",
+	explicit DiffuseMaterial(std::string_view name              = "",
 		Color4 color                                            = Color::white,
 		const std::optional_const_ref<Image2d>& textureAlbedo   = std::nullopt,
 		const std::optional_const_ref<Image2d>& textureSpecular = std::nullopt,
@@ -78,7 +79,7 @@ public:
 	[[nodiscard]] std::optional_const_ref<Image2d> GetNormal() const { return normal_; }
 	void ResetNormal();
 
-	void SetShininess(const float shininess);
+	void SetShininess(float shininess);
 	[[nodiscard]] float GetShininess() const { return shininess_; }
 
 	void SetRenderMode(RenderMode renderMode) override;
@@ -89,11 +90,11 @@ public:
 	[[nodiscard]] ordered_json ToJson() const override;
 	void FromJson(const json& materialJson) override;
 
-	[[nodiscard]] const ResourceHash GetDiffuseId() const { return diffuseId_; }
+	[[nodiscard]] ResourceHash GetDiffuseId() const { return diffuseId_; }
 	void SetDiffuseId(const ResourceHash& diffuseId) { diffuseId_ = diffuseId; }
-	[[nodiscard]] const ResourceHash GetNormalId() const { return normalId_; }
+	[[nodiscard]] ResourceHash GetNormalId() const { return normalId_; }
 	void SetNormalId(const ResourceHash& normalId) { normalId_ = normalId; }
-	[[nodiscard]] const ResourceHash GetSpecularId() const { return specularId_; }
+	[[nodiscard]] ResourceHash GetSpecularId() const { return specularId_; }
 	void SetSpecularId(const ResourceHash& specularId) { specularId_ = specularId; }
 
 private:

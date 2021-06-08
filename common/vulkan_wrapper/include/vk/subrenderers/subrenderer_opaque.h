@@ -73,12 +73,6 @@ private:
 		std::uint8_t viewportCount,
 		std::uint8_t viewportIndex);
 
-	bool CmdRender(const CommandBuffer& commandBuffer,
-		ForwardDrawCmd& modelDrawCommand,
-		UniformHandle& uniformScene,
-		const Mesh& mesh,
-		const Material& mat);
-
 	std::array<UniformHandle, 4> uniformScenes_ { true, true, true, true };
 	std::array<UniformHandle, 4> uniformLights_ { true, true, true, true };
 };

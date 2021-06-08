@@ -121,9 +121,9 @@ public:
 	[[nodiscard]] virtual const Texture* GetTexture(TextureId index) const     = 0;
 	[[nodiscard]] virtual bool IsTextureLoaded(TextureId textureId) const      = 0;
 
-	[[nodiscard]] virtual std::size_t CountTextureLoaded() const    = 0;
-	[[nodiscard]] virtual std::size_t CountTextureNotLoaded() const = 0;
-	[[nodiscard]] virtual std::size_t CountAllTexture() const       = 0;
+	[[nodiscard]] virtual std::size_t GetTexturesCount() const    = 0;
+	[[nodiscard]] virtual std::size_t GetLoadedTexturesCount() const = 0;
+	[[nodiscard]] virtual std::size_t GetNonLoadedTexturesCount() const       = 0;
 };
 
 class NullTextureManager : public TextureManagerInterface
@@ -141,9 +141,9 @@ public:
 
 	[[nodiscard]] bool IsTextureLoaded(TextureId) const override { return false; }
 
-	[[nodiscard]] std::size_t CountTextureLoaded() const override { return 0; }
-	[[nodiscard]] std::size_t CountTextureNotLoaded() const override { return 0; }
-	[[nodiscard]] std::size_t CountAllTexture() const override { return 0; }
+	[[nodiscard]] std::size_t GetTexturesCount() const override { return 0; }
+	[[nodiscard]] std::size_t GetLoadedTexturesCount() const override { return 0; }
+	[[nodiscard]] std::size_t GetNonLoadedTexturesCount() const override { return 0; }
 };
 
 class TextureManager : public TextureManagerInterface, public SystemInterface
@@ -160,15 +160,15 @@ public:
 	void Update(seconds dt) override;
 	void Destroy() override;
 
-	[[nodiscard]] std::size_t CountTextureLoaded() const override { return textureMap_.size(); }
-	[[nodiscard]] std::size_t CountTextureNotLoaded() const override { return textureLoaders_.size(); }
-	[[nodiscard]] std::size_t CountAllTexture() const override { return texturePathMap_.size(); }
+	[[nodiscard]] std::size_t GetTexturesCount() const override { return textures_.size(); }
+	[[nodiscard]] std::size_t GetLoadedTexturesCount() const override { return loaders_.size(); }
+	[[nodiscard]] std::size_t GetNonLoadedTexturesCount() const override { return pathMap_.size(); }
 
 private:
 	const FilesystemInterface& filesystem_;
-	std::map<std::string, TextureId> texturePathMap_;
-	std::map<TextureId, Texture> textureMap_;
-	std::queue<TextureLoader> textureLoaders_;
+	std::map<std::string, TextureId> pathMap_;
+	std::map<TextureId, Texture> textures_;
+	std::queue<TextureLoader> loaders_;
 };
 using TextureManagerLocator = Locator<TextureManagerInterface, NullTextureManager>;
 

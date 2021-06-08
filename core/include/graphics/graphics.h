@@ -88,7 +88,7 @@ public:
 	/// Send the RenderCommand to the queue for next frame
 	void Render(RenderCommandInterface* command) override;
 
-	void Destroy();
+    virtual void Destroy();
 
 	void SetFlag(RendererFlag flag);
 	std::uint8_t GetFlag() const;

@@ -80,9 +80,7 @@ protected:
 	Job preRender_;
 };
 
-/**
- * \brief The Component Manager use to serialize to json and imgui components
- */
+/// The Component Manager use to serialize to json and imgui components
 class RendererSerializer final : public ComponentSerializer
 {
 public:

@@ -25,9 +25,9 @@
  Author: Canas Simon
  Date:
 ---------------------------------------------------------- */
-#include "vk/images/image.h"
-
 #include <stb_image.h>
+
+#include "vk/images/image.h"
 
 namespace neko::vk
 {

@@ -30,6 +30,7 @@
 #include "vk/buffers/buffer.h"
 #include "vk/commands/command_buffer.h"
 #include "vk/images/texture_manager.h"
+#include "vk/material/material.h"
 #include "vk/models/vertex_input.h"
 
 namespace neko::vk
@@ -58,24 +59,20 @@ public:
 
 	[[nodiscard]] std::uint32_t GetVertexCount() const { return vertexCount_; }
 	[[nodiscard]] std::uint32_t GetIndexCount() const { return indexCount_; }
-	static VkIndexType GetIndexType() { return VK_INDEX_TYPE_UINT32; }
-
-	[[nodiscard]] ResourceHash GetMaterialId() const { return materialId_; }
-	void SetMaterialId(ResourceHash resourceId) { materialId_ = resourceId; }
-
-	[[nodiscard]] Vec3f GetExtent() const;
-	[[nodiscard]] Vec3f GetPositionOffset() const { return positionOffset_; }
-
+	[[nodiscard]] MaterialId GetMaterialId() const { return materialId_; }
 	[[nodiscard]] float GetRadius() const { return radius_; }
+	[[nodiscard]] Aabb3d GetAabb() const { return aabb_; }
+
+	static constexpr VkIndexType GetIndexType() { return VK_INDEX_TYPE_UINT32; }
+
+	void SetMaterialId(MaterialId resourceId) { materialId_ = resourceId; }
 
 protected:
 	Buffer vertexBuffer_ {};
 	std::optional<Buffer> indexBuffer_ = std::nullopt;
 
 	friend class ModelLoader;
-	ResourceHash materialId_ = 0;
-
-	Vec3f positionOffset_ = Vec3f::zero;
+	MaterialId materialId_ = sole::uuid();
 
 	std::uint32_t vertexCount_ = 0;
 	std::uint32_t indexCount_ = 0;

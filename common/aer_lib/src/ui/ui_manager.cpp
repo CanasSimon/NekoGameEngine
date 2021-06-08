@@ -141,8 +141,10 @@ void UiManager::SetWindowSize(const Vec2f windowSize)
 	windowSize_ = windowSize;
 	projection_ = Transform3d::Orthographic(0.0f, windowSize.x, 0.0f, windowSize.y);
 
+#ifdef NEKO_OPENGL
 	uiImageShader_.SetUbo(gl::kUboUiProjSize, 0, &projection_, gl::kUboUiProjBinding);
 
 	fontManager_.SetWindowSize(windowSize);
+#endif
 }
 }    // namespace neko::aer

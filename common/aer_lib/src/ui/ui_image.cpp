@@ -106,7 +106,7 @@ void UiImage::ChangeTexture(gl::TextureManager& textureManager, const std::strin
 void UiImage::ChangeTexture(const std::string& texturePath)
 {
 	texturePath_ = texturePath;
-	textureId_   = vk::TextureManagerLocator::get().AddTexture(texturePath_, Texture::DEFAULT);
+	textureId_   = vk::TextureManagerLocator::get().AddTexture(texturePath_, vk::Texture::DEFAULT);
 }
 #endif
 

@@ -37,6 +37,10 @@ public:
 	[[nodiscard]] virtual std::string GetModelName(ModelId modelId)      = 0;
 	[[nodiscard]] virtual std::string_view GetModelPath(ModelId modelId) = 0;
 	[[nodiscard]] virtual bool IsLoaded(ModelId) const                   = 0;
+
+	[[nodiscard]] virtual std::size_t GetLoadedModelsCount() const    = 0;
+	[[nodiscard]] virtual std::size_t GetNonLoadedModelsCount() const = 0;
+	[[nodiscard]] virtual std::size_t GetModelsCount() const     = 0;
 };
 
 class NullModelManager : public IModelManager
@@ -51,6 +55,10 @@ public:
 	[[nodiscard]] std::string GetModelName(ModelId) override { return ""; };
 	[[nodiscard]] std::string_view GetModelPath(ModelId) override { return ""; };
 	[[nodiscard]] bool IsLoaded(ModelId) const override { return false; }
+
+    [[nodiscard]] std::size_t GetLoadedModelsCount() const override { return 0; }
+    [[nodiscard]] std::size_t GetNonLoadedModelsCount() const override { return 0; }
+    [[nodiscard]] std::size_t GetModelsCount() const override { return 0; }
 };
 
 class ModelManager : public IModelManager
@@ -68,10 +76,14 @@ public:
 	[[nodiscard]] std::string_view GetModelPath(ModelId modelId) override;
 	[[nodiscard]] bool IsLoaded(ModelId) const override;
 
+	[[nodiscard]] std::size_t GetModelsCount() const override { return pathMap_.size(); }
+	[[nodiscard]] std::size_t GetLoadedModelsCount() const override { return models_.size(); }
+	[[nodiscard]] std::size_t GetNonLoadedModelsCount() const override { return loaders_.size(); }
+
 private:
-	std::map<std::string, ModelId> modelPathMap_;
+	std::map<std::string, ModelId> pathMap_;
 	std::map<ModelId, Model> models_;
-	std::queue<ModelLoader> modelLoaders_;
+	std::queue<ModelLoader> loaders_;
 };
 
 using ModelManagerLocator = Locator<IModelManager, NullModelManager>;

@@ -6,8 +6,6 @@ namespace neko::vk
 {
 void ModelCommandBuffer::Destroy()
 {
-	for (auto& forwardDrawCmd : forwardDrawingCmd_) forwardDrawCmd.uniformHandle.Destroy();
-
 	Clear();
 }
 
@@ -56,24 +54,12 @@ ModelInstanceIndex ModelCommandBuffer::AddModelInstanceIndex(
 	return modelInstances_.size() - 1;
 }
 
-void ModelCommandBuffer::Draw(const ForwardDrawCmd& drawCommand)
-{
-	forwardDrawingCmd_.push_back(drawCommand);
-}
-
 void ModelCommandBuffer::Draw(const Mat4f& worldMatrix, ModelInstanceIndex instanceIndex)
 {
 	if (instanceMatrices_[instanceIndex].size() == instanceMatrices_.capacity())
 		instanceMatrices_[instanceIndex].resize(instanceMatrices_.size() * 2 + 1);
 
 	instanceMatrices_[instanceIndex].emplace_back(worldMatrix);
-}
-
-void ModelCommandBuffer::Draw(
-	const Mat4f& worldMatrix, const sole::uuid modelId, ModelForwardIndex forwardIndex)
-{
-	forwardDrawingCmd_[forwardIndex].worldMatrix = worldMatrix;
-	forwardDrawingCmd_[forwardIndex].modelId     = modelId;
 }
 
 void ModelCommandBuffer::PrepareData()
@@ -87,7 +73,6 @@ void ModelCommandBuffer::PrepareData()
 
 void ModelCommandBuffer::Clear()
 {
-	forwardDrawingCmd_.clear();
 	modelInstances_.clear();
 }
 

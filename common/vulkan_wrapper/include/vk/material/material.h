@@ -30,6 +30,8 @@
 
 namespace neko::vk
 {
+using MaterialId = sole::uuid;
+
 enum class MaterialType : std::uint8_t
 {
 	DIFFUSE = 0,

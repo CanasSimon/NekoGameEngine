@@ -3,7 +3,7 @@
 namespace neko::vk
 {
 TextureLoader::TextureLoader(
-	std::string_view path, StringHash textureId, Texture::TextureFlags flags)
+	std::string_view path, StringHash textureId, Texture::Flags flags)
    : filesystem_(BasicEngine::GetInstance()->GetFilesystem()),
 	 flags_(flags),
 	 loadingTextureJob_([this]() { LoadTexture(); }),

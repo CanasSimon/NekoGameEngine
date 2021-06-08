@@ -9,19 +9,16 @@ void ModelManager::Init() {}
 
 void ModelManager::Update(seconds)
 {
-	while (!modelLoaders_.empty())
+	while (!loaders_.empty())
 	{
-		auto& modelLoader = modelLoaders_.front();
+		auto& modelLoader = loaders_.front();
 		modelLoader.Update();
-		if (modelLoader.HasErrors())
-		{
-			modelLoaders_.pop();
-		}
+		if (modelLoader.HasErrors()) { loaders_.pop(); }
 		else if (modelLoader.IsDone())
 		{
 			const ModelId modelId = modelLoader.GetModelId();
 			models_[modelId]      = *modelLoader.GetModel();
-			modelLoaders_.pop();
+			loaders_.pop();
 		}
 		else
 		{
@@ -39,8 +36,8 @@ void ModelManager::Destroy()
 
 ModelId ModelManager::LoadModel(std::string_view path)
 {
-	const auto it = modelPathMap_.find(path.data());
-	if (it != modelPathMap_.end())
+	const auto it = pathMap_.find(path.data());
+	if (it != pathMap_.end())
 	{
 		//logDebug(fmt::format("[Debug] Model is already loaded: {}", path));
 		return it->second;
@@ -60,9 +57,9 @@ ModelId ModelManager::LoadModel(std::string_view path)
 		return modelId;
 	}
 
-	modelPathMap_.emplace(path.data(), modelId);
-	modelLoaders_.push(ModelLoader(path, modelId));
-	modelLoaders_.back().Start();
+	pathMap_.emplace(path.data(), modelId);
+	loaders_.push(ModelLoader(path, modelId));
+	loaders_.back().Start();
 	return modelId;
 }
 
@@ -78,7 +75,7 @@ const Model* ModelManager::GetModel(ModelId modelId) const
 
 std::string ModelManager::GetModelName(ModelId modelId)
 {
-	for (auto& it : modelPathMap_)
+	for (auto& it : pathMap_)
 	{
 		if (it.second == modelId)
 		{
@@ -95,7 +92,7 @@ std::string ModelManager::GetModelName(ModelId modelId)
 
 std::string_view ModelManager::GetModelPath(ModelId modelId)
 {
-	for (auto& it : modelPathMap_)
+	for (auto& it : pathMap_)
 		if (it.second == modelId)
 			return it.first;
 

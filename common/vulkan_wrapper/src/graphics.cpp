@@ -1,30 +1,3 @@
-/* ----------------------------------------------------
- MIT License
-
- Copyright (c) 2020 SAE Institute Switzerland AG
-
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
-
- The above copyright notice and this permission notice shall be included in all
- copies or substantial portions of the Software.
-
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- SOFTWARE.
-
- Author : Simon
- Co-Author :
- Date :
----------------------------------------------------------- */
 #include "vk/graphics.h"
 
 #include "vk/subrenderers/subrenderer_opaque.h"
@@ -57,7 +30,7 @@ void VkRenderer::ClearScreen()
 #endif
 }
 
-void VkRenderer::BeforeRenderLoop()
+void VkRenderer::BeforeRender()
 {
 	const std::uint32_t windowFlags = SDL_GetWindowFlags(vkWindow->GetWindow());
 	if (renderer_ == nullptr || windowFlags & SDL_WINDOW_MINIMIZED) return;
@@ -87,12 +60,12 @@ void VkRenderer::BeforeRenderLoop()
 
 	if (!StartRenderPass(renderStage)) return;
 
-	Renderer::BeforeRenderLoop();
+	Renderer::BeforeRender();
 }
 
-void VkRenderer::AfterRenderLoop()
+void VkRenderer::AfterRender()
 {
-	Renderer::AfterRenderLoop();
+	Renderer::AfterRender();
 
 	PipelineStage stage;
 	RenderStage& renderStage = renderer_->GetRenderStage();
@@ -160,7 +133,7 @@ bool VkRenderer::StartRenderPass(RenderStage& renderStage)
 
 void VkRenderer::EndRenderPass(const RenderStage& renderStage)
 {
-	VkQueue presentQueue           = device.GetPresentQueue();
+	VkQueue presentQueue            = device.GetPresentQueue();
 	CommandBuffer& currentCmdBuffer = GetCurrentCmdBuffer();
 	vkCmdEndRenderPass(currentCmdBuffer);
 
@@ -270,16 +243,6 @@ void VkRenderer::CreatePipelineCache()
 	VkPipelineCacheCreateInfo pipelineCacheCreateInfo {};
 	pipelineCacheCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO;
 	vkCreatePipelineCache(device, &pipelineCacheCreateInfo, nullptr, &pipelineCache);
-}
-
-void VkRenderer::RenderAll()
-{
-#ifdef EASY_PROFILE_USE
-	EASY_BLOCK("RenderAllCPU");
-#endif
-	BeforeRenderLoop();
-	for (auto* renderCommand : currentCommandBuffer_) renderCommand->Render();
-	AfterRenderLoop();
 }
 
 void VkRenderer::SetWindow(std::unique_ptr<sdl::VulkanWindow> window)

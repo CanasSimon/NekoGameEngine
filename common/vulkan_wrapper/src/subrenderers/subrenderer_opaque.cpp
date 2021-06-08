@@ -1,6 +1,6 @@
 #include "vk/subrenderers/subrenderer_opaque.h"
 
-#include "graphics/camera.h"
+#include "sdl_engine/sdl_camera.h"
 
 #include "vk/material/material_manager.h"
 #include "vk/vk_resources.h"
@@ -21,10 +21,10 @@ void SubrendererOpaque::Destroy() const
 
 void SubrendererOpaque::Render(const CommandBuffer& commandBuffer)
 {
-	const auto& cameras              = sdl::MultiCameraLocator::get();
-	VkResources* vkObj               = VkResources::Inst;
-	const RenderStage& renderStage   = vkObj->GetRenderStage();
-	const std::uint8_t viewportCount = vkObj->GetViewportCount();
+	const auto& cameras                = sdl::MultiCameraLocator::get();
+	VkResources* vkObj                 = VkResources::Inst;
+	const RenderStage& renderStage     = vkObj->GetRenderStage();
+	const std::uint8_t viewportCount   = vkObj->GetViewportCount();
 	const LightCommandBuffer& lightCmd = vkObj->lightCommandBuffer;
 
 	VkRect2D renderArea;
@@ -50,26 +50,6 @@ void SubrendererOpaque::Render(const CommandBuffer& commandBuffer)
 		const std::size_t lightNum = lightCmd.GetLightNum();
 		uniformLights_[i].Push(kLightNumHash, &lightNum);
 		uniformLights_[i].Push(kDirLightHash, *DirectionalLight::Instance);
-
-		//Single Draw
-		auto& modelManager    = ModelManagerLocator::get();
-		auto& materialManager = MaterialManagerLocator::get();
-		for (auto& modelDrawCommand : cmdBuffer.GetForwardModels())
-		{
-			const auto& model = modelManager.GetModel(modelDrawCommand.modelId);
-			for (std::size_t j = 0; j < model->GetMeshCount(); ++j)
-			{
-				const auto& mesh         = model->GetMesh(j);
-				const ResourceHash matId = mesh.GetMaterialId();
-				if (matId != 0 && matId != 1)
-				{
-					const auto& material = materialManager.GetMaterial(matId);
-					if (material.GetRenderMode() == Material::RenderMode::VK_OPAQUE)
-						CmdRender(
-							commandBuffer, modelDrawCommand, uniformScenes_[i], mesh, material);
-				}
-			}
-		}
 
 		//GPU Instancing
 		for (auto&& meshInstance : cmdBuffer.GetModelInstances())
@@ -133,34 +113,5 @@ void SubrendererOpaque::ChooseViewport(const CommandBuffer& cmdBuffer,
 		case 0:
 		default: neko_assert(false, "Invalid Viewport number!!");
 	}
-}
-
-bool SubrendererOpaque::CmdRender(const CommandBuffer& commandBuffer,
-	ForwardDrawCmd& modelDrawCommand,
-	UniformHandle& uniformScene,
-	const Mesh& mesh,
-	const Material& mat)
-{
-	modelDrawCommand.uniformHandle.Push(kModelHash, modelDrawCommand.worldMatrix);
-	modelDrawCommand.uniformHandle.PushUniformData(mat.ExportUniformData());
-
-	// Check if we are in the correct pipeline stage.
-	const auto& materialPipeline = mat.GetPipelineMaterial();
-	if (materialPipeline.GetStage() != GetStage()) return false;
-
-	// Binds the material pipeline.
-	if (!mat.BindPipeline(commandBuffer)) return false;
-
-	const auto& pipeline = materialPipeline.GetPipeline();
-
-	// Updates descriptors.
-	modelDrawCommand.descriptorHandle.Push(kUboSceneHash, uniformScene);
-	modelDrawCommand.descriptorHandle.Push(kUboObjectHash, modelDrawCommand.uniformHandle);
-	modelDrawCommand.descriptorHandle.PushDescriptorData(mat.ExportDescriptorData());
-	if (!modelDrawCommand.descriptorHandle.Update(pipeline)) return false;
-
-	// Draws the object.
-	modelDrawCommand.descriptorHandle.BindDescriptor(commandBuffer, pipeline);
-	return mesh.DrawCmd(commandBuffer);
 }
 }    // namespace neko::vk

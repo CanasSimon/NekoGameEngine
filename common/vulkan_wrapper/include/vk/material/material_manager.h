@@ -25,6 +25,8 @@
  Author: Canas Simon
  Date:
 ---------------------------------------------------------- */
+#include <sole.hpp>
+
 #include "vk/images/texture_manager.h"
 #include "vk/material/diffuse_material.h"
 
@@ -32,55 +34,39 @@ namespace neko::vk
 {
 //constexpr size_t kMaterialsDefaultNum                 = 100;
 //constexpr size_t kMaterialsSkyboxDefaultNum           = 2;
-constexpr std::string_view kDefaultMaterialName       = "DefaultMaterialName";
-//constexpr std::string_view kDefaultSkyboxMaterialName = "DefaultSkyboxMaterialName";
-constexpr StringHash kDefaultMaterialId               = HashString(kDefaultMaterialName);
-//constexpr StringHash kDefaultSkyboxMaterialId         = HashString(kDefaultSkyboxMaterialName);
+static MaterialId kDefaultMaterialId = sole::uuid0();
+//static MaterialId kDefaultSkyboxMaterialId         = HashString(kDefaultSkyboxMaterialName);
 
 class IMaterialManager
 {
 public:
 	virtual ~IMaterialManager() = default;
 
-	[[maybe_unused]] virtual ResourceHash AddMaterial(std::string_view) = 0;
-	virtual ResourceHash AddNewMaterial(std::string_view, MaterialType) = 0;
-	virtual void Clear()                                                = 0;
+	[[maybe_unused]] virtual MaterialId AddMaterial(std::string_view)          = 0;
+	virtual MaterialId AddNewMaterial(MaterialType, MaterialId = MaterialId()) = 0;
+	virtual void Clear()                                                       = 0;
 
-	virtual Material& GetMaterial(std::string_view)               = 0;
-	virtual Material& GetMaterial(ResourceHash)                   = 0;
-	virtual DiffuseMaterial& GetDiffuseMaterial(std::string_view) = 0;
-	virtual DiffuseMaterial& GetDiffuseMaterial(ResourceHash)     = 0;
-	virtual bool IsMaterialLoaded(std::string_view)               = 0;
-	virtual bool IsMaterialLoaded(ResourceHash)                   = 0;
+	virtual Material& GetMaterial(MaterialId)               = 0;
+	virtual DiffuseMaterial& GetDiffuseMaterial(MaterialId) = 0;
+	virtual bool IsMaterialLoaded(MaterialId)               = 0;
 };
 
 class NullMaterialManager : public IMaterialManager
 {
 public:
-	ResourceHash AddMaterial(std::string_view) override { return {}; }
-	ResourceHash AddNewMaterial(std::string_view, MaterialType) override { return {}; }
+	MaterialId AddMaterial(std::string_view) override { return {}; }
+	MaterialId AddNewMaterial(MaterialType, MaterialId = MaterialId()) override { return {}; }
 
 	void Clear() override {}
 
-	Material& GetMaterial(std::string_view) override
+	Material& GetMaterial(MaterialId) override { neko_assert(false, "Material Manager is null!"); }
+
+	DiffuseMaterial& GetDiffuseMaterial(MaterialId) override
 	{
 		neko_assert(false, "Material Manager is null!");
 	}
 
-	Material& GetMaterial(ResourceHash) override {neko_assert(false, "Material Manager is null!");}
-
-	DiffuseMaterial& GetDiffuseMaterial(std::string_view) override
-	{
-		neko_assert(false, "Material Manager is null!");
-	}
-
-	DiffuseMaterial& GetDiffuseMaterial(ResourceHash) override
-	{
-		neko_assert(false, "Material Manager is null!");
-	}
-
-	bool IsMaterialLoaded(std::string_view) override { return false; }
-	bool IsMaterialLoaded(ResourceHash) override { return false; }
+	bool IsMaterialLoaded(MaterialId) override { return false; }
 };
 
 class MaterialManager final : public IMaterialManager
@@ -88,19 +74,16 @@ class MaterialManager final : public IMaterialManager
 public:
 	MaterialManager();
 
-	ResourceHash AddMaterial(std::string_view materialPath) override;
-	ResourceHash AddNewMaterial(std::string_view name, MaterialType materialType) override;
+	MaterialId AddMaterial(std::string_view materialPath) override;
+	MaterialId AddNewMaterial(MaterialType materialType, MaterialId id = MaterialId()) override;
 	void Clear() override;
 
-	Material& GetMaterial(std::string_view materialName) override;
-	Material& GetMaterial(ResourceHash resourceId) override;
-	DiffuseMaterial& GetDiffuseMaterial(std::string_view materialName) override;
-	DiffuseMaterial& GetDiffuseMaterial(ResourceHash resourceId) override;
-	bool IsMaterialLoaded(std::string_view materialName) override;
-	bool IsMaterialLoaded(ResourceHash resourceId) override;
+	Material& GetMaterial(MaterialId resourceId) override;
+    DiffuseMaterial& GetDiffuseMaterial(MaterialId resourceId) override;
+    bool IsMaterialLoaded(MaterialId resourceId) override;
 
 private:
-	std::map<ResourceHash, DiffuseMaterial> diffuseMaterials_;
+	std::map<MaterialId, DiffuseMaterial> diffuseMaterials_;
 
 	//std::vector<ResourceId> skyboxMaterialIds_;
 	//std::vector<SkyboxMaterial> skyboxMaterials_;

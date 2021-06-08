@@ -40,7 +40,7 @@ namespace neko::gl
 {
 void TextureManager::Destroy()
 {
-	for (auto& textureName : textureMap_)
+	for (auto& textureName : textures_)
 	{
 		DestroyTexture(textureName.second.name);
 		textureName.second.name = INVALID_TEXTURE_NAME;
@@ -280,8 +280,8 @@ void DestroyTexture(TextureName textureName)
 
 TextureId TextureManager::LoadTexture(std::string_view path, Texture::TextureFlags flags)
 {
-	const auto it = texturePathMap_.find(path.data());
-	if (it != texturePathMap_.end()) return it->second;
+	const auto it = pathMap_.find(path.data());
+	if (it != pathMap_.end()) return it->second;
 
 	const std::string metaPath = fmt::format("{}.meta", path);
 	const json metaJson        = LoadJson(metaPath);
@@ -311,32 +311,32 @@ TextureId TextureManager::LoadTexture(std::string_view path, Texture::TextureFla
 	}
 
 	const auto& config = BasicEngine::GetInstance()->GetConfig();
-	textureLoaders_.push(TextureLoader {config.dataRootPath + ktxPath, textureId, flags});
-	textureLoaders_.back().Start();
-	texturePathMap_[path.data()] = textureId;
+	loaders_.push(TextureLoader {config.dataRootPath + ktxPath, textureId, flags});
+	loaders_.back().Start();
+	pathMap_[path.data()] = textureId;
 	return textureId;
 }
 
 const Texture* TextureManager::GetTexture(TextureId index) const
 {
-	const auto it = textureMap_.find(index);
-	if (it != textureMap_.end()) return &it->second;
+	const auto it = textures_.find(index);
+	if (it != textures_.end()) return &it->second;
 	return nullptr;
 }
 
 bool TextureManager::IsTextureLoaded(TextureId textureId) const
 {
-	const auto it = textureMap_.find(textureId);
-	return it != textureMap_.end();
+	const auto it = textures_.find(textureId);
+	return it != textures_.end();
 }
 
 void TextureManager::Init() { TextureManagerLocator::provide(this); }
 
 void TextureManager::Update(seconds)
 {
-	while (!textureLoaders_.empty())
+	while (!loaders_.empty())
 	{
-		auto& textureLoader = textureLoaders_.front();
+		auto& textureLoader = loaders_.front();
 		if (textureLoader.HasErrors())
 		{
 			switch (textureLoader.GetErrors())
@@ -355,12 +355,12 @@ void TextureManager::Update(seconds)
 					break;
 				default: break;
 			}
-			textureLoaders_.pop();
+			loaders_.pop();
 		}
 		else if (textureLoader.IsDone())
 		{
-			textureMap_[textureLoader.GetTextureId()] = textureLoader.GetTexture();
-			textureLoaders_.pop();
+			textures_[textureLoader.GetTextureId()] = textureLoader.GetTexture();
+			loaders_.pop();
 		}
 		else
 		{

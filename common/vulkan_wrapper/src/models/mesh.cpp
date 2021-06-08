@@ -163,10 +163,5 @@ void Mesh::SetIndices(const std::vector<std::uint32_t>& indices)
 	commandBuffer.SubmitIdle();
 	indexStaging.Destroy();
 }
-
-Vec3f Mesh::GetExtent() const
-{
-	return aabb_.CalculateExtends();
-}
 }
 // namespace neko::vk
