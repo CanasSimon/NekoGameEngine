@@ -75,10 +75,9 @@ void GlWindow::Init()
 
 	SdlWindow::Init();
 	SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
-#ifndef __EMSCRIPTEN__
+
 	const std::string videoDriver = SDL_GetCurrentVideoDriver();
 	logDebug(videoDriver);
-#endif
 
 	glRenderContext_ = SDL_GL_CreateContext(window_);
 	MakeCurrentContext();

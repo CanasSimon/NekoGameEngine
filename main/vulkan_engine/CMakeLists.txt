@@ -12,10 +12,5 @@ if (Neko_Vulkan)
     add_dependencies(vk_engine_Generate_Data GenerateDataTool)
     add_dependencies(vk_engine vk_engine_Generate_Data)
 
-    if (EMSCRIPTEN)
-        get_target_property(bin_link_flags vk_engine LINK_FLAGS)
-        set_target_properties(vk_engine PROPERTIES LINK_FLAGS
-                "${bin_link_flags} -s USE_SDL=2 ")
-    endif ()
     set_target_properties(vk_engine PROPERTIES FOLDER Vk/Main)
 endif ()

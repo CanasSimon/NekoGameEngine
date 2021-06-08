@@ -26,14 +26,11 @@ set(UTILITIES_DIR ${EXTERNAL_DIR}/utilities/)
 
 add_library(Neko_Core STATIC ${Neko_SRC})
 target_link_libraries(Neko_Core PUBLIC imgui)
-if (APPLE)
-    target_link_libraries(Neko_Core PUBLIC ${Boost_LIBRARIES})
-endif ()
 
 if(Neko_Profile)
     target_link_libraries(Neko_Core PUBLIC easy_profiler)
 endif()
-target_compile_options(Neko_Core PRIVATE $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:GNU>>:
+target_compile_options(Neko_Core PRIVATE $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:GNU>>:
         -Wall -Wextra>
         $<$<CXX_COMPILER_ID:MSVC>:
         /W4>)

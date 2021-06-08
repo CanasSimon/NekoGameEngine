@@ -65,38 +65,6 @@ BasicEngine::~BasicEngine()
     profiler::dumpBlocksToFile("Neko_Profile.prof");
 #endif
 }
-#ifdef __ANDROID__
-
-#include <sys/stat.h>
-
-extern "C"
-JNIEXPORT void JNICALL
-Java_swiss_sae_gpr5300_MainActivity_finalize([[maybe_unused]] JNIEnv * env, [[maybe_unused]] jclass clazz, [[maybe_unused]] jstring directory)
-{
-
-#ifdef EASY_PROFILE_USE
-    if (env == nullptr)
-    {
-        logDebug("[Error] Android environment is null");
-        return;
-    }
-
-    std::string path = env->GetStringUTFChars(directory, nullptr);
-
-    path += "/Neko_Profile.prof";
-    logDebug("Android data profile data path: " + path);
-    auto blockNumber = profiler::dumpBlocksToFile(path.c_str());
-    if (blockNumber == 0)
-    {
-        logDebug("[Error] Could not save profile data");
-    }
-    else
-    {
-        logDebug("Easy Profile with several blocks: " + std::to_string(blockNumber));
-    }
-#endif
-}
-#endif
 
 void BasicEngine::Init()
 {

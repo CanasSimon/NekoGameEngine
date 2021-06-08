@@ -17,8 +17,3 @@ endif ()
 neko_bin_config(game_editor) # Enables global settings for executables
 data_generate(game_editor) # Generate data folder
 set_target_properties(game_editor PROPERTIES FOLDER Neko/Main)
-
-if (EMSCRIPTEN)
-    get_target_property(bin_link_flags game_editor LINK_FLAGS)
-    set_target_properties(game_editor PROPERTIES LINK_FLAGS "${bin_link_flags} -s USE_SDL=2 -s USE_WEBGL2=1")
-endif ()

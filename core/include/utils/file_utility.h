@@ -30,15 +30,6 @@
 
 #include "engine/jobsystem.h"
 
-#if defined(__ANDROID__)
-#include <jni.h>
-extern "C"
-{
-JNIEXPORT void JNICALL
-Java_swiss_sae_gpr5300_MainActivity_load(JNIEnv *env, [[maybe_unused]] jclass clazz, jobject mgr);
-}
-#endif
-
 namespace neko
 {
 constexpr char GetOsSeparator()

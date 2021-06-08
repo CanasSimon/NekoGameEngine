@@ -1,9 +1,7 @@
-if (NOT Emscripten)
-    if (MSVC)
-        list(APPEND sdl_engine_libs SDL2main SDL2-static)
-    else ()
-        list(APPEND sdl_engine_libs SDL2main SDL2-static Neko_Core)
-    endif ()
+if (MSVC)
+    list(APPEND sdl_engine_libs SDL2main SDL2-static)
+else ()
+    list(APPEND sdl_engine_libs SDL2main SDL2-static Neko_Core)
 endif ()
 
 if(Neko_OpenGL AND NOT Neko_Vulkan)

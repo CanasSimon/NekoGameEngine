@@ -22,23 +22,18 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
  */
-#if defined(EMSCRIPTEN)
-#include <wasm_simd128.h>
-typedef float v4f __attribute__ ((vector_size (16)));
-#endif
-
 #ifdef WIN32
-	#include <intrin.h>
-	#define __SSE__
-	#define __SSE4_2__
-	#define __FMA__
+#include <intrin.h>
+#define __SSE__
+#define __SSE4_2__
+#define __FMA__
 #else
-	#if defined(__amd64__) || defined(__i386__)
-		#include <x86intrin.h>
-	#endif
+#if defined(__amd64__) || defined(__i386__)
+#include <x86intrin.h>
+#endif
 #endif
 
-#if defined(__arm__) || defined(__ANDROID__) || defined(__aarch64__)
+#if defined(__arm__) || defined(__aarch64__)
 typedef float v4f __attribute__ ((vector_size (16)));
 #endif
 

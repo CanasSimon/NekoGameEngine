@@ -51,12 +51,6 @@ void SdlWindow::Init()
 	flags_ |= SDL_WINDOW_VULKAN;
 #endif
 
-#if defined(__ANDROID__)
-	//config.fullscreen = true;
-	config.windowSize = Vec2u(1280, 720);
-	config.fullscreen = true;
-#endif
-
 	auto windowSize = Vec2i(config.windowSize);
 	if (config.flags & Configuration::FULLSCREEN)
 	{

@@ -26,10 +26,8 @@ struct BufferFile
 	void Destroy();
 };
 
-/**
- * \brief Simple interface to a filesystem, useful to define
- * specialized filesystem like physfs, android or consoles
- */
+/// Simple interface to a filesystem, useful to define
+/// specialized filesystem like physfs
 class FilesystemInterface
 {
 public:

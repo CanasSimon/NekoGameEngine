@@ -4,13 +4,10 @@
 #include "engine/log.h"
 #include "utils/file_utility.h"
 
-#ifdef __APPLE__
-#include <boost/filesystem.hpp>
-namespace fs = boost::filesystem;
-#elif WIN32
+#ifdef WIN32
 #include <filesystem>
 namespace fs = std::filesystem;
-#elif defined(__linux__) || defined(EMSCRIPTEN)
+#elif defined(__linux__)
 #include <filesystem>
 namespace fs = std::filesystem;
 #endif

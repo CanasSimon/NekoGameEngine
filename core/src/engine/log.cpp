@@ -25,24 +25,12 @@
 
 #include "engine/log.h"
 
-#if defined(__ANDROID__)
-#include <android/log.h>
-#endif
-
 void logDebug(const std::string_view msg)
 {
-#if defined(__ANDROID__)
-    __android_log_print(ANDROID_LOG_INFO, "NekoEngine", "%s", msg.c_str());
-#else
 	std::cout << "[Debug] " << msg << "\n";
-#endif
 }
 
 void logError(const std::string_view msg)
 {
-#if defined(__ANDROID__)
-    __android_log_print(ANDROID_LOG_ERROR, "NekoEngine", "%s", msg.c_str());
-#else
 	std::cerr << "[ERROR] " << msg << "\n";
-#endif
 }

@@ -13,12 +13,6 @@ if (Neko_OpenGL)
     add_dependencies(feature_dev_Generate_Data GenerateDataTool)
     add_dependencies(feature_dev feature_dev_Generate_Data)
 
-    if (EMSCRIPTEN)
-        get_target_property(bin_link_flags feature_dev LINK_FLAGS)
-        set_target_properties(feature_dev PROPERTIES LINK_FLAGS
-                "${bin_link_flags} -s USE_SDL=2 -s USE_WEBGL2=1 ")
-    else ()
-        target_precompile_headers(feature_dev PRIVATE "include/dev/feature_dev_pch.h")
-    endif ()
+    target_precompile_headers(feature_dev PRIVATE "include/dev/feature_dev_pch.h")
     set_target_properties(feature_dev PROPERTIES FOLDER Aer/Main)
 endif ()

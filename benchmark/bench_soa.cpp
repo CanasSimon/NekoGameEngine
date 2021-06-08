@@ -279,7 +279,7 @@ private:
     std::vector<PackedVec4f<N>> transforms_;
 };
 }
-#ifndef EMSCRIPTEN
+
 #ifdef __AVX2__
 namespace AVX2
 {
@@ -385,7 +385,6 @@ private:
 };
 }
 #endif
-#endif
 
 static void BM_AOS(benchmark::State& state)
 {
@@ -419,7 +418,7 @@ static void BM_AOSOA(benchmark::State& state) {
 	}
 }
 BENCHMARK(BM_AOSOA)->Range(fromRange, toRange);
-#ifndef EMSCRIPTEN
+
 #ifdef __SSE__
 static void BM_AOSOA_SSE(benchmark::State& state) {
     auto transformSystem = std::make_unique<SSE::TransformSystem>(state.range(0));
@@ -441,7 +440,6 @@ static void BM_AOSOA_AVX2(benchmark::State& state) {
     }
 }
 BENCHMARK(BM_AOSOA_AVX2)->Range(fromRange, toRange);
-#endif
 #endif
 
 

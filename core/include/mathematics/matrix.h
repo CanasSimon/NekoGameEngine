@@ -536,7 +536,7 @@ inline Mat4<T> Mat4<T>::MultiplyAoSoA(const Mat4<T>& rhs) const noexcept
 	return Mat4f(v);
 }
 
-#if defined(__SSE__) && !defined(__ANDROID__)
+#if defined(__SSE__)
 template<>
 inline Mat4f Mat4f::Transpose() const
 {
@@ -587,7 +587,7 @@ inline Mat4f Mat4f::MultiplyIntrinsics(const Mat4f& rhs) const noexcept
 	}
 	return Mat4f(v);
 }
-#elif defined(EMSCRIPTEN) || defined(__arm__) || defined(__ANDROID__) || defined(__aarch64__)
+#elif defined(__arm__) || defined(__aarch64__)
 template<>
 inline Mat4f Mat4f::MultiplyIntrinsincs(const Mat4f& rhs) const noexcept
 {
