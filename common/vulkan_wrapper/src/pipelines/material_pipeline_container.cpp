@@ -24,7 +24,7 @@ std::optional_ref<MaterialPipeline> MaterialPipelineContainer::GetMaterial(
 		i++;
 	}
 
-	logDebug("Can't access material!");
+	LogDebug("Can't access material!");
 	return std::nullopt;
 }
 }    // namespace neko::vk

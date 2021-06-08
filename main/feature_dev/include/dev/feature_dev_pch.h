@@ -38,6 +38,6 @@
 #include "sdl_engine/sdl_camera.h"
 #endif
 
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 #include "easy/profiler.h"
 #endif

@@ -47,14 +47,14 @@ public:
 
     void Init() override
     {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 			EASY_BLOCK("Test Init", profiler::colors::Green);
 #endif
     }
 
     void Update(seconds dt) override
     {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 			EASY_BLOCK("Test Update", profiler::colors::Green);
 #endif
         updateCount_ += dt.count();

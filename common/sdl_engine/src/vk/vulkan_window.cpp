@@ -3,7 +3,7 @@
 
 #include "engine/log.h"
 
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 #include <easy/profiler.h>
 #endif
 
@@ -17,20 +17,20 @@ VulkanWindow::VulkanWindow()
 
 void VulkanWindow::Init()
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("VulkanWindowInit");
 #endif
 	SdlWindow::Init();
 
 #ifdef VALIDATION_LAYERS
 	const std::string videoDriver = SDL_GetCurrentVideoDriver();
-	logDebug(videoDriver);
+	LogDebug(videoDriver);
 #endif
 }
 
 void VulkanWindow::Destroy()
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("DestroyWindow");
 #endif
 

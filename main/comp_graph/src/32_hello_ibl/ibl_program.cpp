@@ -24,7 +24,7 @@
 
 #include "32_hello_ibl/ibl_program.h"
 #include "imgui.h"
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 #include "easy/profiler.h"
 #endif
 
@@ -160,7 +160,7 @@ void HelloIblProgram::Render()
 	}
 	if (flags_ & FIRST_FRAME)
 	{
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 		EASY_BLOCK("Generate IBL textures");
 #endif
 		glDepthFunc(GL_LEQUAL);
@@ -173,7 +173,7 @@ void HelloIblProgram::Render()
 		glViewport(0, 0, config.windowSize.x, config.windowSize.y);
 		flags_ = flags_ & ~FIRST_FRAME;
 	}
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("Render IBL");
 #endif
 	const auto view = camera_.GenerateViewMatrix();
@@ -240,10 +240,10 @@ void HelloIblProgram::OnEvent(const SDL_Event& event)
 
 void HelloIblProgram::GenerateCubemap()
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("Generate Cubemap");
 #endif
-	logDebug("Generate Cubemap");
+	LogDebug("Generate Cubemap");
     glBindFramebuffer(GL_FRAMEBUFFER, captureFbo_);
     glGenTextures(1, &envCubemap_);
     glBindTexture(GL_TEXTURE_CUBE_MAP, envCubemap_);
@@ -296,10 +296,10 @@ void HelloIblProgram::GenerateCubemap()
 
 void HelloIblProgram::GenerateDiffuseIrradiance()
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("Generate Diffuse Irradiance");
 #endif
-	logDebug("Generate DIffuse Irradiance");
+	LogDebug("Generate DIffuse Irradiance");
 
     glBindFramebuffer(GL_FRAMEBUFFER, captureFbo_);
     glGenTextures(1, &irradianceMap_);
@@ -352,10 +352,10 @@ void HelloIblProgram::GenerateDiffuseIrradiance()
 
 void HelloIblProgram::GeneratePrefilter()
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("Generate Prefilter Convolution Map");
 #endif
-	logDebug("Generate Prefilter Convolution Map");
+	LogDebug("Generate Prefilter Convolution Map");
 	Camera3D captureCamera;
 	captureCamera.position = Vec3f::zero;
 	captureCamera.aspect = 1.0f;
@@ -420,10 +420,10 @@ void HelloIblProgram::GeneratePrefilter()
 
 void HelloIblProgram::GenerateLUT()
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("Generate BRDF LUT");
 #endif
-	logDebug("Generate BRDF LUT");
+	LogDebug("Generate BRDF LUT");
 
 	glGenTextures(1, &brdfLUTTexture_);
 

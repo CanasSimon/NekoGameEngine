@@ -46,7 +46,7 @@ void Shader::LoadFromFile(const std::string_view vertexShaderPath, const std::st
     vertexFile.Destroy();
     if (vertexShader == INVALID_SHADER)
     {
-        logDebug(fmt::format("[Error] Loading vertex shader: {} unsuccessful", vertexShaderPath));
+        LogError(fmt::format("Loading vertex shader: {} unsuccessful", vertexShaderPath));
         return;
     }
     BufferFile fragmentFile = filesystem_.LoadFile(fragmentShaderPath);
@@ -56,19 +56,19 @@ void Shader::LoadFromFile(const std::string_view vertexShaderPath, const std::st
     if (fragmentShader == INVALID_SHADER)
     {
         DeleteShader(vertexShader);
-        logDebug(fmt::format("[Error] Loading fragment shader: {} unsuccessful", vertexShaderPath));
+        LogError(fmt::format("Loading fragment shader: {} unsuccessful", vertexShaderPath));
         return;
     }
 
     shaderProgram_ = CreateShaderProgram(vertexShader, fragmentShader);
     if (shaderProgram_ == 0)
     {
-        logDebug(fmt::format("[Error] Loading shader program with vertex: {} and fragment {}",
-                             vertexShaderPath,
-                             fragmentShaderPath));
-    }
+		LogError(fmt::format("Loading shader program with vertex: {} and fragment {}",
+			vertexShaderPath,
+			fragmentShaderPath));
+	}
 
-    DeleteShader(vertexShader);
+	DeleteShader(vertexShader);
     DeleteShader(fragmentShader);
 
     glGenBuffers(3, ubos_);
@@ -236,8 +236,8 @@ GLuint CreateShaderProgram(GLuint vertexShader,
 	if (!success)
 	{
 		glGetProgramInfoLog(program, 512, nullptr, infoLog);
-		logDebug(fmt::format(
-			"[Error] Shader program with vertex {} and fragment {}: LINK_FAILED with infoLog:\n{}",
+		LogError(fmt::format(
+			"Shader program with vertex {} and fragment {}: LINK_FAILED with infoLog:\n{}",
 			vertexShader,
 			fragmentShader,
 			infoLog));
@@ -260,13 +260,12 @@ GLuint LoadShader(char* shaderContent, GLenum shaderType)
     glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
     if (!success)
     {
-        glGetShaderInfoLog(shader, 512, nullptr, infoLog);
-        logDebug(
-            fmt::format("[Error] Shader compilation failed with this log:\n{}\nShader content:\n{}",
-                        infoLog,
-                        shaderContent));
-        return 0;
-    }
+		glGetShaderInfoLog(shader, 512, nullptr, infoLog);
+		LogError(fmt::format("Shader compilation failed with this log:\n{}\nShader content:\n{}",
+			infoLog,
+			shaderContent));
+		return 0;
+	}
     return shader;
 }
 

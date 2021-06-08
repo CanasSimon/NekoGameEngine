@@ -35,7 +35,7 @@
 #include <utils/file_utility.h>
 #include "graphics/graphics.h"
 #include <engine/window.h>
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 #include <easy/profiler.h>
 #endif
 
@@ -52,16 +52,16 @@ BasicEngine::BasicEngine(const FilesystemInterface& filesystem, std::optional<Co
         config_ = config.value();
     }
 
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
     EASY_PROFILER_ENABLE;
 #endif
 }
 
 BasicEngine::~BasicEngine()
 {
-    logDebug("Destroy Basic Engine");
+    LogDebug("Destroy Basic Engine");
 
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
     profiler::dumpBlocksToFile("Neko_Profile.prof");
 #endif
 }
@@ -69,10 +69,10 @@ BasicEngine::~BasicEngine()
 void BasicEngine::Init()
 {
 
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
     EASY_FUNCTION(profiler::colors::Magenta);
 #endif
-    logDebug("Current path: " + GetCurrentPath());
+    LogDebug("Current path: " + GetCurrentPath());
     jobSystem_.Init();
     initAction_.Execute();
 }
@@ -80,7 +80,7 @@ void BasicEngine::Init()
 void BasicEngine::Update(seconds dt)
 {
     dt_ = dt.count();
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
     EASY_BLOCK("Main Thread Update");
 #endif
     if (renderer_)
@@ -114,7 +114,7 @@ void BasicEngine::Update(seconds dt)
     }
     jobSystem_.ScheduleJob(&eventJob, JobThreadType::MAIN_THREAD);
     jobSystem_.ScheduleJob(&updateJob, JobThreadType::MAIN_THREAD);
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
     EASY_END_BLOCK
     EASY_BLOCK("Waiting for Swap Buffer");
 #endif
@@ -165,7 +165,7 @@ void BasicEngine::SetWindowAndRenderer(Window* window, Renderer* renderer)
 
 void BasicEngine::GenerateUiFrame()
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
     EASY_BLOCK("Generate ImGui Frame");
 #endif
     ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_FirstUseEver);

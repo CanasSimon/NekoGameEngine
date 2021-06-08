@@ -68,17 +68,17 @@ public:
 class OnCollisionInterface
 {
 public:
-    virtual void OnCollisionEnter(const physx::PxContactPairHeader& pairHeader) {};
-    virtual void OnCollisionStay(const physx::PxContactPairHeader& pairHeader) {};
-    virtual void OnCollisionExit(const physx::PxContactPairHeader& pairHeader) {};
+    virtual void OnCollisionEnter(const physx::PxContactPairHeader&) {};
+    virtual void OnCollisionStay(const physx::PxContactPairHeader&) {};
+    virtual void OnCollisionExit(const physx::PxContactPairHeader&) {};
 };
 
 
 class OnTriggerInterface
 {
 public:
-	virtual void OnTriggerEnter(physx::PxTriggerPair* pairs) {};
-	virtual void OnTriggerExit(physx::PxTriggerPair* pairs) {};
+	virtual void OnTriggerEnter(physx::PxTriggerPair*) {};
+	virtual void OnTriggerExit(physx::PxTriggerPair*) {};
 };
 
 }

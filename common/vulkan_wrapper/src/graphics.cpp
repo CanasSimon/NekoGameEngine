@@ -2,7 +2,7 @@
 
 #include "vk/subrenderers/subrenderer_opaque.h"
 
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 #include "easy/profiler.h"
 #endif
 
@@ -25,7 +25,7 @@ VkRenderer::VkRenderer(sdl::VulkanWindow* window) : Renderer(), VkResources(wind
 
 void VkRenderer::ClearScreen()
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("Clear Screen");
 #endif
 }

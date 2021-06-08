@@ -21,16 +21,16 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
  */
-
 #include "gl/graphics.h"
-#include "graphics/texture.h"
-#include "gl/gl_include.h"
-
-#include "engine/log.h"
 
 #include <fmt/format.h>
 
-#ifdef EASY_PROFILE_USE
+#include "engine/log.h"
+
+#include "gl/gl_include.h"
+#include "graphics/texture.h"
+
+#ifdef NEKO_PROFILE
 #include "easy/profiler.h"
 #endif
 
@@ -44,24 +44,25 @@ void CheckGlError(const char* file, int line)
         switch (err)
         {
         case GL_INVALID_ENUM:
-            log += "[Error] GL Invalid Enum";
+            log += "GL Invalid Enum";
             break;
         case GL_INVALID_VALUE:
-            log += "[Error] GL Invalid Value";
+            log += "GL Invalid Value";
             break;
         case GL_INVALID_OPERATION:
-            log += "[Error] GL Invalid Operation";
+            log += "GL Invalid Operation";
             break;
         case GL_OUT_OF_MEMORY:
-            log += "[Error] GL Out Of Memory";
+            log += "GL Out Of Memory";
             break;
         case GL_INVALID_FRAMEBUFFER_OPERATION:
-            log += "[Error] GL Invalid Framebuffer Operation";
+            log += "GL Invalid Framebuffer Operation";
             break;
         default:
         	continue;
         }
-        logDebug(fmt::format("{} in file: {} at line: {}",log, file, line));
+
+        neko::LogError(fmt::format("{} in file: {} at line: {}",log, file, line));
     }
 }
 
@@ -75,21 +76,22 @@ void CheckFramebuffer(const char* file, int line)
         switch (status)
         {
             case GL_FRAMEBUFFER_UNDEFINED:
-                log+="[Error] Framebuffer is undefined!";
+                log+="Framebuffer is undefined!";
                 break;
             case GL_FRAMEBUFFER_UNSUPPORTED:
-                log+="[Error] Framebuffer is unsupported!";
+                log+="Framebuffer is unsupported!";
                 break;
             case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
-                log+="[Error] Framebuffer has incomplete attachment!";
+                log+="Framebuffer has incomplete attachment!";
                 break;
             case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
-                log+="[Error] Framebuffer has incomplete missing attachment!";
+                log+="Framebuffer has incomplete missing attachment!";
                 break;
             default:
                 return;
         }
-        logDebug(fmt::format("{} in file: {} at line: {}", log, file, line));
+
+        neko::LogError(fmt::format("{} in file: {} at line: {}", log, file, line));
     }
 }
 
@@ -101,7 +103,7 @@ GlRenderer::GlRenderer() : Renderer()
 
 void GlRenderer::ClearScreen()
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
     EASY_BLOCK("Clear Screen");
 #endif
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);

@@ -39,6 +39,6 @@
 #include "mathematics/transform.h"
 #include "sdl_engine/sdl_camera.h"
 
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 #include "easy/profiler.h"
 #endif

@@ -27,13 +27,14 @@
  Date : 29.09.2020 
  Last Modif: 26.01.2021
 ---------------------------------------------------------- */
+#include "engine/log.h"
+
+#include "aer/draw_system.h"
+#include "aer/managers/manager_container.h"
+
 #ifdef NEKO_FMOD
 #include "fmod/fmod_engine.h"
 #endif
-
-#include "aer/draw_system.h"
-#include "aer/log.h"
-#include "aer/managers/manager_container.h"
 
 namespace neko::aer
 {
@@ -91,7 +92,7 @@ private:
 	EditorToolManager toolManager_;
 
 	//Service Locator
-	std::unique_ptr<LogManager> logManager_;
+	std::unique_ptr<Logger> logManager_;
 	std::unique_ptr<TagManager> tagManager_;
 };
 }    // namespace neko::aer

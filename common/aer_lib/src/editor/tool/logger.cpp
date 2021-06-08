@@ -4,14 +4,14 @@
 
 namespace neko::aer
 {
-Logger::Logger(AerEngine& engine) : EditorToolInterface(engine) {}
+LoggerTool::LoggerTool(AerEngine& engine) : EditorToolInterface(engine) {}
 
-void Logger::DrawImGui()
+void LoggerTool::DrawImGui()
 {
 	// nbrLogs contains the quantity of logs
-	int nbrLog = Log::get().GetLogs().size();
+	std::size_t nbrLog = LoggerLocator::get().GetLogs().size();
 	const int nbrLogDisplayMax =
-		static_cast<const int>(ImGui::GetWindowHeight() / ImGui::GetTextLineHeightWithSpacing());
+		static_cast<int>(ImGui::GetWindowHeight() / ImGui::GetTextLineHeightWithSpacing());
 
 	//Removes all Logs
 	if (ImGui::Button("Clear"))
@@ -47,20 +47,16 @@ void Logger::DrawImGui()
 			{
 				if (i < nbrLog)
 				{
-					LogMessage log = Log::get().GetLogs()[i];
+					LogMessage log = LoggerLocator::get().GetLogs()[i];
 					switch (log.type)
 					{
 						case LogType::DEBUG_:
-							ImGui::TextColored(Color::blue, "%s", log.log.c_str());
+							ImGui::TextColored(Color::white, "%s", log.log.c_str());
 							break;
-						case LogType::INFO: ImGui::Text("%s", log.log.c_str()); break;
 						case LogType::WARNING:
-							ImGui::TextColored(Color::yellow, "%s", log.log.c_str());
-							break;
-						case LogType::ERROR_:
 							ImGui::TextColored(Color::orange, "%s", log.log.c_str());
 							break;
-						case LogType::CRITICAL:
+						case LogType::ERROR_:
 							ImGui::TextColored(Color::red, "%s", log.log.c_str());
 							break;
 						default: break;
@@ -81,8 +77,9 @@ void Logger::DrawImGui()
 			ImGui::Text("");
 		}
 	}
+
 	ImGui::EndChild();
 }
 
-void Logger::ClearLogs() { Log::get().ClearLogs(); }
+void LoggerTool::ClearLogs() { LoggerLocator::get().ClearLogs(); }
 }    // namespace neko::aer

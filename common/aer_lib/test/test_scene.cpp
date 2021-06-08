@@ -28,7 +28,7 @@
 #include <gtest/gtest.h>
 
 #include "utils/file_utility.h"
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
     #include "easy/profiler.h"
 #endif
 
@@ -97,7 +97,7 @@ public:
 
 	void Init() override
     {
-    #ifdef EASY_PROFILE_USE
+    #ifdef NEKO_PROFILE
         EASY_BLOCK("Test Init", profiler::colors::Green);
     #endif
 		const Configuration config = BasicEngine::GetInstance()->GetConfig();
@@ -108,7 +108,7 @@ public:
 
 	void Update(seconds) override
     {
-    #ifdef EASY_PROFILE_USE
+    #ifdef NEKO_PROFILE
         EASY_BLOCK("Test Update", profiler::colors::Green);
     #endif
 		updateCount_++;
@@ -197,7 +197,7 @@ public:
 
     void Init() override
     {
-        #ifdef EASY_PROFILE_USE
+        #ifdef NEKO_PROFILE
         EASY_BLOCK("Test Init", profiler::colors::Green);
         #endif
         auto& cContainer           = engine_.GetComponentManagerContainer();
@@ -239,7 +239,7 @@ public:
 
 	void Update(seconds dt) override
     {
-    #ifdef EASY_PROFILE_USE
+    #ifdef NEKO_PROFILE
         EASY_BLOCK("Test Update", profiler::colors::Green);
     #endif
 		updateCount_+= dt.count();
@@ -375,7 +375,7 @@ public:
 
     void Init() override
     {
-    #ifdef EASY_PROFILE_USE
+    #ifdef NEKO_PROFILE
         EASY_BLOCK("Test Init", profiler::colors::Green);
     #endif
         const Configuration config = BasicEngine::GetInstance()->GetConfig();
@@ -388,7 +388,7 @@ public:
 
     void Update(seconds dt) override
     {
-    #ifdef EASY_PROFILE_USE
+    #ifdef NEKO_PROFILE
         EASY_BLOCK("Test Update", profiler::colors::Green);
     #endif
         updateCount_+=dt.count();
@@ -435,12 +435,12 @@ TEST(Scene, TestUnitySceneView)
     engine.Init();
 
     engine.EngineLoop();
-    #ifdef EASY_PROFILE_USE
+    #ifdef NEKO_PROFILE
     profiler::dumpBlocksToFile("Scene_Neko_Profile.prof");
     #endif
 
     //testSceneImporteur.HasSucceed();
-    logDebug("Test without check");
+    LogDebug("Test without check");
 }
 }    // namespace neko::aer
 #endif

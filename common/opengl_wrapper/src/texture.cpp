@@ -32,7 +32,7 @@
 
 #include "gl/gl_include.h"
 
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 #include "easy/profiler.h"
 #endif
 
@@ -51,30 +51,30 @@ TextureName StbCreateTexture(const std::string_view filename,
 	const FilesystemInterface& filesystem,
 	Texture::TextureFlags flags)
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("Create Texture");
 	EASY_BLOCK("Load From File");
 #endif
 	const std::string extension = GetFilenameExtension(filename);
 	if (!filesystem.FileExists(filename))
 	{
-		logDebug(fmt::format("[Error] Texture: {} does not exist", filename));
+        LogError(fmt::format("Texture: {} does not exist", filename));
 		return 0;
 	}
 
 	BufferFile textureFile = filesystem.LoadFile(filename);
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_END_BLOCK;
 #endif
 	Image image = StbImageConvert(textureFile);
 	textureFile.Destroy();
 	if (image.data == nullptr)
 	{
-		logDebug(fmt::format("[Error] Texture: cannot load {}", filename));
+        LogError(fmt::format("Texture: cannot load {}", filename));
 		return INVALID_TEXTURE_NAME;
 	}
 
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("Push Texture To GPU");
 #endif
 	TextureName texture;
@@ -146,16 +146,16 @@ TextureName StbCreateTexture(const std::string_view filename,
 TextureName CreateTextureFromKTX(
 	const std::string_view filename, const FilesystemInterface& filesystem)
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("Load KTX Texture");
 	EASY_BLOCK("Open File");
 #endif
 	BufferFile textureFile = filesystem.LoadFile(filename);
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_END_BLOCK;
 #endif
 
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("Create KTX from memory");
 #endif
 	gli::gl glProfile(gli::gl::PROFILE_ES30);
@@ -164,21 +164,21 @@ TextureName CreateTextureFromKTX(
 		gli::load(reinterpret_cast<const char*>(textureFile.dataBuffer), textureFile.dataLength);
 	if (texture.empty())
 	{
-		logDebug("Could not load texture with GLI");
+		LogDebug("Could not load texture with GLI");
 		return 0;
 	}
 	const gli::gl::format format = glProfile.translate(texture.format(), texture.swizzles());
 
 	GLenum target = glProfile.translate(texture.target());
-	logDebug(fmt::format("texture format: {}, texture target {}, is compressed {}",
+	LogDebug(fmt::format("texture format: {}, texture target {}, is compressed {}",
 		(int) texture.format(),
 		(int) texture.target(),
 		is_compressed(texture.format())));
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_END_BLOCK;
 #endif
 
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("Upload Texture to GPU");
 #endif
 	TextureName textureName = 0;
@@ -225,7 +225,7 @@ TextureName CreateTextureFromKTX(
 		glCheckError();
 	}
 	glCheckError();
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_END_BLOCK;
 #endif
 	return textureName;
@@ -256,7 +256,7 @@ TextureName LoadCubemap(
 		}
 		else
 		{
-			logError(fmt::format("Cubemap tex failed to load at path: {}", facesFilename[i]));
+			LogError(fmt::format("Cubemap tex failed to load at path: {}", facesFilename[i]));
 		}
 
 		image.Destroy();
@@ -293,20 +293,20 @@ TextureId TextureManager::LoadTexture(std::string_view path, Texture::TextureFla
 	}
 	else
 	{
-		logDebug(fmt::format("[Error] Could not find texture id in json file {}", metaPath));
+        LogError(fmt::format("Could not find texture id in json file {}", metaPath));
 		return textureId;
 	}
 
 	if (CheckJsonExists(metaJson, "ktx_path")) { ktxPath = metaJson["ktx_path"]; }
 	else
 	{
-		logDebug("[Error] Could not find ktx path in json file");
+        LogError("Could not find ktx path in json file");
 		return INVALID_TEXTURE_ID;
 	}
 
 	if (textureId == INVALID_TEXTURE_ID)
 	{
-		logDebug("[Error] Invalid texture id on texture load");
+        LogError("Invalid texture id on texture load");
 		return textureId;
 	}
 
@@ -342,16 +342,16 @@ void TextureManager::Update(seconds)
 			switch (textureLoader.GetErrors())
 			{
 				case TextureLoader::TextureLoaderError::ASSET_LOADING_ERROR:
-					logDebug(fmt::format(
-						"[Error] Could not load texture {} from disk", textureLoader.GetPath()));
+					LogError(fmt::format(
+						"Could not load texture {} from disk", textureLoader.GetPath()));
 					break;
 				case TextureLoader::TextureLoaderError::DECOMPRESS_ERROR:
-					logDebug(fmt::format("[Error] Could not decompress texture {} from disk",
-						textureLoader.GetPath()));
+					LogError(fmt::format(
+						"Could not decompress texture {} from disk", textureLoader.GetPath()));
 					break;
 				case TextureLoader::TextureLoaderError::UPLOAD_TO_GPU_ERROR:
-					logDebug(fmt::format(
-						"[Error] Could not upload texture {} from disk", textureLoader.GetPath()));
+					LogError(fmt::format(
+						"Could not upload texture {} from disk", textureLoader.GetPath()));
 					break;
 				default: break;
 			}
@@ -406,7 +406,7 @@ void TextureLoader::Start()
 
 void TextureLoader::LoadTexture()
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("Load KTX from disk");
 #endif
 	bufferFile_ = filesystem_.get().LoadFile(path_);
@@ -422,7 +422,7 @@ void TextureLoader::LoadTexture()
 void TextureLoader::DecompressTexture()
 {
     {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 		EASY_BLOCK("Create KTX from memory");
 #endif
 		texture_.gliTexture = gli::load(
@@ -431,7 +431,7 @@ void TextureLoader::DecompressTexture()
 
 	if (texture_.gliTexture.empty())
 	{
-		logDebug("[Error] OpenGLI error while opening KTX content");
+        LogError("OpenGLI error while opening KTX content");
 		error_ = TextureLoaderError::DECOMPRESS_ERROR;
 		return;
 	}
@@ -441,7 +441,7 @@ void TextureLoader::DecompressTexture()
 
 void TextureLoader::UploadToGL()
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("Upload KTX Texture to GPU");
 #endif
 	gli::gl glProfile(gli::gl::PROFILE_GL33);

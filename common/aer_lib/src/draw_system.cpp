@@ -6,7 +6,7 @@
 #include "vk/vk_resources.h"
 #endif
 
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 #include <easy/profiler.h>
 #endif
 
@@ -32,7 +32,7 @@ DrawSystem::DrawSystem(AerEngine& engine)
 
 void DrawSystem::Init()
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("DrawSystem::Init");
 #endif
 	Camera3D camera;
@@ -73,7 +73,7 @@ void DrawSystem::Init()
 
 void DrawSystem::Update(seconds dt)
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("DrawSystem::Update");
 #endif
 
@@ -92,7 +92,7 @@ void DrawSystem::Update(seconds dt)
 
 void DrawSystem::Render()
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("DrawSystem::Render");
 #endif
 
@@ -200,7 +200,7 @@ void DrawSystem::Render()
 #ifdef NEKO_OPENGL
 void DrawSystem::RenderScene(const std::size_t playerNum)
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("DrawSystem::RenderScene");
 #endif
 

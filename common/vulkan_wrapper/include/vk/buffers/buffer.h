@@ -44,6 +44,7 @@ public:
 		VkBufferUsageFlags usage,
 		VkMemoryPropertyFlags properties,
 		const void* data = nullptr);
+	virtual ~Buffer() = default;
 
 	operator const VkBuffer*() const { return &buffer_; }
 	operator const VkBuffer&() const { return buffer_; }

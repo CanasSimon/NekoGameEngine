@@ -58,28 +58,6 @@ Image2d::Image2d(const Vec2u extent,
 	Load();
 }
 
-Image2d& Image2d::operator=(const Image2d& other) noexcept
-{
-	extent_      = other.extent_;
-	format_      = other.format_;
-	sample_      = other.sample_;
-	usage_       = other.usage_;
-	mipLevels_   = other.mipLevels_;
-	arrayLayers_ = other.arrayLayers_;
-	filter_      = other.filter_;
-	addressMode_ = other.addressMode_;
-	layout_      = other.layout_;
-	image_       = other.image_;
-	memory_      = other.memory_;
-	sampler_     = other.sampler_;
-	view_        = other.view_;
-	filePath_    = other.filePath_;
-	anisotropic_ = other.anisotropic_;
-	mipmap_      = other.mipmap_;
-	components_  = other.components_;
-	return *this;
-}
-
 void Image2d::Load()
 {
 #ifdef NEKO_KTX
@@ -110,7 +88,7 @@ void Image2d::LoadKtx()
 		usage_,
 		kLayout);
 	if (err != KTX_SUCCESS)
-		logDebug(fmt::format("KTX Error: {} for file '{}'", ktxErrorString(err), filePath_));
+		LogDebug(fmt::format("KTX Error: {} for file '{}'", ktxErrorString(err), filePath_));
 	ktxTexture_Destroy(kTexture);
 	ktxVulkanDeviceInfo_Destruct(&vdi);
 

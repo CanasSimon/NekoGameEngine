@@ -37,7 +37,7 @@ PhysicsMaterial RigidActor::GetPhysicsMaterial() const
 	PhysicsMaterial physicsMaterial;
 	if (!shape_)
 	{
-		logDebug("No material found for this actor");
+		LogDebug("No material found for this actor");
 		return physicsMaterial;
 	}
 
@@ -52,7 +52,7 @@ BoxColliderData RigidActor::GetBoxColliderData() const
 	BoxColliderData boxColliderData;
 	if (!shape_)
 	{
-		logDebug("No box collider found for this actor");
+		LogDebug("No box collider found for this actor");
 		return boxColliderData;
 	}
 
@@ -69,7 +69,7 @@ SphereColliderData RigidActor::GetSphereColliderData() const
 	SphereColliderData sphereColliderData;
 	if (!shape_)
 	{
-		logDebug("No sphere collider found for this actor");
+		LogDebug("No sphere collider found for this actor");
 		return sphereColliderData;
 	}
 
@@ -86,7 +86,7 @@ CapsuleColliderData RigidActor::GetCapsuleColliderData() const
 	CapsuleColliderData capsuleColliderData;
 	if (!shape_)
 	{
-		logDebug("No capsule collider found for this actor");
+		LogDebug("No capsule collider found for this actor");
 		return capsuleColliderData;
 	}
 
@@ -112,7 +112,7 @@ void RigidActor::SetBoxColliderData(const BoxColliderData& boxColliderData) cons
 {
     if (!shape_)
     {
-        logDebug("No box collider found for this actor");
+        LogDebug("No box collider found for this actor");
         return;
     }
 
@@ -140,7 +140,7 @@ void RigidActor::SetSphereColliderData(const SphereColliderData& sphereColliderD
 {
 	if (!shape_)
 	{
-        logDebug("No sphere collider found for this actor");
+        LogDebug("No sphere collider found for this actor");
 		return;
 	}
 
@@ -158,7 +158,7 @@ void RigidActor::SetCapsuleColliderData(const CapsuleColliderData& capsuleCollid
 {
 	if (!shape_)
 	{
-        logDebug("No capsule collider found for this actor");
+        LogDebug("No capsule collider found for this actor");
 		return;
 	}
 
@@ -187,7 +187,7 @@ void RigidActor::SetMeshColliderData(const MeshColliderData& meshColliderData) c
 {
 	if (!shape_)
 	{
-        logDebug("No mesh collider found for this actor");
+        LogDebug("No mesh collider found for this actor");
 		return;
 	}
 
@@ -283,9 +283,9 @@ physx::PxShape* RigidActor::InitMeshCollider(const PhysicsEngine& physics,
 		{
 			case physx::PxTriangleMeshCookingResult::eSUCCESS: break;
 			case physx::PxTriangleMeshCookingResult::eLARGE_TRIANGLE:
-				logDebug("eLARGE_TRIANGLE");
+				LogDebug("eLARGE_TRIANGLE");
 				break;
-			case physx::PxTriangleMeshCookingResult::eFAILURE: logDebug("eFAILURE"); break;
+			case physx::PxTriangleMeshCookingResult::eFAILURE: LogDebug("eFAILURE"); break;
 			default:;
 		}
 	}
@@ -490,10 +490,10 @@ void RigidStatic::Init(const PhysicsEngine& physics,
 	physx::PxTransform transform = physx::PxTransform(
 		ConvertToPxVec(position), ConvertToPxQuat(Quaternion::FromEuler(eulerAngle)));
 	rigidActor_ = physics.GetPhysx()->createRigidStatic(transform);
-	if (!rigidActor_) logError("Couldn't create actor!");
+	if (!rigidActor_) LogError("Couldn't create actor!");
 
 	material_ = InitMaterial(physics.GetPhysx(), rigidStatic.material);
-	if (!material_) logError("Couldn't create material!");
+	if (!material_) LogError("Couldn't create material!");
 
 	if (rigidStatic.colliderType == ColliderType::MESH)
 	{
@@ -510,7 +510,7 @@ void RigidStatic::Init(const PhysicsEngine& physics,
 					physx::PxMeshScale(rigidStatic.meshColliderData.size));
 				if (!shape_)
 				{
-                    logError("Couldn't create actor shape!");
+                    LogError("Couldn't create actor shape!");
 					return;
 				}
 
@@ -564,7 +564,7 @@ void RigidStatic::Init(const PhysicsEngine& physics,
 
 		if (!shape_)
 		{
-            logError("Couldn't create actor shape!");
+            LogError("Couldn't create actor shape!");
 			return;
 		}
 
@@ -579,7 +579,7 @@ RigidStaticData RigidStatic::GetRigidStaticData() const
     RigidStaticData rigidStaticData;
     if (!rigidActor_)
     {
-        logDebug("No rigidbody found for this actor");
+        LogDebug("No rigidbody found for this actor");
         return rigidStaticData;
     }
 
@@ -613,7 +613,7 @@ void RigidStatic::SetRigidStaticData(const RigidStaticData& rigidStaticData) con
 {
 	if (!rigidActor_)
 	{
-        logError("No rigidbody found for this actor");
+        LogError("No rigidbody found for this actor");
 		return;
 	}
 
@@ -920,14 +920,14 @@ void RigidDynamic::Init(const PhysicsEngine& physics,
 	rigidActor_ = physics.GetPhysx()->createRigidDynamic(transform);
 	if (!rigidActor_)
 	{
-        logError("Couldn't create actor!");
+        LogError("Couldn't create actor!");
 		return;
 	}
 
 	material_ = InitMaterial(physics.GetPhysx(), rigidDynamic.material);
 	if (!material_)
 	{
-        logError("Couldn't create material!");
+        LogError("Couldn't create material!");
 		return;
 	}
 
@@ -945,13 +945,13 @@ void RigidDynamic::Init(const PhysicsEngine& physics,
 			shape_ =
 				InitCapsuleShape(physics.GetPhysx(), material_, rigidDynamic.capsuleColliderData);
 			break;
-		case ColliderType::MESH: logError("Mesh collider aren't supported yet!"); break;
+		case ColliderType::MESH: LogError("Mesh collider aren't supported yet!"); break;
 		default:;
 	}
 
 	if (!shape_)
     {
-        logError("Couldn't create dynamic rigidbody!");
+        LogError("Couldn't create dynamic rigidbody!");
         return;
     }
 
@@ -967,7 +967,7 @@ void RigidDynamic::AddForce(const Vec3f& force, physx::PxForceMode::Enum forceMo
 {
     if (!rigidActor_)
     {
-        logError("No rigidbody found for this actor!");
+        LogError("No rigidbody found for this actor!");
         return;
     }
 
@@ -978,7 +978,7 @@ void RigidDynamic::AddForceAtPosition(const Vec3f& force, const Vec3f& position)
 {
     if (!rigidActor_)
     {
-        logError("No rigidbody found for this actor!");
+        LogError("No rigidbody found for this actor!");
         return;
     }
 
@@ -990,7 +990,7 @@ void RigidDynamic::AddRelativeTorque(const Vec3f& torque, physx::PxForceMode::En
 {
     if (!rigidActor_)
     {
-        logError("No rigidbody found for this actor!");
+        LogError("No rigidbody found for this actor!");
         return;
     }
 
@@ -1002,7 +1002,7 @@ RigidDynamicData RigidDynamic::GetRigidDynamicData() const
 	RigidDynamicData rigidDynamicData;
 	if (!rigidActor_)
 	{
-		logError("No rigidbody found for this actor!");
+		LogError("No rigidbody found for this actor!");
 		return rigidDynamicData;
 	}
 
@@ -1067,7 +1067,7 @@ VelocityData RigidDynamic::GetVelocityData() const
 	VelocityData dynamicData;
 	if (!rigidActor_)
 	{
-		logError("No actor found!");
+		LogError("No actor found!");
 		return dynamicData;
 	}
 
@@ -1080,7 +1080,7 @@ void RigidDynamic::SetPosition(const Vec3f& pos) const
 {
     if (!rigidActor_)
     {
-        logError("No actor found!");
+        LogError("No actor found!");
         return;
     }
 
@@ -1093,7 +1093,7 @@ void RigidDynamic::SetRotation(const Quaternion& rot) const
 {
     if (!rigidActor_)
     {
-        logError("No actor found!");
+        LogError("No actor found!");
 		return;
 	}
 
@@ -1106,7 +1106,7 @@ void RigidDynamic::SetRigidDynamicData(const RigidDynamicData& rigidDynamicData)
 {
 	if (!rigidActor_)
 	{
-		logError("No rigidbody found for this actor!");
+		LogError("No rigidbody found for this actor!");
 		return;
 	}
 

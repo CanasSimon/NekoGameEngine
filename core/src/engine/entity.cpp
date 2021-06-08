@@ -193,7 +193,7 @@ bool EntityManager::SetParent(Entity child, Entity parent)
 	{
 		if (p == child)
 		{
-			logDebug(fmt::format(
+			LogDebug(fmt::format(
 				"[Warning] Child entity: {} cannot have parent entity: {}", child, parent));
 			return false;
 		}
@@ -211,9 +211,9 @@ bool EntityManager::HasComponent(Entity entity, EntityMask componentType) const
 	if (entity >= entityMasks_.size())
 	{
 		std::ostringstream oss;
-		oss << "[Error] Accessing entity: " << entity
+		oss << "Accessing entity: " << entity
 			<< " while entity mask array is of size: " << entityMasks_.size();
-		logDebug(oss.str());
+		LogError(oss.str());
 		return false;
 	}
 	return (entityMasks_[entity] & static_cast<EntityMask>(componentType)) ==

@@ -39,11 +39,10 @@ ModelId ModelManager::LoadModel(std::string_view path)
 	const auto it = pathMap_.find(path.data());
 	if (it != pathMap_.end())
 	{
-		//logDebug(fmt::format("[Debug] Model is already loaded: {}", path));
 		return it->second;
 	}
 
-	logDebug(fmt::format("[Debug] Loading model: {}", path));
+	LogDebug(fmt::format("Loading model: {}", path));
 	const std::string metaPath  = fmt::format("{}.meta", path);
 	const json metaJson         = LoadJson(metaPath);
 	ModelId modelId             = INVALID_MODEL_ID;
@@ -53,7 +52,7 @@ ModelId ModelManager::LoadModel(std::string_view path)
 	}
 	else
 	{
-		logDebug(fmt::format("[Error] Could not find model id in json file: {}", metaPath));
+		LogError(fmt::format("Could not find model id in json file: {}", metaPath));
 		return modelId;
 	}
 

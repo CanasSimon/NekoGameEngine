@@ -27,7 +27,7 @@ void PhysicsEngine::InitPhysics()
 	transport_ = physx::PxDefaultPvdSocketTransportCreate(PVD_HOST.c_str(), 5425, 10);
 
 	bool connected = pvd_->connect(*transport_, physx::PxPvdInstrumentationFlag::eALL);
-	if (connected) logDebug("Connected to PhysX Visual Debugger!");
+	if (connected) LogDebug("Connected to PhysX Visual Debugger!");
 
 	physics_ = PxCreatePhysics(PX_PHYSICS_VERSION,
 		*foundation_,
@@ -82,7 +82,7 @@ bool PhysicsEngine::Advance(physx::PxReal dt)
 
 void PhysicsEngine::Update(seconds dt)
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
     EASY_BLOCK("PhysicsEngine::Update");
 #endif
 	if (physicRunning_)

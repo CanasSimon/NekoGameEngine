@@ -1,6 +1,6 @@
 #include "aer/aer_engine.h"
 
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 #include <easy/profiler.h>
 #endif
 
@@ -13,10 +13,10 @@ AerEngine::AerEngine(const FilesystemInterface& filesystem, Configuration* confi
 	 cContainer_(*this, rContainer_, physicsEngine_),
 	 toolManager_(*this)
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("AerEngine::Constructor");
 #endif
-	logManager_ = std::make_unique<LogManager>();
+	logManager_ = std::make_unique<Logger>();
 
 	if (mode_ == ModeEnum::EDITOR)
 	{
@@ -45,7 +45,7 @@ AerEngine::AerEngine(const FilesystemInterface& filesystem, Configuration* confi
 
 void AerEngine::Init()
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("AerEngine::Init");
 #endif
 #ifdef NEKO_OPENGL
@@ -69,7 +69,7 @@ void AerEngine::ManageEvent() { SdlEngine::ManageEvent(); }
 
 void AerEngine::GenerateUiFrame()
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("AerEngine::GenerateUiFrame");
 #endif
 

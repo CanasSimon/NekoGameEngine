@@ -2,14 +2,14 @@
 #include "engine/resource_locations.h"
 #include "utils/file_utility.h"
 
-#include "aer/log.h"
+#include "engine/log.h"
 #include "aer/managers/manager_container.h"
 
 #ifdef NEKO_VULKAN
 #include "vk/vk_resources.h"
 #endif
 
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 #include "easy/profiler.h"
 #endif
 
@@ -190,7 +190,7 @@ void SceneManager::ParseSceneJson(const json& sceneJson)
 
 bool SceneManager::LoadScene(const std::string_view& jsonPath)
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("LoadScene");
 #endif
 	if (filesystem_.FileExists(jsonPath))

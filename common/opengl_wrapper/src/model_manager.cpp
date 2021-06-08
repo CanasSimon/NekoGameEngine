@@ -62,7 +62,7 @@ ModelId ModelManager::LoadModel(std::string_view path)
 	}
 	else
 	{
-		logDebug(fmt::format("[Error] Could not find model id in json file: {}", metaPath));
+        LogError(fmt::format("Could not find model id in json file: {}", metaPath));
 		return modelId;
 	}
 

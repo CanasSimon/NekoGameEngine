@@ -1,6 +1,6 @@
 #include "aer/gizmos_renderer.h"
 
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 #include "easy/profiler.h"
 #endif
 
@@ -19,7 +19,7 @@ GizmoRenderer::GizmoRenderer(Camera3D* camera) : camera_(camera)
 
 void GizmoRenderer::Init()
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("GizmoRenderer::Init");
 #endif
 
@@ -47,14 +47,14 @@ void GizmoRenderer::Init()
 
 void GizmoRenderer::Update(seconds)
 {
-    #ifdef EASY_PROFILE_USE
+    #ifdef NEKO_PROFILE
     EASY_BLOCK("GizmoRenderer::Update");
     #endif
 }
 
 void GizmoRenderer::Render()
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("GizmoRenderer::Render");
 #endif
 	if (isRunning_)
@@ -105,7 +105,7 @@ void GizmoRenderer::Render()
 			}
 			break;
 			default:
-				logDebug("Invalid Gizmo shape!");
+				LogDebug("Invalid Gizmo shape!");
 			}
 		}
 	}

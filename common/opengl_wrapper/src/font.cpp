@@ -26,7 +26,7 @@
 
 #include "gl/font.h"
 
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 #include "easy/profiler.h"
 #endif
 
@@ -61,7 +61,7 @@ void FontManager::Init()
 
 FontId FontManager::LoadFont(std::string_view fontPath, int pixelHeight)
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
     EASY_BLOCK("Load Font");
 #endif
     const std::string metaPath = std::string(fontPath) + ".meta";
@@ -73,13 +73,13 @@ FontId FontManager::LoadFont(std::string_view fontPath, int pixelHeight)
     }
     else
     {
-        logDebug("[Error] Could not find font id in json file");
+        LogError("Could not find font id in json file");
         return fontId;
     }
 
     if (fontId == INVALID_FONT_ID)
     {
-        logDebug("[Error] Invalid font id on texture load");
+        LogError("Invalid font id on texture load");
         return fontId;
     }
 
@@ -93,7 +93,7 @@ FontId FontManager::LoadFont(std::string_view fontPath, int pixelHeight)
     FT_Library ft;
     if (FT_Init_FreeType(&ft))
     {
-        logDebug("[Error] Freetype could not init FreeType Library");
+        LogError("Freetype could not init FreeType Library");
         return INVALID_FONT_ID;
     }
 
@@ -101,7 +101,7 @@ FontId FontManager::LoadFont(std::string_view fontPath, int pixelHeight)
     BufferFile fontFile = filesystem_.LoadFile(fontPath);
     if (FT_New_Memory_Face(ft, fontFile.dataBuffer, fontFile.dataLength, 0, &face))
     {
-        logDebug("[Error] Freetype: Failed to load font");
+        LogError("Freetype: Failed to load font");
         return INVALID_FONT_ID;
     }
 
@@ -118,7 +118,7 @@ FontId FontManager::LoadFont(std::string_view fontPath, int pixelHeight)
         // Load character glyph
         if (FT_Load_Char(face, c, FT_LOAD_RENDER))
         {
-            logDebug("[Error] Freetype failed to load Glyph");
+            LogError("Freetype failed to load Glyph");
             continue;
         }
 
@@ -166,7 +166,7 @@ void FontManager::RenderText(const FontId fontId,
                              const Color4& color)
 {
     textShader_.Bind();
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
     EASY_BLOCK("Render Text");
 #endif
     auto& font = fonts_[fontId];
@@ -233,7 +233,7 @@ void FontManager::Destroy()
 
 void FontManager::Render()
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
     EASY_BLOCK("Render Font Manager");
 #endif
 }

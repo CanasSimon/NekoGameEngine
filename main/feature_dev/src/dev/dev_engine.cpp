@@ -1,5 +1,5 @@
 #include "dev/dev_engine.h"
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
     #include <easy/profiler.h>
 #endif
 
@@ -8,7 +8,7 @@ namespace neko::dev
 DevEngine::DevEngine(const FilesystemInterface& filesystem, Configuration* config)
    : SdlEngine(filesystem, *config)
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("DevEngine::Constructor");
 #endif
 	RegisterSystem(sampleBrowser_);
@@ -18,7 +18,7 @@ DevEngine::DevEngine(const FilesystemInterface& filesystem, Configuration* confi
 
 void DevEngine::Init()
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
     EASY_BLOCK("DevEngine::Init");
 #endif
 	SdlEngine::Init();
@@ -34,7 +34,7 @@ void DevEngine::ManageEvent() { SdlEngine::ManageEvent(); }
 
 void DevEngine::GenerateUiFrame()
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("DevEngine::GenerateUiFrame");
 #endif
 	window_->GenerateUiFrame();

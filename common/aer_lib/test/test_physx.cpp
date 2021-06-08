@@ -27,7 +27,7 @@
 ---------------------------------------------------------- */
 #include <gtest/gtest.h>
 
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 #include "easy/profiler.h"
 #endif
 
@@ -246,7 +246,7 @@ public:
 		viewedEntity = plateformEntity_;
 	}
 
-	void HasSucceed() override { logDebug("Test without check"); }
+	void HasSucceed() override { LogDebug("Test without check"); }
 
 	void Update(seconds dt) override
 	{
@@ -1125,7 +1125,7 @@ public:
 			!entityManager_->HasComponent(planeEntity_, EntityMask(ComponentType::RIGID_STATIC)))
 #endif
 		{
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 			EASY_BLOCK("Load Mesh Collider", profiler::colors::Green);
 #endif
 			RigidStaticData rigidStatic;
@@ -1210,7 +1210,7 @@ namespace aer
 
         void Init() override
         {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 		EASY_BLOCK("Test Init", profiler::colors::Green);
 #endif
 		const Configuration config = BasicEngine::GetInstance()->GetConfig();
@@ -1222,7 +1222,7 @@ namespace aer
 
 	void Update(seconds dt) override
 	{
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 		EASY_BLOCK("Test Update", profiler::colors::Green);
 #endif
             updateCount_ += dt.count();

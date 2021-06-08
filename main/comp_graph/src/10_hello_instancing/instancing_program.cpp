@@ -25,7 +25,7 @@
 #include "10_hello_instancing/instancing_program.h"
 #include "imgui.h"
 
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 #include "easy/profiler.h"
 #endif
 namespace neko
@@ -38,7 +38,7 @@ void HelloInstancingProgram::Init()
     asteroidPositions_.resize(maxAsteroidNmb_);
     asteroidForces_.resize(maxAsteroidNmb_);
     asteroidVelocities_.resize(maxAsteroidNmb_);
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
     EASY_BLOCK("Calculate Positions");
 #endif
     //Calculate init pos and velocities
@@ -51,7 +51,7 @@ void HelloInstancingProgram::Init()
         position *= radius;
         asteroidPositions_[i] = position;
     }
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
     EASY_END_BLOCK;
 #endif
     const auto& config = BasicEngine::GetInstance()->GetConfig();
@@ -86,13 +86,13 @@ void HelloInstancingProgram::Update(seconds dt)
     dt_ = dt.count();
     auto* engine = BasicEngine::GetInstance();
     //Kicking the velocity calculus for force and velocities
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
     EASY_BLOCK("Calculate Positions");
 #endif
     CalculateForce(0, asteroidNmb_);
     CalculateVelocity(0, asteroidNmb_);
     CalculatePositions(0, asteroidNmb_);
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
     EASY_END_BLOCK;
 #endif
 
@@ -164,7 +164,7 @@ void HelloInstancingProgram::Render()
     {
         case InstancingType::NO_INSTANCING:
         {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
             EASY_BLOCK("Draw No Instance");
 #endif
             singleDrawShader_.Bind();
@@ -180,7 +180,7 @@ void HelloInstancingProgram::Render()
         }
         case InstancingType::UNIFORM_INSTANCING:
         {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
             EASY_BLOCK("Draw Uniform Instaning");
 #endif
             uniformInstancingShader_.Bind();
@@ -193,7 +193,7 @@ void HelloInstancingProgram::Render()
             {
                 const size_t chunkBeginIndex = chunk * uniformChunkSize_;
                 const size_t chunkEndIndex = std::min(asteroidNmb_, (chunk + 1) * uniformChunkSize_);
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
                 EASY_BLOCK("Set Uniform Model Matrices");
 #endif
             	for (size_t index = chunkBeginIndex; index < chunkEndIndex; index++)
@@ -201,7 +201,7 @@ void HelloInstancingProgram::Render()
                     const std::string uniformName = "position[" + std::to_string(index - chunkBeginIndex) + "]";
                     uniformInstancingShader_.SetVec3(uniformName, asteroidPositions_[index]);
                 }
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
                 EASY_END_BLOCK
                 EASY_BLOCK("Draw Mesh");
 
@@ -218,7 +218,7 @@ void HelloInstancingProgram::Render()
         }
         case InstancingType::BUFFER_INSTANCING:
         {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
             EASY_BLOCK("Draw Vertex Buffer Instaning");
 #endif
             vertexInstancingDrawShader_.Bind();
@@ -234,13 +234,13 @@ void HelloInstancingProgram::Render()
                 if (chunkEndIndex > chunkBeginIndex)
                 {
                     const size_t chunkSize = chunkEndIndex-chunkBeginIndex;
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
                     EASY_BLOCK("Set VBO Model Matrices");
 #endif
                     glBindBuffer(GL_ARRAY_BUFFER, instanceVBO_);
                     glBufferData(GL_ARRAY_BUFFER, sizeof(Vec3f) * chunkSize, &asteroidPositions_[chunkBeginIndex], GL_DYNAMIC_DRAW);
                     glBindBuffer(GL_ARRAY_BUFFER, 0);
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
                     EASY_END_BLOCK
                     EASY_BLOCK("Draw Mesh");
 
@@ -267,7 +267,7 @@ void HelloInstancingProgram::OnEvent(const SDL_Event& event)
 
 void HelloInstancingProgram::CalculateForce(size_t begin, size_t end)
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
     EASY_BLOCK("Calculate Forces");
 #endif
     const size_t endCount = std::min(end, asteroidNmb_);
@@ -282,7 +282,7 @@ void HelloInstancingProgram::CalculateForce(size_t begin, size_t end)
 
 void HelloInstancingProgram::CalculateVelocity(size_t begin, size_t end)
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
     EASY_BLOCK("Calculate Velocities");
 #endif
     const size_t endCount = std::min(end, asteroidNmb_);

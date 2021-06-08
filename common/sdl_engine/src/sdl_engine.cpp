@@ -34,7 +34,7 @@
 #include "mathematics/vector.h"
 #include "utils/file_utility.h"
 
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 #include "easy/profiler.h"
 #endif
 
@@ -42,10 +42,10 @@ namespace neko::sdl
 {
 void SdlEngine::Init()
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("Init Sdl Engine");
 #endif
-	logDebug("Current path: " + GetCurrentPath());
+	LogDebug("Current path: " + GetCurrentPath());
 	jobSystem_.Init();
 
 	assert(window_ != nullptr);
@@ -66,7 +66,7 @@ void SdlEngine::Destroy()
 
 void SdlEngine::ManageEvent()
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("Manage Event");
 #endif
 	inputManager_.OnPreUserInput();
@@ -79,7 +79,7 @@ void SdlEngine::ManageEvent()
 		{
 			if (event.window.event == SDL_WINDOWEVENT_RESIZED)
 			{
-				logDebug(fmt::format("Windows resized with new size: ({},{})",
+				LogDebug(fmt::format("Windows resized with new size: ({},{})",
 					event.window.data1,
 					event.window.data2));
 				config_.windowSize = Vec2u(event.window.data1, event.window.data2);

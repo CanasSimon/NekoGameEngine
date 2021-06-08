@@ -10,7 +10,7 @@
 namespace fs = std::filesystem;
 #endif
 
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 #include <easy/profiler.h>
 #endif
 
@@ -50,7 +50,7 @@ void BufferFile::Destroy()
 }
 LoadingAssetJob::LoadingAssetJob(const FilesystemInterface & filesystem) : Job(
         [this] {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
             EASY_BLOCK("Load File in AssetJob");
 #endif
             bufferFile_.Destroy();
@@ -76,19 +76,16 @@ void LoadingAssetJob::Reset()
 
 BufferFile Filesystem::LoadFile(std::string_view path) const
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
     EASY_BLOCK("Load File from Filesystem");
 #endif
     BufferFile newFile;
     if (FileExists(path))
     {
         std::ifstream is(path.data(), std::ifstream::binary);
-        if (!is)
-        {
-            logDebug(fmt::format("[Error] Could not open file: {}  for BufferFile", path));
-        }
-        else
-        {
+		if (!is) { LogError(fmt::format("Could not open file: {}  for BufferFile", path)); }
+		else
+		{
             is.seekg(0, is.end);
             newFile.dataLength = is.tellg();
             is.seekg(0, is.beg);

@@ -34,7 +34,7 @@
 
 #include "gl/gl_include.h"
 
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 #include <easy/profiler.h>
 #endif
 
@@ -42,13 +42,13 @@ namespace neko::sdl
 {
 void OnResizeRenderCommand::Render()
 {
-	logDebug(fmt::format("Resize window with new size: {}", newWindowSize_.ToString()));
+	LogDebug(fmt::format("Resize window with new size: {}", newWindowSize_.ToString()));
 	glViewport(0, 0, newWindowSize_.x, newWindowSize_.y);
 }
 
 void GlWindow::Init()
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("OPENGLWindowInit");
 #endif
 	const auto& config = BasicEngine::GetInstance()->GetConfig();
@@ -77,7 +77,7 @@ void GlWindow::Init()
 	SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
 
 	const std::string videoDriver = SDL_GetCurrentVideoDriver();
-	logDebug(videoDriver);
+	LogDebug(videoDriver);
 
 	glRenderContext_ = SDL_GL_CreateContext(window_);
 	MakeCurrentContext();
@@ -85,7 +85,7 @@ void GlWindow::Init()
 	SDL_GL_SetSwapInterval(config.flags & Configuration::VSYNC ? 1 : 0);
     if (const auto errorCode = glewInit(); GLEW_OK != errorCode)
     {
-        logError("Failed to initialize GLEW");
+        LogError("Failed to initialize GLEW");
         std::terminate();
     }
 
@@ -101,7 +101,7 @@ void GlWindow::Init()
 
 void GlWindow::InitImGui()
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("ImGuiInit");
 #endif
     SdlWindow::InitImGui();
@@ -111,7 +111,7 @@ void GlWindow::InitImGui()
 
 void GlWindow::GenerateUiFrame()
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("ImGuiGenerate");
 #endif
 	ImGui_ImplOpenGL3_NewFrame();
@@ -121,7 +121,7 @@ void GlWindow::GenerateUiFrame()
 
 void GlWindow::SwapBuffer()
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("SwapBuffer");
 #endif
 	SDL_GL_SwapWindow(window_);
@@ -129,7 +129,7 @@ void GlWindow::SwapBuffer()
 
 void GlWindow::Destroy()
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("DestroyWindow");
 #endif
 	Job leaveContext([this] { LeaveCurrentContext(); });
@@ -146,7 +146,7 @@ void GlWindow::Destroy()
 
 void GlWindow::RenderUi()
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("ImGuiRender");
 #endif
 	ImGui::Render();
@@ -175,7 +175,7 @@ void GlWindow::MakeCurrentContext()
 	oss << "Current Context: " << currentContext << " Render Context: " << glRenderContext_
 		<< " from Thread: " << std::this_thread::get_id();
 	if (currentContext == nullptr) { oss << "\nSDL Error: " << SDL_GetError(); }
-	logDebug(oss.str());
+	LogDebug(oss.str());
 }
 
 void GlWindow::LeaveCurrentContext()
@@ -187,9 +187,10 @@ void GlWindow::LeaveCurrentContext()
 	oss << "Leave current context from thread: " << std::this_thread::get_id();
 	if (currentContext != nullptr)
 	{
-		oss << "[Error] After Leave Current Context, context: " << currentContext;
+		oss << "After Leave Current Context, context: " << currentContext;
 	}
-	logDebug(oss.str());
+
+	LogError(oss.str());
 }
 }    // namespace neko::sdl
 

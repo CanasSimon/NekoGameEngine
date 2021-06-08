@@ -30,10 +30,10 @@
 
 namespace neko::aer
 {
-class Logger final : public EditorToolInterface
+class LoggerTool final : public EditorToolInterface
 {
 public:
-	explicit Logger(AerEngine& engine);
+	explicit LoggerTool(AerEngine& engine);
 
 	void DrawImGui() override;
 

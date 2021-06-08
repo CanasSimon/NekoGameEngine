@@ -25,7 +25,7 @@
 #ifdef NEKO_OPENGL
 #include "gl/mesh.h"
 
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 #include "easy/profiler.h"
 #endif
 
@@ -50,7 +50,7 @@ void Mesh::Init()
     glGenBuffers(1, &ebo_);
     glCheckError();
 
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
     EASY_BLOCK("Copy Buffers");
 #endif
     glBindVertexArray(vao_);
@@ -63,7 +63,7 @@ void Mesh::Init()
         GL_ELEMENT_ARRAY_BUFFER, indices_.size() * sizeof(Index), &indices_[0], GL_STATIC_DRAW);
     glCheckError();
 
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
     EASY_END_BLOCK;
 	EASY_BLOCK("Vertex Attrib");
 #endif
@@ -99,7 +99,7 @@ void Mesh::Init()
 
     glBindVertexArray(0);
     glCheckError();
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
     EASY_END_BLOCK;
 #endif
 }

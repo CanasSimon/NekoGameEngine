@@ -16,5 +16,5 @@ TEST(CompNet, FloatDeterminism)
     p.Rotate(neko::degree_t(90.0f));
     checksum += neko::Checksum<std::uint8_t>(p);
   }
-  logDebug(fmt::format("Float checksum: {}", checksum));
+  LogDebug(fmt::format("Float checksum: {}", checksum));
 }

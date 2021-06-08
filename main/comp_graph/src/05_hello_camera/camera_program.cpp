@@ -195,7 +195,7 @@ void HelloCameraProgram::OnEvent(const SDL_Event& event)
 	case SDL_MOUSEMOTION:
 	{
 		mouseMotion_ = Vec2f(event.motion.xrel, event.motion.yrel)/mouseMotionRatio_;
-		logDebug(fmt::format("Mouse motion: {}", mouseMotion_.ToString()));
+		LogDebug(fmt::format("Mouse motion: {}", mouseMotion_.ToString()));
 			
 		break;
 	}

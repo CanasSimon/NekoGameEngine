@@ -25,7 +25,7 @@
 #include "17_hello_frustum/frustum_program.h"
 #include "imgui.h"
 
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 #include "easy/profiler.h"
 #endif
 namespace neko
@@ -39,7 +39,7 @@ void HelloFrustumProgram::Init()
     asteroidForces_.resize(maxAsteroidNmb_);
     asteroidVelocities_.resize(maxAsteroidNmb_);
     asteroidCulledPositions_.reserve(maxAsteroidNmb_);
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
     EASY_BLOCK("Calculate Positions");
 #endif
     //Calculate init pos and velocities
@@ -52,7 +52,7 @@ void HelloFrustumProgram::Init()
         position *= radius;
         asteroidPositions_[i] = position;
     }
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
     EASY_END_BLOCK;
 #endif
     const auto& config = BasicEngine::GetInstance()->GetConfig();
@@ -98,7 +98,7 @@ void HelloFrustumProgram::Init()
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo_);
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
     {
-        logDebug("[Error] Framebuffer is not complete!");
+        LogError("Framebuffer is not complete!");
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -120,7 +120,7 @@ void HelloFrustumProgram::Update(seconds dt)
     {
         return;
     }
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
     EASY_BLOCK("Calculate Positions");
 #endif
     asteroidCulledPositions_.clear();
@@ -130,7 +130,7 @@ void HelloFrustumProgram::Update(seconds dt)
     CalculatePositions(0, asteroidNmb_);
     Culling(0, asteroidNmb_);
 	
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
     EASY_END_BLOCK;
 #endif
 
@@ -152,7 +152,7 @@ void HelloFrustumProgram::Destroy()
 void HelloFrustumProgram::DrawImGui()
 {
     std::lock_guard<std::mutex> lock(updateMutex_);
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
     EASY_BLOCK("Asteroid Draw Imgui");
 #endif
     ImGui::Begin("Frustum Culling");
@@ -192,7 +192,7 @@ void HelloFrustumProgram::Render()
     }
 
 
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
     EASY_BLOCK("Draw Vertex Buffer Instaning");
 #endif
     vertexInstancingDrawShader_.Bind();
@@ -211,13 +211,13 @@ void HelloFrustumProgram::Render()
             if (chunkEndIndex > chunkBeginIndex)
             {
                 const size_t chunkSize = chunkEndIndex - chunkBeginIndex;
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
                 EASY_BLOCK("Set VBO Model Matrices");
 #endif
                 glBindBuffer(GL_ARRAY_BUFFER, instanceVBO_);
                 glBufferData(GL_ARRAY_BUFFER, sizeof(Vec3f) * chunkSize, &asteroidCulledPositions_[chunkBeginIndex], GL_DYNAMIC_DRAW);
                 glBindBuffer(GL_ARRAY_BUFFER, 0);
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
                 EASY_END_BLOCK
                     EASY_BLOCK("Draw Mesh");
 
@@ -268,7 +268,7 @@ void HelloFrustumProgram::OnEvent(const SDL_Event& event)
 
 void HelloFrustumProgram::CalculateForce(size_t begin, size_t end)
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
     EASY_BLOCK("Calculate Forces");
 #endif
     const size_t endCount = std::min(end, asteroidNmb_);
@@ -283,7 +283,7 @@ void HelloFrustumProgram::CalculateForce(size_t begin, size_t end)
 
 void HelloFrustumProgram::CalculateVelocity(size_t begin, size_t end)
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
     EASY_BLOCK("Calculate Velocities");
 #endif
     const size_t endCount = std::min(end, asteroidNmb_);
@@ -309,7 +309,7 @@ void HelloFrustumProgram::CalculatePositions(size_t begin, size_t end)
 
 void HelloFrustumProgram::Culling(size_t begin, size_t end)
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
     EASY_BLOCK("Culling");
 #endif
     const auto* model = modelManager_.GetModel(modelId_);

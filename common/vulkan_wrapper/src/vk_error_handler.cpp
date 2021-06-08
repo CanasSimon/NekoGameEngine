@@ -8,8 +8,8 @@ namespace neko::vk
 void CheckVkError(VkResult err, const char* msg, const char* file, int line)
 {
 	std::string log;
-	if (err >= 0 || err == VK_ERROR_OUT_OF_DATE_KHR) log += "[Info] ";
-	else log += "[Error] ";
+	bool isError = false;
+	if (err <= 0 || err != VK_ERROR_OUT_OF_DATE_KHR) isError = true;
 	switch (err)
 	{
 		case VK_SUCCESS: return;
@@ -32,6 +32,7 @@ void CheckVkError(VkResult err, const char* msg, const char* file, int line)
 		case VK_ERROR_NATIVE_WINDOW_IN_USE_KHR: log += "VK Native Window in Use KHR"; break;
 		case VK_ERROR_OUT_OF_DATE_KHR: log += "VK Out of Date KHR"; break;
 		case VK_ERROR_INCOMPATIBLE_DISPLAY_KHR: log += "VK Incompatible Display KHR"; break;
+        case VK_ERROR_INCOMPATIBLE_VERSION_KHR: log += "VK Incompatible Version KHR"; break;
 
 		case VK_ERROR_LAYER_NOT_PRESENT: log += "VK Layer Not Present"; break;
 		case VK_ERROR_EXTENSION_NOT_PRESENT: log += "VK Extension Not Present"; break;
@@ -70,7 +71,7 @@ void CheckVkError(VkResult err, const char* msg, const char* file, int line)
 		case VK_ERROR_UNKNOWN: log += "VK Unknown"; break;
 	}
 
-	if (err >= 0 || err == VK_ERROR_OUT_OF_DATE_KHR) logDebug(log);
+	if (err >= 0 || err == VK_ERROR_OUT_OF_DATE_KHR) isError ? LogError(log) : LogDebug(log);
 	else neko_assert(false, fmt::format("{}: {} | At line {} in {}", log, msg, line, file));
 }
 #ifdef NEKO_KTX
@@ -100,7 +101,7 @@ void PrintKtxError(ktx_error_code_e result, const char* file, int line)
 		default: return;
 	}
 
-	logDebug(fmt::format("{} | At line {} in {}", log, line, file));
+	LogError(fmt::format("{} | At line {} in {}", log, line, file));
 }
 #endif
 }    // namespace neko::vk

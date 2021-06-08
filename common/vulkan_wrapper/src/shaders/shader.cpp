@@ -147,7 +147,7 @@ VkShaderStageFlagBits Shader::GetShaderStage(const std::string_view& filename)
 	if (fileExt == ".tese") return VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
 	if (fileExt == ".tesc") return VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
 
-	logDebug(fileExt + " is not a valid shader extension!");
+	LogDebug(fileExt + " is not a valid shader extension!");
 	return VK_SHADER_STAGE_ALL;
 }
 
@@ -345,7 +345,7 @@ ordered_json Shader::ToJson() const
 			case VK_SHADER_STAGE_COMPUTE_BIT: shaderJson["comp"] = stagePath; break;
 			case VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT: shaderJson["tesc"] = stagePath; break;
 			case VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT: shaderJson["tese"] = stagePath; break;
-			default: logDebug(stagePath + " isn't a valid shader stage!");
+			default: LogDebug(stagePath + " isn't a valid shader stage!");
 		}
 	}
 

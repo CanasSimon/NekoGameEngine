@@ -66,7 +66,7 @@ public:
 
 	void HasSucceed() const
 	{
-		logDebug("Test without check");
+		LogDebug("Test without check");
 		//EXPECT_TRUE(testSuccess_);
 	}
 

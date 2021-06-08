@@ -26,7 +26,7 @@
 
 #include <utility>
 
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 #include <easy/profiler.h>
 #endif
 
@@ -59,7 +59,7 @@ Job& Job::operator=(Job&& job) noexcept
 
 void Job::AddDependency(const Job* dependentJob)
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("Jobsystem Add Dependency");
 #endif
 	// Be sure to not create a cycle of dependencies which would deadlock the thread
@@ -254,7 +254,7 @@ void JobSystem::Work(JobQueue& jobQueue)
 					lock.lock();
 					if (jobQueue.jobs_.empty())
 					{
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 						EASY_BLOCK("Wait for Dependencies");
 #endif
 						jobQueue.cv_.wait_for(lock, std::chrono::microseconds(100));

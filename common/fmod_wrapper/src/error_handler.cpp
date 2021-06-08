@@ -265,7 +265,7 @@ void CheckFmodError(FMOD_RESULT err, const char* file, int line)
 			default:;
 		}
 
-		logError(fmt::format("{} | At line {} in file {}", msg, line, file));
+		LogError(fmt::format("{} | At line {} in file {}", msg, line, file));
 	}
 }
 }    // namespace neko::fmod

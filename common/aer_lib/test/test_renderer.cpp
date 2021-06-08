@@ -21,7 +21,7 @@
  Date : 22.01.2020
 ---------------------------------------------------------- */
 #include <gtest/gtest.h>
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
     #include "easy/profiler.h"
 #endif
 #include <aer\aer_engine.h>
@@ -50,7 +50,7 @@ public:
 
     void Init() override
     {
-    #ifdef EASY_PROFILE_USE
+    #ifdef NEKO_PROFILE
         EASY_BLOCK("Test Init", profiler::colors::Green);
     #endif
         const auto& config = neko::BasicEngine::GetInstance()->GetConfig();
@@ -98,7 +98,7 @@ public:
 
     void Update(seconds dt) override
     {
-    #ifdef EASY_PROFILE_USE
+    #ifdef NEKO_PROFILE
         EASY_BLOCK("Test Update", profiler::colors::Green);
     #endif
         cContainer_.transform3dManager.SetRelativePosition(testEntity_,
@@ -168,7 +168,7 @@ TEST(Renderer, Cube_Sphere)
     engine.RegisterOnDrawUi(testRenderer);
     engine.Init();
     engine.EngineLoop();
-    #ifdef EASY_PROFILE_USE
+    #ifdef NEKO_PROFILE
     profiler::dumpBlocksToFile("Renderer_Neko_Profile.prof");
     #endif
 }
@@ -187,7 +187,7 @@ public:
     void Init() override
     {
         gizmosRenderer_ = &GizmosLocator::get();
-    #ifdef EASY_PROFILE_USE
+    #ifdef NEKO_PROFILE
         EASY_BLOCK("Test Init", profiler::colors::Green);
     #endif
         const auto& config = neko::BasicEngine::GetInstance()->GetConfig();
@@ -200,7 +200,7 @@ public:
 
     void Update(seconds dt) override
     {
-    #ifdef EASY_PROFILE_USE
+    #ifdef NEKO_PROFILE
         EASY_BLOCK("Test Update", profiler::colors::Green);
     #endif
         const auto modelId = cContainer_.renderManager.GetComponent(testEntity_).modelId;
@@ -247,7 +247,7 @@ private:
 TEST(Renderer, NanosuitMesh)
 {
     //Deactive useless test
-    logDebug("Unactive useless test");
+    LogDebug("Unactive useless test");
     return;
     //Travis Fix because Windows can't open a window
     char* env = getenv("TRAVIS_DEACTIVATE_GUI");
@@ -274,7 +274,7 @@ TEST(Renderer, NanosuitMesh)
     engine.RegisterOnDrawUi(testRenderer);
     engine.Init();
     engine.EngineLoop();
-    logDebug("Test without check");
+    LogDebug("Test without check");
 
 }
 class TestProBuilder: public SystemInterface,
@@ -292,7 +292,7 @@ public:
     void Init() override
     {
         gizmosRenderer_ = &GizmosLocator::get();
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
         EASY_BLOCK("Test Init", profiler::colors::Green);
 #endif
         const auto& config = neko::BasicEngine::GetInstance()->GetConfig();
@@ -305,7 +305,7 @@ public:
 
     void Update(seconds dt) override
     {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
         EASY_BLOCK("Test Update", profiler::colors::Green);
 #endif
         const auto modelId = cContainer_.renderManager.GetComponent(testEntity_).modelId;
@@ -374,7 +374,7 @@ TEST(Renderer, ProBuilder) {
     engine.RegisterOnDrawUi(testRenderer);
     engine.Init();
     engine.EngineLoop();
-    logDebug("Test without check");
+    LogDebug("Test without check");
 
 }
 class TestLevelDesignRenderer : public SystemInterface,
@@ -392,7 +392,7 @@ public:
     void Init() override
     {
         gizmosRenderer_ = &GizmosLocator::get();
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
         EASY_BLOCK("Test Init", profiler::colors::Green);
 #endif
         const auto& config = neko::BasicEngine::GetInstance()->GetConfig();
@@ -406,7 +406,7 @@ public:
 
     void Update(seconds dt) override
     {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
         EASY_BLOCK("Test Update", profiler::colors::Green);
 #endif
         const auto modelId = cContainer_.renderManager.GetComponent(testEntity_).modelId;
@@ -451,7 +451,7 @@ private:
 };
 TEST(Renderer, LevelDesign) {
     //Deactive useless test
-    logDebug("Unactive useless test");
+    LogDebug("Unactive useless test");
     return;
     //Travis Fix because Windows can't open a window
     char* env = getenv("TRAVIS_DEACTIVATE_GUI");
@@ -477,7 +477,7 @@ TEST(Renderer, LevelDesign) {
     engine.RegisterOnDrawUi(testRenderer);
     engine.Init();
     engine.EngineLoop();
-    logDebug("Test without check");
+    LogDebug("Test without check");
 
 }
 }    // namespace neko::aer

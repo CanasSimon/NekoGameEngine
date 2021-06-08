@@ -43,7 +43,7 @@ void TextureLoader::LoadTexture()
 
 void TextureLoader::DecompressTexture()
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("Create KTX from memory");
 #endif
 

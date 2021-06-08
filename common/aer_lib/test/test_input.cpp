@@ -106,7 +106,7 @@ public:
 		sdlEvent.key.keysym.scancode = static_cast<SDL_Scancode>(key);
 		if (SDL_PushEvent(&sdlEvent) < 1)
 		{
-			logDebug("SDL_Init failed: " + std::string(SDL_GetError()));
+			LogDebug("SDL_Init failed: " + std::string(SDL_GetError()));
 		}
 	}
 
@@ -117,7 +117,7 @@ public:
 		sdlEvent.key.keysym.scancode = static_cast<SDL_Scancode>(key);
 		if (SDL_PushEvent(&sdlEvent) < 1)
 		{
-			logDebug("SDL_Init failed: " + std::string(SDL_GetError()));
+			LogDebug("SDL_Init failed: " + std::string(SDL_GetError()));
 		}
 	}
 
@@ -129,7 +129,7 @@ public:
 		sdlEvent.jbutton.which  = static_cast<SDL_JoystickID>(controllerId);
 		if (SDL_PushEvent(&sdlEvent) < 1)
 		{
-			logDebug("SDL_Init failed: " + std::string(SDL_GetError()));
+			LogDebug("SDL_Init failed: " + std::string(SDL_GetError()));
 		}
 	}
 
@@ -141,7 +141,7 @@ public:
 		sdlEvent.jbutton.which  = static_cast<SDL_JoystickID>(controllerId);
 		if (SDL_PushEvent(&sdlEvent) < 1)
 		{
-			logDebug("SDL_Init failed: " + std::string(SDL_GetError()));
+			LogDebug("SDL_Init failed: " + std::string(SDL_GetError()));
 		}
 	}
 
@@ -386,7 +386,7 @@ TEST(Input, TestInteractiveInput)
 	engine.Init();
 
 	engine.EngineLoop();
-    logDebug("Test without check");
+    LogDebug("Test without check");
 }
 }    // namespace neko::aer
 #endif

@@ -29,7 +29,7 @@
 
 #include "engine/log.h"
 
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 #include "easy/profiler.h"
 #endif
 
@@ -96,7 +96,7 @@ void IterateDirectory(const std::string_view dirname,
 	}
 	else
 	{
-		logDebug(fmt::format("[Error] Path: {}  is not a directory!", dirname));
+		LogError(fmt::format("Path: {} is not a directory!", dirname));
 	}
 }
 
@@ -117,7 +117,7 @@ std::string LoadBinaries(const std::string_view path)
 std::string GetRelativePath(const std::string_view path, const std::string_view relative)
 {
 	fs::path p = fs::path(path);
-	//logDebug(std::string("Relative path from: ") + path.data() + " to: " + relative.data());
+	//LogDebug(std::string("Relative path from: ") + path.data() + " to: " + relative.data());
 	return MakeGeneric(fs::relative(p, relative).string());
 }
 

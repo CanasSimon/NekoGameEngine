@@ -14,7 +14,7 @@ void PhysicalDevice::Init()
 #ifdef VALIDATION_LAYERS
 	std::ostringstream oss1;
 	oss1 << "Found " << physDeviceCount << " GPUs:\n";
-	logDebug(oss1.str());
+	LogDebug(oss1.str());
 #endif
 
 	std::vector<VkPhysicalDevice> physDevices(physDeviceCount);
@@ -29,7 +29,7 @@ void PhysicalDevice::Init()
 #ifdef VALIDATION_LAYERS
 		std::ostringstream oss2;
 		oss2 << "Testing if '" << deviceProperties.deviceName << "' is a suitable GPU\n";
-		logDebug(oss2.str());
+		LogDebug(oss2.str());
 #endif
 
 		gpu_ = gpu;
@@ -39,7 +39,7 @@ void PhysicalDevice::Init()
 #ifdef VALIDATION_LAYERS
 			std::ostringstream oss3;
 			oss3 << "'" << deviceProperties.deviceName << "' is a suitable GPU\n";
-			logDebug(oss3.str());
+			LogDebug(oss3.str());
 #endif
 			break;
 		}
@@ -54,7 +54,7 @@ void PhysicalDevice::Init()
 #ifdef VALIDATION_LAYERS
 	std::ostringstream oss4;
 	oss4 << "Picked '" << deviceProperties.deviceName << "' as the physical device";
-	logDebug(oss4.str());
+	LogDebug(oss4.str());
 #endif
 
 	// Find the number queues this device supports

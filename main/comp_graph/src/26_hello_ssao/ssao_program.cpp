@@ -24,14 +24,14 @@
 
 #include "26_hello_ssao/ssao_program.h"
 #include "imgui.h"
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 #include "easy/profiler.h"
 #endif
 namespace neko
 {
 void HelloSsaoProgram::Init()
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
     EASY_BLOCK("Init SSAO Program");
 #endif
     const auto& config = BasicEngine::GetInstance()->GetConfig();
@@ -144,7 +144,7 @@ void HelloSsaoProgram::Render()
         return;
     }
     std::lock_guard<std::mutex> lock(updateMutex_);
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
     EASY_BLOCK("Render SSAO Program");
 #endif
     if (flags_ & RESIZE_SCREEN)
@@ -157,7 +157,7 @@ void HelloSsaoProgram::Render()
     const auto projection = camera_.GenerateProjectionMatrix();
 
     // 1. geometry pass: render scene's geometry/color data into gbuffer
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
     EASY_BLOCK("Geometry Pass");
 #endif
     glBindFramebuffer(GL_FRAMEBUFFER, gBuffer_);
@@ -169,7 +169,7 @@ void HelloSsaoProgram::Render()
     RenderScene(ssaoGeometryShader_);
 
     // 2. generate SSAO texture
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
     EASY_END_BLOCK;
     EASY_BLOCK("Generate SSAO Texture");
 #endif
@@ -191,7 +191,7 @@ void HelloSsaoProgram::Render()
     screenPlane_.Draw();
 
     // 3. blur SSAO texture to remove noise
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
     EASY_END_BLOCK;
     EASY_BLOCK("Blur SSAO Texture");
 #endif
@@ -203,7 +203,7 @@ void HelloSsaoProgram::Render()
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     // 4. lighting pass: traditional deferred Blinn-Phong lighting with added screen-space ambient occlusion
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
     EASY_END_BLOCK;
     EASY_BLOCK("Lighting pass");
 #endif

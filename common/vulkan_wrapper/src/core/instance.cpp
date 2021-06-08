@@ -54,11 +54,11 @@ void Instance::Init()
 #endif
 
 	//Create Vulkan Instance
-	logDebug("Initializing Vulkan instance");
+	LogDebug("Initializing Vulkan instance");
 	const VkResult res = vkCreateInstance(&createInfo, nullptr, &instance_);
 	switch (res)
 	{
-		case VK_SUCCESS: logDebug("Successfully created Vulkan instance\n"); break;
+		case VK_SUCCESS: LogDebug("Successfully created Vulkan instance\n"); break;
 		case VK_ERROR_INCOMPATIBLE_DRIVER: vkCheckError(res, "Cannot find a compatible Vulkan ICD");
 		default: vkCheckError(res, "Unable to create Vulkan instance");
 	}
@@ -136,7 +136,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(
 	{
 		std::ostringstream oss;
 		oss << "Validation layer: " << pCallbackData->pMessage << '\n';
-		logDebug(oss.str());
+		LogDebug(oss.str());
 	}
 
 	return VK_FALSE;

@@ -21,7 +21,7 @@
  Date : 01.03.2021
 ---------------------------------------------------------- */
 #include <gtest/gtest.h>
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 #include "easy/profiler.h"
 #endif
 
@@ -46,7 +46,7 @@ namespace neko::aer {
 
         void Init() override
         {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
             EASY_BLOCK("Test Init", profiler::colors::Green);
 #endif
             Camera3D* camera = GizmosLocator::get().GetCamera();
@@ -63,7 +63,7 @@ namespace neko::aer {
 
         void Update(seconds dt) override
         {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
             EASY_BLOCK("Test Update", profiler::colors::Green);
 #endif
             updateCount_ += dt.count();

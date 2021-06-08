@@ -5,13 +5,13 @@
 #include "utils/file_utility.h"
 #include "utils/imgui_utility.h"
 
-#include "aer/log.h"
+#include "engine/log.h"
 
 #ifdef NEKO_VULKAN
 #include "vk/vk_resources.h"
 #endif
 
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 #include "easy/profiler.h"
 #endif
 
@@ -39,7 +39,7 @@ RenderManager::RenderManager(EntityManager& entityManager,
 
 void RenderManager::Init()
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
     EASY_BLOCK("RenderManager::Init", profiler::colors::Brown);
 #endif
 
@@ -58,14 +58,14 @@ void RenderManager::Init()
 
 void RenderManager::Update(seconds)
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
     EASY_BLOCK("RenderManager::Update", profiler::colors::Brown);
 #endif
 }
 
 void RenderManager::Render()
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
     EASY_BLOCK("RenderManager::Render", profiler::colors::Brown);
 #endif
 	const auto& entities =

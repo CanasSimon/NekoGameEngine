@@ -27,7 +27,7 @@
 #include "graphics/camera.h"
 #include "engine/engine.h"
 
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 #include "easy/profiler.h"
 #endif
 
@@ -80,7 +80,7 @@ void SpriteManager::Destroy()
 
 void SpriteManager::Render()
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
     EASY_BLOCK("Render Sprite Manager");
 #endif
     //TODO batch sprite with the same texture together

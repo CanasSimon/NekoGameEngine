@@ -18,7 +18,7 @@ EditorToolManager::EditorToolManager(AerEngine& engine)
 	const ModeEnum mode = engine_.GetMode();
 	if (mode == ModeEnum::EDITOR)
 	{
-		AddEditorTool<Logger>();
+		AddEditorTool<LoggerTool>();
 		AddEditorTool<Hierarchy>();
 		AddEditorTool<Inspector>();
 		AddEditorTool<SceneLoader>();

@@ -16,16 +16,16 @@ void TextureManager::Update(seconds)
 			switch (textureLoader.error_)
 			{
 				case TextureLoader::TextureLoaderError::ASSET_LOADING_ERROR:
-					logDebug(fmt::format(
-						"[Error] Could not load texture {} from disk", textureLoader.path_));
+					LogError(
+						fmt::format("Could not load texture {} from disk", textureLoader.path_));
 					break;
 				case TextureLoader::TextureLoaderError::DECOMPRESS_ERROR:
-					logDebug(fmt::format(
-						"[Error] Could not decompress texture {} from disk", textureLoader.path_));
+					LogError(fmt::format(
+						"Could not decompress texture {} from disk", textureLoader.path_));
 					break;
 				case TextureLoader::TextureLoaderError::UPLOAD_TO_GPU_ERROR:
-					logDebug(fmt::format(
-						"[Error] Could not upload texture {} from disk", textureLoader.path_));
+					LogError(
+						fmt::format("Could not upload texture {} from disk", textureLoader.path_));
 					break;
 				default: break;
 			}
@@ -63,7 +63,7 @@ ResourceHash TextureManager::AddTexture(std::string_view path, Texture::Flags fl
 	//const json metaJson = LoadJson(metaPath);
 	if (textureId == kInvalidTextureId)
 	{
-		logDebug("[Error] Invalid texture id on texture load");
+        LogError("Invalid texture id on texture load");
 		return textureId;
 	}
 

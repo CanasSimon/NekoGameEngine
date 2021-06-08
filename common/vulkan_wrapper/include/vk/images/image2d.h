@@ -59,11 +59,8 @@ public:
 		bool anisotropic                 = false,
 		bool mipmap                      = false);
 
-	Image2d& operator=(const Image2d& other) noexcept;
-
 	void Load();
 	void LoadStb();
-
 
 	void CreateFromStb(const neko::Image& image);
 

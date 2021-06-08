@@ -25,7 +25,7 @@
 #include "mathematics/transform.h"
 #include "utils/imgui_utility.h"
 
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 #include "easy/profiler.h"
 #endif
 
@@ -56,7 +56,7 @@ Transform2dManager::Transform2dManager(EntityManager& entityManager)
 
 void Transform2dManager::Update()
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("Update Transform");
 #endif
 	//dirtyManager_.UpdateDirtyEntities();
@@ -144,7 +144,7 @@ void Transform3dManager::Init() { RendererLocator::get().RegisterSyncBuffersFunc
 
 void Transform3dManager::Update()
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("Update Transform");
 #endif
 	dirtyManager_.UpdateDirtyEntities();

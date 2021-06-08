@@ -30,7 +30,7 @@
 #include "engine/engine.h"
 #include "engine/window.h"
 
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 #include "easy/profiler.h"
 #endif
 
@@ -40,7 +40,7 @@ Renderer::Renderer()
    : renderAllJob_(
 		 [this]
 		 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 			 EASY_BLOCK("Renderer Update");
 #endif
 			 auto* engine = BasicEngine::GetInstance();
@@ -63,7 +63,7 @@ void Renderer::Render(RenderCommandInterface* command) { nextCommandBuffer_.push
 
 void Renderer::RenderAll()
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("Render Commands");
 #endif
 	for (auto* renderCommand : currentCommandBuffer_) renderCommand->Render();
@@ -84,7 +84,7 @@ void Renderer::RegisterSyncBuffersFunction(SyncBuffersInterface* syncBuffersInte
 
 void Renderer::SyncBuffers()
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("Sync Renderer");
 #endif
 	std::swap(currentCommandBuffer_, nextCommandBuffer_);
@@ -94,7 +94,7 @@ void Renderer::SyncBuffers()
 
 void Renderer::PreRender()
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("Renderer Pre Render");
 #endif
 	using namespace std::chrono_literals;
@@ -134,7 +134,7 @@ void Renderer::PreRender()
 
 void Renderer::Destroy()
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("Closing Renderer");
 #endif
 

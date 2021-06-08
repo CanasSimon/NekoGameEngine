@@ -252,7 +252,7 @@ TEST(Engine, Gizmos)
 	Job initJob {[&textGizmos]() { textGizmos.InitRenderer(); }};
 	BasicEngine::GetInstance()->ScheduleJob(&initJob, JobThreadType::RENDER_THREAD);
 	engine.EngineLoop();
-    logDebug("Test without check");
+    LogDebug("Test without check");
 }
 }    // namespace neko
 #endif

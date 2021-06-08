@@ -10,10 +10,10 @@ void PhysicsSimulationEventCallback::onConstraintBreak(
     physx::PxU32 count) {
 
 #ifdef NDEBUG
-    logDebug("onConstraintBreak");
+    LogDebug("onConstraintBreak");
 #endif
 #ifdef _DEBUG
-    logDebug("onConstraintBreak");
+    LogDebug("onConstraintBreak");
 #endif
 
 }
@@ -22,14 +22,14 @@ void PhysicsSimulationEventCallback::onWake(
     physx::PxActor** actors,
     physx::PxU32 count)
 {
-    //logDebug("onWake");
+    //LogDebug("onWake");
 }
 
 void PhysicsSimulationEventCallback::onSleep(
     physx::PxActor** actors,
     physx::PxU32 count)
 {
-    //logDebug("onSleep");
+    //LogDebug("onSleep");
 }
 
 void PhysicsSimulationEventCallback::onContact(const physx::PxContactPairHeader& pairHeader,
@@ -41,19 +41,19 @@ void PhysicsSimulationEventCallback::onContact(const physx::PxContactPairHeader&
 		const physx::PxContactPair& cp = pairs[i];
 		if (cp.events & physx::PxPairFlag::eNOTIFY_TOUCH_FOUND)
 		{
-			//logDebug("onContactEnter");
+			//LogDebug("onContactEnter");
 			onCollisionEnterAction.Execute(pairHeader);
 		}
 
 		if (cp.events & physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS)
 		{
-			//logDebug("onContactStay");
+			//LogDebug("onContactStay");
 			onCollisionStayAction.Execute(pairHeader);
 		}
 
 		if (cp.events & physx::PxPairFlag::eNOTIFY_TOUCH_LOST)
 		{
-			//logDebug("onContactExit");
+			//LogDebug("onContactExit");
 			onCollisionExitAction.Execute(pairHeader);
 		}
 	}
@@ -63,12 +63,12 @@ void PhysicsSimulationEventCallback::onTrigger(physx::PxTriggerPair* pairs, phys
 {
 	if (pairs->status & physx::PxPairFlag::eNOTIFY_TOUCH_FOUND)
 	{
-		//logDebug("onTriggerEnter");
+		//LogDebug("onTriggerEnter");
 		onTriggerEnterAction.Execute(pairs);
 	}
 	if (pairs->status & physx::PxPairFlag::eNOTIFY_TOUCH_LOST)
 	{
-		//logDebug("onTriggerExit");
+		//LogDebug("onTriggerExit");
 		onTriggerExitAction.Execute(pairs);
 	}
 }
@@ -78,6 +78,6 @@ void PhysicsSimulationEventCallback::onAdvance(
     const physx::PxTransform* poseBuffer,
     const physx::PxU32 count)
 {
-    //logDebug("onAdvance");
+    //LogDebug("onAdvance");
 }
 }

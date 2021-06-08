@@ -24,7 +24,7 @@
 #include "25_hello_deferred/deferred_progam.h"
 #include "imgui.h"
 
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 #include "easy/profiler.h"
 #endif
 
@@ -158,7 +158,7 @@ void HelloDeferredProgram::Render()
 
     if(flags_ & FORWARD_RENDERING)
     {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
         EASY_BLOCK("Forward Rendering");
 #endif
         forwardShader_.Bind();
@@ -174,7 +174,7 @@ void HelloDeferredProgram::Render()
     }
     else
     {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
         EASY_BLOCK("Deferred Rendering");
 #endif
         //G-Buffer pass
@@ -264,7 +264,7 @@ void HelloDeferredProgram::CreateFramebuffer()
 
 void HelloDeferredProgram::RenderScene(const gl::Shader& shader)
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
     EASY_BLOCK("�Render Scene");
 #endif
     for(int x = -2; x < 3; x++)

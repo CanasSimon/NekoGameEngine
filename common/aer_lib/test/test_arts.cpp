@@ -21,7 +21,7 @@
  Date : 22.01.2020
 ---------------------------------------------------------- */
 #include <gtest/gtest.h>
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
     #include "easy/profiler.h"
 #endif
 
@@ -53,7 +53,7 @@ public:
 
     void Init() override
     {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
         EASY_BLOCK("Test Init", profiler::colors::Green);
 #endif
         const auto& config = neko::BasicEngine::GetInstance()->GetConfig();
@@ -186,7 +186,7 @@ public:
 
     void Update(seconds dt) override
     {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
         EASY_BLOCK("Test Update", profiler::colors::Green);
 #endif
         const auto& config = neko::BasicEngine::GetInstance()->GetConfig();
@@ -273,7 +273,7 @@ TEST(Arts, Ship)
     engine.RegisterOnDrawUi(testRenderer);
     engine.Init();
     engine.EngineLoop();
-    logDebug("Test without check");
+    LogDebug("Test without check");
 
 }
 #pragma endregion
@@ -292,7 +292,7 @@ public:
 
     void Init() override
     {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
         EASY_BLOCK("Test Init", profiler::colors::Green);
 #endif
         const auto& config = neko::BasicEngine::GetInstance()->GetConfig();
@@ -311,7 +311,7 @@ public:
 
     void Update(seconds dt) override
     {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
         EASY_BLOCK("Test Update", profiler::colors::Green);
 #endif
         const auto modelId = cContainer_.renderManager.GetComponent(testEntity_).modelId;
@@ -399,7 +399,7 @@ TEST(Arts, Block)
     engine.RegisterOnDrawUi(testRenderer);
     engine.Init();
     engine.EngineLoop();
-    logDebug("Test without check");
+    LogDebug("Test without check");
 
 }
 #pragma endregion 
@@ -418,7 +418,7 @@ public:
 
     void Init() override
     {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
         EASY_BLOCK("Test Init", profiler::colors::Green);
 #endif
         const auto& config = neko::BasicEngine::GetInstance()->GetConfig();
@@ -437,7 +437,7 @@ public:
 
     void Update(seconds dt) override
     {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
         EASY_BLOCK("Test Update", profiler::colors::Green);
 #endif
         const auto modelId = cContainer_.renderManager.GetComponent(testEntity_).modelId;
@@ -517,7 +517,7 @@ TEST(Arts, Totem)
     engine.RegisterOnDrawUi(testRenderer);
     engine.Init();
     engine.EngineLoop();
-    logDebug("Test without check");
+    LogDebug("Test without check");
 
 }
 #pragma endregion
@@ -532,7 +532,7 @@ public:
 
     void Init() override
     {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
         EASY_BLOCK("Test Init", profiler::colors::Green);
 #endif
         const Configuration config = BasicEngine::GetInstance()->GetConfig();
@@ -545,7 +545,7 @@ public:
 
     void Update(seconds dt) override
     {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
         EASY_BLOCK("Test Update", profiler::colors::Green);
 #endif
         updateCount_ += dt.count();
@@ -601,12 +601,12 @@ TEST(Arts, TestLevelDesignSceneViewer)
     engine.Init();
 
     engine.EngineLoop();
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
     profiler::dumpBlocksToFile("Scene_Neko_Profile.prof");
 #endif
 
     //testSceneImporteur.HasSucceed();
-    logDebug("Test without check");
+    LogDebug("Test without check");
 }
 #pragma endregion
 #pragma region Stb
@@ -624,7 +624,7 @@ public:
 
     void Init() override
     {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
         EASY_BLOCK("Test Init", profiler::colors::Green);
 #endif
         if (engine_.GetMode() != ModeEnum::TEST)
@@ -660,7 +660,7 @@ public:
 
     void Update(seconds dt) override
     {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
         EASY_BLOCK("Test Update", profiler::colors::Green);
 #endif
         const auto modelId = cContainer_.renderManager.GetComponent(testEntity_).modelId;
@@ -800,7 +800,7 @@ TEST(Arts, Stb)
     Job initJob{ [&testRenderer]() { testRenderer.InitRenderer(); } };
     BasicEngine::GetInstance()->ScheduleJob(&initJob, JobThreadType::RENDER_THREAD);
     engine.EngineLoop();
-    logDebug("Test without check");
+    LogDebug("Test without check");
 
 }
 #pragma endregion 
@@ -821,7 +821,7 @@ public:
 
     void Init() override
     {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
         EASY_BLOCK("Test Init", profiler::colors::Green);
 #endif
         const Configuration config = BasicEngine::GetInstance()->GetConfig();
@@ -834,7 +834,7 @@ public:
 
     void Update(seconds dt) override
     {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
         EASY_BLOCK("Test Update", profiler::colors::Green);
 #endif
         updateCount_ += dt.count();
@@ -896,12 +896,12 @@ TEST(Arts, TestLevelDesignSceneViewer)
     engine.Init();
 
     engine.EngineLoop();
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
     profiler::dumpBlocksToFile("Scene_Neko_Profile.prof");
 #endif
 
     //testSceneImporteur.HasSucceed();
-    logDebug("Test without check");
+    LogDebug("Test without check");
 }
 #pragma endregion
 }    // namespace neko::aer

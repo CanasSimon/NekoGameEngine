@@ -29,7 +29,7 @@
 #include "engine/engine.h"
 #include "engine/log.h"
 
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 #include "easy/profiler.h"
 #endif
 
@@ -37,7 +37,7 @@ namespace neko::sdl
 {
 void SdlWindow::Init()
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("InitSdlWindow");
 #endif
 	auto* engine = (SdlEngine*) BasicEngine::GetInstance();
@@ -77,14 +77,14 @@ void SdlWindow::Init()
 	// Check that everything worked out okay
 	if (window_ == nullptr)
 	{
-		logDebug("[Error] Unable to create window\n");
+		LogError("Unable to create window\n");
 		return;
 	}
 }
 
 void SdlWindow::InitImGui()
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("InitSdlImGui");
 #endif
 	// Setup Dear ImGui context
@@ -103,7 +103,7 @@ void SdlWindow::InitImGui()
 
 void SdlWindow::Destroy()
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("DestroySdlWindow");
 #endif
 	ImGui_ImplSDL2_Shutdown();

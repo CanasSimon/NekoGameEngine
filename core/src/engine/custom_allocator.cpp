@@ -30,7 +30,7 @@ namespace neko
 Allocator::Allocator(size_t size, void* start) : start_(start), size_(size)
 {
 #ifdef NEKO_ALLOCATOR_LOG
-    logDebug(fmt::format("[Allocator] Construct with {}B memory and start pointer {} with pointer {}",
+    LogDebug(fmt::format("[Allocator] Construct with {}B memory and start pointer {} with pointer {}",
 		size_,
 		reinterpret_cast<std::uintptr_t>(start),
 		reinterpret_cast<std::uintptr_t>(this)));
@@ -40,7 +40,7 @@ Allocator::Allocator(size_t size, void* start) : start_(start), size_(size)
 Allocator::Allocator(const Allocator& allocator)
 {
 #ifdef NEKO_ALLOCATOR_LOG
-    logDebug(fmt::format("[Allocator] Copy construct with {}B memory from pointer {} with pointer {}", size_,
+    LogDebug(fmt::format("[Allocator] Copy construct with {}B memory from pointer {} with pointer {}", size_,
 		reinterpret_cast<std::uintptr_t>(&allocator), reinterpret_cast<std::uintptr_t>(this)));
 #endif
     start_ = allocator.start_;
@@ -52,7 +52,7 @@ Allocator::Allocator(const Allocator& allocator)
 Allocator::~Allocator() noexcept
 {
 #ifdef NEKO_ALLOCATOR_LOG
-    logDebug(fmt::format("[Allocator] Destructing with {} allocations and {}B memory, with pointer {}",
+    LogDebug(fmt::format("[Allocator] Destructing with {} allocations and {}B memory, with pointer {}",
 		numAllocations_, usedMemory_, reinterpret_cast<std::uintptr_t>(this)));
 #endif
     //neko_assert(numAllocations_ == 0 && usedMemory_ == 0, "Allocator should be emptied before destructor");
@@ -61,7 +61,7 @@ Allocator::~Allocator() noexcept
 void Allocator::Destroy()
 {
 #ifdef NEKO_ALLOCATOR_LOG
-    logDebug(fmt::format("Destroying Allocator with {} allocations and {}B memory, with pointer {}",
+    LogDebug(fmt::format("Destroying Allocator with {} allocations and {}B memory, with pointer {}",
 		numAllocations_, usedMemory_, reinterpret_cast<std::uintptr_t>(this)));
 #endif
     neko_assert(numAllocations_ == 0 && usedMemory_ == 0, "Allocator should be emptied before destroy");
@@ -139,7 +139,7 @@ void StackAllocator::Deallocate(void* p)
 FreeListAllocator::~FreeListAllocator()
 {
 #ifdef NEKO_ALLOCATOR_LOG
-    logDebug(fmt::format("[FreeList Allocator] Destruction with {}B usedMemory, {} allocations",usedMemory_, numAllocations_));
+    LogDebug(fmt::format("[FreeList Allocator] Destruction with {}B usedMemory, {} allocations",usedMemory_, numAllocations_));
 #endif
     freeBlocks_ = nullptr;
 }
@@ -147,7 +147,7 @@ FreeListAllocator::~FreeListAllocator()
 void* FreeListAllocator::Allocate(size_t allocatedSize, size_t alignment)
 {
 #ifdef NEKO_ALLOCATOR_LOG
-    logDebug(fmt::format("[FreeList Allocator] Allocate {}B, with pointer {}", allocatedSize,
+    LogDebug(fmt::format("[FreeList Allocator] Allocate {}B, with pointer {}", allocatedSize,
 		reinterpret_cast<std::uintptr_t>(this)));
 #endif
     FreeBlock* prevFreeBlock = nullptr;
@@ -208,7 +208,7 @@ void* FreeListAllocator::Allocate(size_t allocatedSize, size_t alignment)
 void FreeListAllocator::Deallocate(void* p)
 {
 #ifdef NEKO_ALLOCATOR_LOG
-    logDebug("[FreeList Allocator] Deallocate");
+    LogDebug("[FreeList Allocator] Deallocate");
 #endif
     neko_assert(p != nullptr, "Free List cannot deallocate nullptr");
     AllocationHeader* header = reinterpret_cast<AllocationHeader*>(reinterpret_cast<std::uintptr_t>(p) - sizeof(AllocationHeader));
@@ -257,7 +257,7 @@ ProxyAllocator::ProxyAllocator(Allocator& allocator):
         Allocator(allocator.GetSize(), allocator.GetStart()), allocator_(allocator)
 {
 #ifdef NEKO_ALLOCATOR_LOG
-    logDebug(fmt::format("[Proxy Allocator] Construct with {}B memory from pointer {} with pointer {}",
+    LogDebug(fmt::format("[Proxy Allocator] Construct with {}B memory from pointer {} with pointer {}",
 		size_,
 		reinterpret_cast<std::uintptr_t>(&allocator),
 		reinterpret_cast<std::uintptr_t>(this)));
@@ -269,7 +269,7 @@ ProxyAllocator::ProxyAllocator(const ProxyAllocator& allocator) :
         allocator_(allocator.allocator_)
 {
 #ifdef NEKO_ALLOCATOR_LOG
-    logDebug(fmt::format("[Proxy Allocator] Copy construct size: {}B, start: {} from pointer {} with pointer {}",
+    LogDebug(fmt::format("[Proxy Allocator] Copy construct size: {}B, start: {} from pointer {} with pointer {}",
 		size_,
 		reinterpret_cast<std::uintptr_t>(start_),
 		reinterpret_cast<std::uintptr_t>(&allocator),
@@ -280,14 +280,14 @@ ProxyAllocator::ProxyAllocator(const ProxyAllocator& allocator) :
 ProxyAllocator::~ProxyAllocator()
 {
 #ifdef NEKO_ALLOCATOR_LOG
-    logDebug(fmt::format("[Proxy Allocator] Destruction with allocations nmb: {} and used memory {}", numAllocations_, usedMemory_));
+    LogDebug(fmt::format("[Proxy Allocator] Destruction with allocations nmb: {} and used memory {}", numAllocations_, usedMemory_));
 #endif
 }
 
 void* ProxyAllocator::Allocate(size_t allocatedSize, size_t alignment)
 {
 #ifdef NEKO_ALLOCATOR_LOG
-    logDebug(fmt::format("[Proxy Allocator] Allocate {}B with pointer {}", allocatedSize, reinterpret_cast<std::uintptr_t>(this)));
+    LogDebug(fmt::format("[Proxy Allocator] Allocate {}B with pointer {}", allocatedSize, reinterpret_cast<std::uintptr_t>(this)));
 #endif
     numAllocations_++;
     const size_t mem = allocator_.GetUsedMemory();
@@ -299,7 +299,7 @@ void* ProxyAllocator::Allocate(size_t allocatedSize, size_t alignment)
 void ProxyAllocator::Deallocate(void* p)
 {
 #ifdef NEKO_ALLOCATOR_LOG
-    logDebug("[Proxy Allocator] Deallocate");
+    LogDebug("[Proxy Allocator] Deallocate");
 #endif
     if (p == nullptr)
         return;

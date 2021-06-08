@@ -78,15 +78,15 @@ void ModelLoader::LoadModel()
 {
 	std::string war, err;
 	tinyobj::LoadObj(&attrib_, &shapes_, &materials_, &war, &err, path_.c_str(), directory_.c_str());
-	if (!war.empty()) logDebug(war);
-	if (!err.empty()) logDebug(err);
+	if (!war.empty()) LogDebug(war);
+	if (!err.empty()) LogDebug(err);
 
 	BasicEngine::GetInstance()->ScheduleJob(&processModelJob_, JobThreadType::OTHER_THREAD);
 }
 
 void ModelLoader::ProcessModel()
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("vk::Process Model");
 #endif
 	model_.meshes_.reserve(shapes_.size());
@@ -171,7 +171,7 @@ void ModelLoader::ProcessModel()
 		mesh.InitData(vertices, indices);
 	}
 
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_END_BLOCK
 #endif
 }
@@ -213,7 +213,7 @@ void ModelLoader::LoadMaterialTextures(const tinyobj::material_t& mat,
 				materialManager.GetDiffuseMaterial(mesh.materialId_).SetNormalId(textureId);
 				break;
 			case DiffuseMaterial::EMISSIVE: break;
-			default: logDebug("Unsupported texture type"); break;
+			default: LogDebug("Unsupported texture type"); break;
 		}
 	}
 }

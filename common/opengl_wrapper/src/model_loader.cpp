@@ -3,7 +3,7 @@
 #include "engine/engine.h"
 #include "graphics/graphics.h"
 
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 #include "easy/profiler.h"
 #endif
 
@@ -62,20 +62,20 @@ void ModelLoader::LoadModel()
 {
 	std::string war, err;
 	tinyobj::LoadObj(&attrib_, &shapes_, &materials_, &war, &err, path_.c_str(), directory_.c_str());
-	if (!war.empty()) logDebug(war);
-	if (!err.empty()) logDebug(err);
+	if (!war.empty()) LogDebug(war);
+	if (!err.empty()) LogDebug(err);
 
 	BasicEngine::GetInstance()->ScheduleJob(&processModelJob_, JobThreadType::OTHER_THREAD);
 }
 
 void ModelLoader::ProcessModel()
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("Process Shapes");
 #endif
 	model_.meshes_.reserve(shapes_.size());
 	for (const auto& shape : shapes_) ProcessShape(shape);
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_END_BLOCK;
 #endif
 
@@ -194,7 +194,7 @@ void ModelLoader::LoadMaterialTextures(const tinyobj::material_t& mat,
 
 void ModelLoader::UploadMeshesToGl()
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("Upload Meshes to GPU");
 #endif
 
@@ -208,7 +208,7 @@ void ModelLoader::UploadMeshesToGl()
 	for (auto& mesh : model_.meshes_) mesh.InitInstanced();
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_END_BLOCK;
 #endif
 }

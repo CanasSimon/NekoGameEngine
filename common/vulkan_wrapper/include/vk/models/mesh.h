@@ -39,7 +39,10 @@ class Mesh
 {
 public:
 	Mesh() = default;
-	Mesh(const std::vector<Vertex>& vertices, const std::vector<std::uint32_t>& indices = {});
+    virtual ~Mesh() = default;
+
+	explicit Mesh(
+		const std::vector<Vertex>& vertices, const std::vector<std::uint32_t>& indices = {});
 
 	virtual void Init();
 	void InitData(const std::vector<Vertex>& vertices, const std::vector<std::uint32_t>& indices);

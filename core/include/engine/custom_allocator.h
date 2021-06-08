@@ -321,7 +321,7 @@ public:
     [[nodiscard]] pointer allocate(size_type n)
     {
 #ifdef NEKO_ALLOCATOR_LOG
-        logDebug(fmt::format("[SL Allocator] Allocate {} objects", n));
+        LogDebug(fmt::format("[SL Allocator] Allocate {} objects", n));
 #endif
         return static_cast<T*>(Allocate(sizeof(T) * n, alignof(T)));
     }
@@ -330,7 +330,7 @@ public:
         if (p == nullptr || n == 0)
             return;
 #ifdef NEKO_ALLOCATOR_LOG
-        logDebug(fmt::format("[SL Allocator] Deallocate {}B with pointer {}", n, reinterpret_cast<std::uintptr_t>(p)));
+        LogDebug(fmt::format("[SL Allocator] Deallocate {}B with pointer {}", n, reinterpret_cast<std::uintptr_t>(p)));
 #endif
         Deallocate(p);
     }
@@ -359,7 +359,7 @@ StandardLibraryAllocator<T>::StandardLibraryAllocator(Allocator& allocator) :
         ProxyAllocator(allocator)
 {
 #ifdef NEKO_ALLOCATOR_LOG
-    logDebug(fmt::format("[SL Allocator] Construct with {}B memory with pointer {}", size_,
+    LogDebug(fmt::format("[SL Allocator] Construct with {}B memory with pointer {}", size_,
 		reinterpret_cast<std::uintptr_t>(this)));
 #endif
 
@@ -370,7 +370,7 @@ StandardLibraryAllocator<T>::StandardLibraryAllocator(const StandardLibraryAlloc
         ProxyAllocator(allocator.allocator_)
 {
 #ifdef NEKO_ALLOCATOR_LOG
-    logDebug(fmt::format("[SL Allocator] Copy construct with {}B memory with pointer {}", size_,
+    LogDebug(fmt::format("[SL Allocator] Copy construct with {}B memory with pointer {}", size_,
 		reinterpret_cast<std::uintptr_t>(this)));
 #endif
 
@@ -381,7 +381,7 @@ StandardLibraryAllocator<T>::StandardLibraryAllocator(StandardLibraryAllocator&&
         ProxyAllocator(allocator.allocator_)
 {
 #ifdef NEKO_ALLOCATOR_LOG
-    logDebug(fmt::format("[SL Allocator] Move construct with {}B memory with pointer {}", size_,
+    LogDebug(fmt::format("[SL Allocator] Move construct with {}B memory with pointer {}", size_,
 		reinterpret_cast<std::uintptr_t>(this)));
 #endif
 
@@ -393,7 +393,7 @@ StandardLibraryAllocator<T>::StandardLibraryAllocator(const StandardLibraryAlloc
         ProxyAllocator(allocator.allocator_)
 {
 #ifdef NEKO_ALLOCATOR_LOG
-    logDebug(fmt::format("[SL Allocator] Template Copy construct with {}B memory with pointer {}", size_,
+    LogDebug(fmt::format("[SL Allocator] Template Copy construct with {}B memory with pointer {}", size_,
 		reinterpret_cast<std::uintptr_t>(this)));
 #endif
 
@@ -403,7 +403,7 @@ template <typename T>
 StandardLibraryAllocator<T>::~StandardLibraryAllocator()
 {
 #ifdef NEKO_ALLOCATOR_LOG
-    logDebug(fmt::format("[SL Allocator] Destruction with {}B used memory {} allocations with pointer {}", usedMemory_,
+    LogDebug(fmt::format("[SL Allocator] Destruction with {}B used memory {} allocations with pointer {}", usedMemory_,
 		numAllocations_, reinterpret_cast<std::uintptr_t>(this)));
 #endif
 

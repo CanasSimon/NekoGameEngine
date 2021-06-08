@@ -327,12 +327,12 @@ struct Quaternion
 	{
 		if (lookAt.Magnitude() == 0 || upDirection.Magnitude() == 0)
 		{
-			logDebug("Look rotation viewing vector is zero");
+			LogDebug("Look rotation viewing vector is zero");
 			return Quaternion(0, 0, 0, 1);
 		}
 		if (Vec3f::Cross(lookAt, upDirection) == Vec3f::zero)
 		{
-			logDebug("LookRotation vectors are colinear");
+			LogDebug("LookRotation vectors are colinear");
 			return Quaternion(0, 0, 0, 1);
 		}
 

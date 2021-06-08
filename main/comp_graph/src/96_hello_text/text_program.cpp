@@ -44,13 +44,13 @@ void HelloTextProgram::Init()
 	// All functions return a value different than 0 whenever an error occurred
 	if (FT_Init_FreeType(&ft))
 	{
-		logDebug( "[Error] Freetype could not init FreeType Library");
+		LogError("Freetype could not init FreeType Library");
 		return;
 	}
 	const std::string font_name = config.dataRootPath+"font/8-bit-hud.ttf";
 	FT_Face face;
 	if (FT_New_Face(ft, font_name.c_str(), 0, &face)) {
-		logDebug("[Error] Freetype: Failed to load font");
+        LogError("Freetype: Failed to load font");
 		return;
 	}
     // set size to load glyphs as

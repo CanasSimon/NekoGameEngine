@@ -149,7 +149,7 @@ endif()
 
 # Enables Easy Profile
 if (Neko_Profile)
-    add_compile_definitions("EASY_PROFILE_USE=1")
+    add_compile_definitions("NEKO_PROFILE=1")
     add_subdirectory("${EXTERNAL_DIR}/easy_profiler")
 
     set_target_properties(easy_profiler PROPERTIES FOLDER Externals)

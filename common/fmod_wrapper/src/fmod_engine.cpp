@@ -72,7 +72,7 @@ void FmodEngine::LoadBank(std::string_view bankName, FMOD_STUDIO_LOAD_BANK_FLAGS
 	if (bank)
 	{
 		banks_[bankName.data()] = bank;
-		logDebug(fmt::format("The FMOD bank [{}] has successfully been loaded", bankName));
+		LogDebug(fmt::format("The FMOD bank [{}] has successfully been loaded", bankName));
 	}
 }
 
@@ -102,7 +102,7 @@ void FmodEngine::LoadEventNames()
 			eventNames_.push_back(name);
 		}
 
-		logDebug(
+		LogDebug(
 			fmt::format("{} events have been loaded from the FMOD bank [{}]", count, bank.first));
 		delete[] events;
 	}
@@ -111,7 +111,7 @@ void FmodEngine::LoadEventNames()
 		eventName = eventName.substr(7, eventName.size());
 	std::sort(eventNames_.begin(), eventNames_.end());
 
-	logDebug(fmt::format("{} total events have been loaded", eventNames_.size()));
+	LogDebug(fmt::format("{} total events have been loaded", eventNames_.size()));
 }
 // ----------
 

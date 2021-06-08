@@ -15,7 +15,7 @@ InputManager::InputManager() { InputLocator::provide(this); }
 void InputManager::Init()
 {
 	/* Print information about the joysticks */
-	logDebug("There are " + std::to_string(SDL_NumJoysticks()) + " joysticks attached");
+	LogDebug("There are " + std::to_string(SDL_NumJoysticks()) + " joysticks attached");
 	PrintAllJoystick();
 
 	if (SDL_NumJoysticks() > 0)
@@ -76,7 +76,7 @@ unsigned InputManager::FindControllerIndexFromId(const JoystickId controllerId) 
 
 	if (controllerInputIt >= controllerInputs_.end())
 	{
-		logDebug("Invalid controllerId : " + std::to_string(controllerId));
+		LogDebug("Invalid controllerId : " + std::to_string(controllerId));
 		return controllerInputs_.size();
 	}
 
@@ -103,7 +103,7 @@ unsigned InputManager::FindSwitchIndexFromId(const JoystickId switchJoyId) const
 		{ return switchInputs.switchJoyInstanceId == switchJoyId; });
 	if (switchInputIt >= switchInputs_.end())
 	{
-		logDebug("Invalid switchJoyInstanceId : " + std::to_string(switchJoyId));
+		LogDebug("Invalid switchJoyInstanceId : " + std::to_string(switchJoyId));
 		return switchInputs_.size();
 	}
 	const unsigned index = std::distance(switchInputs_.begin(), switchInputIt);
@@ -118,7 +118,7 @@ unsigned InputManager::FindSwitchIndexFromPlayerId(JoyPlayerId switchJoyId) cons
 		{ return switchInputs.switchJoyPlayerId == switchJoyId; });
 	if (switchInputIt >= switchInputs_.end())
 	{
-		logDebug("Invalid switchJoyPlayerId : " + std::to_string(switchJoyId));
+		LogDebug("Invalid switchJoyPlayerId : " + std::to_string(switchJoyId));
 		return switchInputs_.size();
 	}
 	const unsigned index = std::distance(switchInputs_.begin(), switchInputIt);
@@ -193,20 +193,20 @@ void InputManager::OnEvent(SDL_Event event)
 		case SDL_JOYDEVICEREMOVED:
 		case SDL_CONTROLLERDEVICEREMOVED:
 		{
-			logDebug("Joystick device  removed." +
+			LogDebug("Joystick device  removed." +
 					 std::to_string(static_cast<int>(event.cdevice.which)));
 			SDL_Joystick* joystick_ = SDL_JoystickFromInstanceID(event.cdevice.which);
 			if (joystick_ != nullptr)
 			{
-				logDebug("Our instance ID is" +
+				LogDebug("Our instance ID is" +
 						 std::to_string(static_cast<int>(SDL_JoystickInstanceID(joystick_))));
-				logDebug("There are " + std::to_string(SDL_NumJoysticks()) + " joysticks attached");
+				LogDebug("There are " + std::to_string(SDL_NumJoysticks()) + " joysticks attached");
 				SDL_JoystickClose(joystick_);
 				SDL_GameControllerClose(SDL_GameControllerFromInstanceID(event.cdevice.which));
 			}
 			else
 			{
-				logDebug("Joystick removed not found");
+				LogDebug("Joystick removed not found");
 			}
 			const unsigned controllerIndex = FindControllerIndexFromId(event.cdevice.which);
 			if (controllerIndex < controllerInputs_.size())
@@ -215,7 +215,7 @@ void InputManager::OnEvent(SDL_Event event)
 			}
 			else
 			{
-				logDebug(&"Controller removed out of range : Joystick "[event.cdevice.which]);
+				LogDebug(&"Controller removed out of range : Joystick "[event.cdevice.which]);
 			}
 
 			break;
@@ -226,14 +226,14 @@ void InputManager::OnEvent(SDL_Event event)
 			const int device        = event.jdevice.which;
 			SDL_Joystick* joystick_ = SDL_JoystickOpen(device);
 			SDL_GameControllerOpen(device);
-			logDebug("Joystick device added." +
+			LogDebug("Joystick device added." +
 					 std::to_string(static_cast<int>(SDL_JoystickInstanceID(joystick_))));
 			if (joystick_ != nullptr)
 			{
 				SDL_assert(
 					SDL_JoystickFromInstanceID(SDL_JoystickInstanceID(joystick_)) == joystick_);
 			}
-			logDebug("There are " + std::to_string(SDL_NumJoysticks()) + " joysticks attached");
+			LogDebug("There are " + std::to_string(SDL_NumJoysticks()) + " joysticks attached");
 			const unsigned controllerId    = SDL_JoystickInstanceID(joystick_);
 			const unsigned controllerIndex = FindControllerIndexFromId(controllerId);
 			if (controllerIndex >= controllerInputs_.size())
@@ -245,18 +245,18 @@ void InputManager::OnEvent(SDL_Event event)
 			}
 			else
 			{
-				logDebug(&"Controller already added : Joystick "[controllerId]);
+				LogDebug(&"Controller already added : Joystick "[controllerId]);
 			}
 			break;
 		}
 
 		case SDL_JOYBALLMOTION:
 		{
-			logDebug("Joystick " + std::to_string(event.jball.which) + " ball " +
+			LogDebug("Joystick " + std::to_string(event.jball.which) + " ball " +
 					 std::to_string(event.jball.ball) + " delta: (" +
 					 std::to_string(event.jball.xrel) + "," + std::to_string(event.jball.yrel) +
 					 ")");
-			logDebug("JoyBall not support");
+			LogDebug("JoyBall not support");
 
 			break;
 		}
@@ -271,7 +271,7 @@ void InputManager::OnEvent(SDL_Event event)
 			}
 			else
 			{
-				logDebug(&"JoyButton pressed down from unknown Joystick : Joystick "[event.cdevice
+				LogDebug(&"JoyButton pressed down from unknown Joystick : Joystick "[event.cdevice
 																						 .which]);
 			}
 			break;
@@ -287,7 +287,7 @@ void InputManager::OnEvent(SDL_Event event)
 			}
 			else
 			{
-				logDebug(
+				LogDebug(
 					&"JoyButton released up from unknow Joystick : Joystick "[event.cdevice.which]);
 			}
 			break;
@@ -308,7 +308,7 @@ void InputManager::OnEvent(SDL_Event event)
 			}
 			else
 			{
-				logDebug(&"JoyAxis from unknown Joystick : Joystick "[event.cdevice.which]);
+				LogDebug(&"JoyAxis from unknown Joystick : Joystick "[event.cdevice.which]);
 			}
 			break;
 		}
@@ -316,17 +316,17 @@ void InputManager::OnEvent(SDL_Event event)
 			/* Fall through to signal quit */
 		case SDL_FINGERDOWN:
 		{
-			logDebug("Finger down");
+			LogDebug("Finger down");
 			break;
 		}
 		case SDL_FINGERMOTION:
 		{
-			logDebug("Finger motion");
+			LogDebug("Finger motion");
 			break;
 		}
 		case SDL_FINGERUP:
 		{
-			logDebug("Finger up");
+			LogDebug("Finger up");
 			break;
 		}
 #pragma endregion
@@ -346,7 +346,7 @@ ButtonState InputManager::GetSwitchButtonState(
 	const unsigned switchIndex = FindSwitchIndexFromPlayerId(switchJoyId);
 	if (switchIndex >= switchInputs_.size())
 	{
-		logDebug("Unknown Joystick : " + std::to_string(switchJoyId));
+		LogDebug("Unknown Joystick : " + std::to_string(switchJoyId));
 		return ButtonState::NONE;
 	}
 	return switchInputs_[switchIndex].switchButtonStates[static_cast<size_t>(switchButton)];
@@ -357,7 +357,7 @@ float InputManager::GetSwitchAxis(JoyPlayerId switchJoyId, SwitchAxisType axis) 
 	const unsigned switchIndex = FindSwitchIndexFromPlayerId(switchJoyId);
 	if (switchIndex >= switchInputs_.size())
 	{
-		logDebug("Unknown Joystick : " + std::to_string(switchJoyId));
+		LogDebug("Unknown Joystick : " + std::to_string(switchJoyId));
 		return 0.0f;
 	}
 	return switchInputs_[switchIndex].switchAxis[static_cast<size_t>(axis)];
@@ -402,15 +402,14 @@ std::vector<JoyPlayerId> InputManager::GetSwitchJoyIdVector() const
 void InputManager::PrintJoystick(const int device)
 {
 	//Print info
-	logDebug("Joystick DeviceId: " + std::to_string(device));
-	logDebug("Controller : " + std::to_string(SDL_IsGameController(device)));
+	LogDebug("Joystick DeviceId: " + std::to_string(device));
+	LogDebug("Controller : " + std::to_string(SDL_IsGameController(device)));
 	const auto joystick = SDL_JoystickOpen(device);
-	if (joystick == nullptr) { logDebug("SDL_JoystickOpen " + std::to_string(device) + " failed"); }
+	if (joystick == nullptr) { LogDebug("SDL_JoystickOpen " + std::to_string(device) + " failed"); }
 	else
 	{
 		std::string type;
 
-		char guid[64];
 		switch (SDL_JoystickGetType(joystick))
 		{
 			case SDL_JOYSTICK_TYPE_GAMECONTROLLER: type = "Game Controller"; break;
@@ -425,17 +424,17 @@ void InputManager::PrintJoystick(const int device)
 			default: type = "Unknown"; break;
 		}
 
-		logDebug("Name: " + std::string(SDL_JoystickName(joystick)));
-		logDebug("Instance id: " + std::to_string(SDL_JoystickInstanceID(joystick)));
-		logDebug("Player id: " + std::to_string(SDL_JoystickGetPlayerIndex(joystick)));
+		LogDebug("Name: " + std::string(SDL_JoystickName(joystick)));
+		LogDebug("Instance id: " + std::to_string(SDL_JoystickInstanceID(joystick)));
+		LogDebug("Player id: " + std::to_string(SDL_JoystickGetPlayerIndex(joystick)));
 
-		logDebug("Power level: " +
+		LogDebug("Power level: " +
 				 std::to_string(static_cast<int>(SDL_JoystickCurrentPowerLevel(joystick))));
-		logDebug("Type: " + type);
-		logDebug("Axes: " + std::to_string(SDL_JoystickNumAxes(joystick)));
-		logDebug("Balls: " + std::to_string(SDL_JoystickNumBalls(joystick)));
-		logDebug("Hats: " + std::to_string(SDL_JoystickNumHats(joystick)));
-		logDebug("Buttons: " + std::to_string(SDL_JoystickNumButtons(joystick)));
+		LogDebug("Type: " + type);
+		LogDebug("Axes: " + std::to_string(SDL_JoystickNumAxes(joystick)));
+		LogDebug("Balls: " + std::to_string(SDL_JoystickNumBalls(joystick)));
+		LogDebug("Hats: " + std::to_string(SDL_JoystickNumHats(joystick)));
+		LogDebug("Buttons: " + std::to_string(SDL_JoystickNumButtons(joystick)));
 
 		SDL_JoystickClose(joystick);
 	}
@@ -443,14 +442,15 @@ void InputManager::PrintJoystick(const int device)
 
 void InputManager::PrintAllJoystick()
 {
-	logDebug("-----------Start Print All-----------");
+	LogDebug("-----------Start Print All-----------");
 	unsigned nbJoystick = SDL_NumJoysticks();
-	logDebug("Nb Joystick : " + std::to_string(nbJoystick));
-	for (unsigned deviceId = 0; deviceId < SDL_NumJoysticks(); ++deviceId)
+	LogDebug("Nb Joystick : " + std::to_string(nbJoystick));
+	for (int deviceId = 0; deviceId < SDL_NumJoysticks(); ++deviceId)
 	{
 		PrintJoystick(deviceId);
 	}
-	logDebug("-------------End Print All-----------");
+
+	LogDebug("-------------End Print All-----------");
 }
 
 std::string InputManager::PcInputsEnumToString(const KeyCodeType keyCode)

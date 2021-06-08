@@ -224,7 +224,7 @@ TEST(UIManager, TestWithEngine)
 
 	engine.EngineLoop();
 
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	profiler::dumpBlocksToFile("UiManager_Neko_Profile.prof");
 #endif
 }
@@ -555,7 +555,7 @@ TEST(UIManager, TestMenu)
 	engine.RegisterOnDrawUi(testUiMenu);
 
 	engine.EngineLoop();
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	profiler::dumpBlocksToFile("UiManager_Neko_Profile.prof");
 #endif
 }

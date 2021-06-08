@@ -33,7 +33,7 @@ std::vector<std::string> GetBankPaths()
 		return bankPaths;
 	}
 
-	logError("[Error] The FMOD banks folder doesn't exist!");
+    LogError("The FMOD banks folder doesn't exist!");
 	return {};
 }
 

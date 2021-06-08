@@ -15,10 +15,10 @@ VkEngine::VkEngine(const FilesystemInterface& filesystem, Configuration* config)
 
 void VkEngine::Init()
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("Init Sdl Engine");
 #endif
-	logDebug("Current path: " + GetCurrentPath());
+	LogDebug("Current path: " + GetCurrentPath());
 	jobSystem_.Init();
 
 	initAction_.Execute();

@@ -28,13 +28,13 @@
 
 #include <gtest/gtest.h>
 
-#include "aer/log.h"
+#include "engine/log.h"
 
 namespace neko
 {
 TEST(Logs, TestLogsBasic)
 {
-	LogManager logger;
+	Logger logger;
 
 	LogDebug(LogCategory::ENGINE, "Engine is running");
 	LogWarning("That feature isn't fully supported yet");
@@ -45,7 +45,7 @@ TEST(Logs, TestLogsBasic)
 
 TEST(Logs, TestLogsFromNewThread)
 {
-	LogManager logger;
+	Logger logger;
 
 	auto task(
 		[]()

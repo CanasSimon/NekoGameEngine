@@ -30,7 +30,7 @@
 #include "stb_image.h"
 #include "utils/file_utility.h"
 
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 #include "easy/profiler.h"
 #endif
 
@@ -68,7 +68,7 @@ void Image::Destroy()
 
 Image StbImageConvert(const BufferFile& imageFile, bool flipY, bool hdr)
 {
-#ifdef EASY_PROFILE_USE
+#ifdef NEKO_PROFILE
 	EASY_BLOCK("Convert Image");
 #endif
 	Image image;
