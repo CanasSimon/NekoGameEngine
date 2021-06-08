@@ -21,17 +21,18 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
  */
-
 #include "sdl_engine/sdl_window.h"
-#include <engine/log.h>
-#include <utils/service_locator.h>
-#include "engine/engine.h"
 
 #include "imgui.h"
 #include "imgui_impl_sdl.h"
+
+#include "engine/engine.h"
+#include "engine/log.h"
+
 #ifdef EASY_PROFILE_USE
 #include "easy/profiler.h"
 #endif
+
 namespace neko::sdl
 {
 void SdlWindow::Init()
@@ -44,7 +45,7 @@ void SdlWindow::Init()
 
 	const auto& config = BasicEngine::GetInstance()->GetConfig();
 	flags_             = SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI;
-#if defined(NEKO_GLES3) && !defined(NEKO_VULKAN)
+#if defined(NEKO_OPENGL) && !defined(NEKO_VULKAN)
 	flags_ |= SDL_WINDOW_OPENGL;
 #elif defined(NEKO_VULKAN)
 	flags_ |= SDL_WINDOW_VULKAN;
@@ -104,7 +105,6 @@ void SdlWindow::InitImGui()
 
 	// Setup Dear ImGui style
 	ImGui::StyleColorsDark();
-	ImGui_ImplSDL2_Init(window_, nullptr);
 }
 
 void SdlWindow::Destroy()

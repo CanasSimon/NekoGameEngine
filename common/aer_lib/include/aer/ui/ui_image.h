@@ -25,7 +25,7 @@
 
 #include "aer/ui/ui_element.h"
 
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 #include "gl/shader.h"
 #include "gl/shape.h"
 #include "gl/texture.h"
@@ -57,7 +57,7 @@ public:
 		std::uint8_t screenId                     = 0,
 		const Color4& color                       = Color::white);
 
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 	void Init(gl::TextureManager& textureManager);
 	void Draw(
 		gl::TextureManager& textureManager, uint8_t playerNmb, const gl::Shader& uiImageShader);
@@ -72,7 +72,7 @@ public:
      * \brief Change the texture of the image
      * \param texturePath TexturePath of the new texture
      */
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
     void ChangeTexture(gl::TextureManager& textureManager, const std::string& texturePath);
 #else
 	void ChangeTexture(const std::string& texturePath);
@@ -88,7 +88,7 @@ public:
 	void SetCropping(const Vec2f& slidingCrop) { slidingCrop_ = slidingCrop; }
 
 protected:
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 	void Draw() const;
 	void SetValues(Vec2f size, Vec2f offset);
 #endif
@@ -100,7 +100,7 @@ protected:
 
 	std::string texturePath_;
 
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 	gl::TextureId textureId_     = gl::INVALID_TEXTURE_ID;
     gl::TextureName textureName_ = gl::INVALID_TEXTURE_NAME;
 	gl::VertexArrayObject quad_;

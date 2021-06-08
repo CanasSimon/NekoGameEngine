@@ -26,8 +26,8 @@
 #include "engine/entity.h"
 #include "engine/transform.h"
 
-#ifdef NEKO_GLES3
-#include "gl/gles3_include.h"
+#ifdef NEKO_OPENGL
+#include "gl/gl_include.h"
 #include "gl/model.h"
 #include "gl/shader.h"
 #include "gl/shape.h"

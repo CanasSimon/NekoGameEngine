@@ -1,0 +1,26 @@
+{
+    "name": "neko-game-engine",
+    "version-string": "1.0",
+    "dependencies": [
+        "argh",
+        "assimp",
+        "glm",
+        "gli",
+        "gtest", {
+            "name": "sdl2",
+            "features": ["vulkan"]
+        },
+        "glew",
+        "freetype",
+        "fmt",
+        "nlohmann-json",
+        "physfs",
+        "physx",
+        "stb", {
+            "name": "imgui",
+            "features": ["docking-experimental", "sdl2-binding", "opengl3-glew-binding", "vulkan-binding"]
+        },
+        "units",
+        "valijson"
+    ]
+}

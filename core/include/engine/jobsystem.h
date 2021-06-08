@@ -22,82 +22,74 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
  */
-
-#include <functional>
-#include <thread>
-#include <future>
 #include <condition_variable>
-
+#include <functional>
+#include <future>
+#include <thread>
 #include <vector>
+
 #include "engine/system.h"
 
 namespace neko
 {
-
-enum class JobThreadType : int8_t
+enum class JobThreadType : std::int8_t
 {
-    MAIN_THREAD = -1,
-    RENDER_THREAD = 0,
-    RESOURCE_THREAD = 1,
-    OTHER_THREAD = 2
+	MAIN_THREAD     = -1,
+	RENDER_THREAD   = 0,
+	RESOURCE_THREAD = 1,
+	OTHER_THREAD    = 2
 };
 
 class Job
 {
 public:
-    enum class JobType
-    {
-        MANDATORY,
-        DEPENDABLE,
-        NICE_TO_HAVE
-    };
-    enum JobStatus : std::uint8_t
-    {
-        NONE = 0u,
-        STARTED = 1u << 0u,
-        DONE = 1u << 1u
-    };
-    Job():Job([]{}){};
-    explicit Job(std::function<void()> task);
-    virtual ~Job() = default;
-    Job(const Job&) = delete;
-    Job& operator=(const Job&) = delete;
+	enum JobStatus : std::uint8_t
+	{
+		NONE    = 0u,
+		STARTED = 1u << 0u,
+		DONE    = 1u << 1u
+	};
+
+	Job() : Job([] {}) {};
+	explicit Job(std::function<void()> task);
+	virtual ~Job() = default;
+
+	Job(const Job&) = delete;
     Job(Job&& job) noexcept;
-    Job& operator=(Job&& job) noexcept;
 
+	Job& operator=(const Job&) = delete;
+	Job& operator=(Job&& job) noexcept;
 
-    /**
-     * \brief Wait for the Job to be done,
-     * used when dependencies are not done
-     * useful when dependencies are on other threads
-     */
-    void Join() const;
-
-    /**
-     * \brief Execute is called by the JobSystem
-     */
-    void Execute();
-	/**
-	 *  \brief Check if all dependencies started
-	 *  used when we want to start the job to know if we should join or wait for other dependencies
-	 */
-    [[nodiscard]] bool CheckDependenciesStarted() const;
-    [[nodiscard]] bool IsDone() const;
-    [[nodiscard]] bool HasStarted() const;
     void AddDependency(const Job* dep);
 
-    std::function<void()> GetTask() const { return task_; }
-    void SetTask(std::function<void()> task) { task_ = std::move(task); }
+    /// Execute is called by the JobSystem
+    void Execute();
+
+    /// \brief Wait for the Job to be done, used when dependencies are not done
+    /// useful when dependencies are on other threads
+	void Join() const;
+
     virtual void Reset();
 
-protected:
-    std::vector<const Job*> dependencies_;
-    std::function<void()> task_;
-    mutable std::promise<void> promise_;
-    mutable std::shared_future<void> taskDoneFuture_;
-    mutable std::mutex statusLock_;
-    std::uint8_t status_= NONE;
+	/// Check if all dependencies started
+	/// used when we want to start the job to know if we should join or wait for other dependencies
+	[[nodiscard]] bool CheckDependenciesStarted() const;
 
+	std::function<void()> GetTask() const { return task_; }
+	void SetTask(std::function<void()> task) { task_ = std::move(task); }
+
+	[[nodiscard]] bool HasStarted() const;
+	[[nodiscard]] bool IsDone() const;
+
+protected:
+    std::function<void()> task_;
+	std::vector<const Job*> dependencies_;
+
+	mutable std::promise<void> promise_;
+	mutable std::shared_future<void> taskDoneFuture_;
+	mutable std::mutex statusLock_;
+
+	std::uint8_t status_ = NONE;
 };
 
 struct JobQueue
@@ -109,36 +101,36 @@ struct JobQueue
 
 class JobSystem : SystemInterface
 {
-    enum Status : std::uint8_t
-    {
-        NONE = 0u,
-        RUNNING = 1u
-    };
-
 public:
-    JobSystem();
-    ~JobSystem() override;
-    void ScheduleJob(Job* func, JobThreadType threadType);
-    void Init() override;
+    JobSystem() = default;
+    ~JobSystem() override = default;
 
-    void Update([[maybe_unused]]seconds dt) override{}
+	void Init() override;
+	void Update(seconds) override {}
+	void Destroy() override;
 
-    void Destroy() override;
+	void ScheduleJob(Job* func, JobThreadType threadType);
+
     [[nodiscard]] std::uint8_t GetWorkersNumber() const { return numberOfWorkers; }
+
 private:
 	void Work(JobQueue& jobQueue);
 
+    [[nodiscard]] std::uint8_t CountStartedWorkers() const;
+
     [[nodiscard]] bool IsRunning() const;
 
-    Status status_ = NONE;
-    JobQueue jobs_; // Managed via mutex. // TODO: replace with custom queue when those are implemented.
+    bool isRunning_ = false;
+
+    std::uint8_t workersStarted_ = 0;
+
+	std::uint8_t numberOfWorkers {};
+	std::vector<std::thread> workers_; // TODO: replace with fixed vector when those are implemented.
+
+	JobQueue jobs_; // Managed via mutex. // TODO: replace with custom queue when those are implemented.
     JobQueue renderJobs_; // Managed via mutex. // TODO: replace with custom queue when those are implemented.
     JobQueue resourceJobs_; // Managed via mutex. // TODO: replace with custom queue when those are implemented.
-    std::uint8_t workersStarted_ = 0;
-    [[nodiscard]] std::uint8_t CountStartedWorkers() const;
-    std::uint8_t numberOfWorkers;
-    std::vector<std::thread> workers_; // TODO: replace with fixed vector when those are implemented.
-    mutable std::mutex statusMutex_;
-};
 
-}
+	mutable std::mutex statusMutex_;
+};
+}    // namespace neko

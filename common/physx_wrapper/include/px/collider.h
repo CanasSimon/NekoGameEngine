@@ -29,7 +29,7 @@
 
 #include <engine/component.h>
 
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 #include "gl/model.h"
 #elif NEKO_VULKAN
 #include "vk/models/model_loader.h"
@@ -86,7 +86,7 @@ struct MeshColliderData : public ColliderData
 {
 public:
 	float size = 1.0f;
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 	gl::ModelId modelId = gl::INVALID_MODEL_ID;
 #elif NEKO_VULKAN
 	vk::ModelId modelId = vk::INVALID_MODEL_ID;

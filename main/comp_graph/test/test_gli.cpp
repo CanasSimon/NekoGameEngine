@@ -1,6 +1,8 @@
 #include <gli/gli.hpp>
-#include <gl/gles3_include.h>
+#include <gl/gl_include.h>
 #include <gtest/gtest.h>
+
+#include "mathematics/vector.h"
 
 GLuint CreateTexture(char const* Filename)
 {
@@ -19,11 +21,11 @@ GLuint CreateTexture(char const* Filename)
 	glTexParameteri(target, GL_TEXTURE_BASE_LEVEL, 0);
 	glTexParameteri(target, GL_TEXTURE_MAX_LEVEL, static_cast<GLint>(texture.levels() - 1));
 
-	glm::tvec3<GLsizei> extent{};
+    neko::Vec3GLi extent{};
 	glTexStorage2D(target, static_cast<GLint>(texture.levels()), format.Internal, extent.x, extent.y);
 	for (std::size_t level = 0; level < texture.levels(); ++level)
 	{
-		glm::tvec3<GLsizei> levelExtent(texture.extent(level));
+        neko::Vec3GLi levelExtent(texture.extent(level));
 		glCompressedTexSubImage2D(
 			target, static_cast<GLint>(level), 0, 0, levelExtent.x, levelExtent.y,
 			format.Internal, static_cast<GLsizei>(texture.size(level)), texture.data(0, 0, level));

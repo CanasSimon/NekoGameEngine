@@ -4,9 +4,9 @@ if (Neko_FMOD)
     list(APPEND aer_lib_libs fmod_wrapper)
 endif ()
 
-if (Neko_GLES3 AND NOT Neko_VULKAN)
-    list(APPEND aer_lib_libs gles3_wrapper)
-elseif (Neko_VULKAN)
+if (Neko_OpenGL AND NOT Neko_Vulkan)
+    list(APPEND aer_lib_libs opengl_wrapper)
+elseif (Neko_Vulkan)
     list(APPEND aer_lib_libs vulkan_wrapper)
 endif ()
 
@@ -18,7 +18,7 @@ target_include_directories(aer_lib PUBLIC "include/")
 set_target_properties (aer_lib PROPERTIES FOLDER Neko/Common)
 neko_lib_config(aer_lib)
 
-if(Aer_Test)
+if(Neko_Test)
     add_neko_test(aer_lib)
 endif()
 

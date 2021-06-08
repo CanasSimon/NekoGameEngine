@@ -8,7 +8,7 @@ namespace neko::aer
 {
 UiManager::UiManager(AerEngine& aerEngine)
    : aerEngine_(aerEngine)
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 	 ,
 	 fontManager_(aerEngine.GetFilesystem())
 #endif
@@ -20,7 +20,7 @@ void UiManager::Init()
 	uiImages_.reserve(MAX_UI_ELEMENTS);
 	uiTexts_.reserve(MAX_UI_ELEMENTS);
 
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 	const auto& config = aerEngine_.GetConfig();
 	preRender_         = Job {[this, config]()
         {
@@ -54,7 +54,7 @@ void UiManager::Update(seconds)
 
 void UiManager::Render(std::uint8_t playerNmb)
 {
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 	const auto& config = aerEngine_.GetConfig();
 	SetWindowSize(Vec2f(config.windowSize));
 	if (uiImageShader_.GetProgram() == 0) return;
@@ -104,7 +104,7 @@ void UiManager::Destroy()
 	uiImages_.clear();
 	uiTexts_.clear();
 
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 	uiImageShader_.Destroy();
 	fontManager_.Destroy();
 #endif

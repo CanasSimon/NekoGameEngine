@@ -9,7 +9,12 @@ void PhysicsSimulationEventCallback::onConstraintBreak(
     physx::PxConstraintInfo* constraints,
     physx::PxU32 count) {
 
-    //logDebug("onConstraintBreak");
+#ifdef NDEBUG
+    logDebug("onConstraintBreak");
+#endif
+#ifdef _DEBUG
+    logDebug("onConstraintBreak");
+#endif
 
 }
 

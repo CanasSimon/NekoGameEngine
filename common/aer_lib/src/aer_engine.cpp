@@ -10,8 +10,6 @@ AerEngine::AerEngine(const FilesystemInterface& filesystem, Configuration* confi
    : SdlEngine(filesystem, *config),
 	 mode_(mode),
 	 drawSystem_(*this),
-	 physicsEngine_(cContainer_.entityManager, cContainer_.transform3dManager),
-	 rContainer_(),
 	 cContainer_(*this, rContainer_, physicsEngine_),
 	 toolManager_(*this)
 {
@@ -50,7 +48,7 @@ void AerEngine::Init()
 #ifdef EASY_PROFILE_USE
 	EASY_BLOCK("AerEngine::Init");
 #endif
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 	SdlEngine::Init();
 #elif NEKO_VULKAN
 	jobSystem_.Init();
@@ -75,7 +73,7 @@ void AerEngine::GenerateUiFrame()
 	EASY_BLOCK("AerEngine::GenerateUiFrame");
 #endif
 
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 	drawImGuiAction_.Execute();
 #elif NEKO_VULKAN
 	if (ImGui::GetCurrentContext()) drawImGuiAction_.Execute();

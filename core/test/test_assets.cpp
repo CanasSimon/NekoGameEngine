@@ -21,14 +21,14 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-#include <iostream>
-#include <fstream>
-#include <xxhash.hpp>
-#include <sole.hpp>
-#include <gtest/gtest.h>
 #include <engine/filesystem.h>
-#include "utils/file_utility.h"
+#include <gtest/gtest.h>
+#include <fstream>
+#include <iostream>
+#include <mathematics/hash.h>
+#include <sole.hpp>
 #include "engine/engine.h"
+#include "utils/file_utility.h"
 
 TEST(Engine, TestUUIDToStringToUUID)
 {
@@ -51,21 +51,19 @@ TEST(Engine, TestAssetImport)
 		config.dataRootPath+"fake/path/file.png",
 		config.dataRootPath+"other/fake/path/file.png",
 	};
-	std::vector<xxh::hash_t<64>> fileHashes;
+
+	std::vector<neko::StringHash> fileHashes;
 	fileHashes.reserve(filenames.size());
 	for (auto& filename : filenames)
 	{
-		xxh::hash_state_t<64> hash_stream(0);
-		hash_stream.update(filename);
 		neko::BufferFile bufferFile = filesystem.LoadFile(filename);
-		if (bufferFile.dataBuffer != nullptr)
-		{
-			hash_stream.update(bufferFile.dataBuffer, bufferFile.dataLength);
-		}
+		if (bufferFile.dataBuffer)
+			fileHashes.push_back(
+				neko::HashString(reinterpret_cast<const char*>(bufferFile.dataBuffer)));
+
 		bufferFile.Destroy();
-		const xxh::hash_t<64> final_hash = hash_stream.digest();
-		fileHashes.push_back(final_hash);
 	}
+
 	EXPECT_NE(fileHashes[0], fileHashes[1]);
 	EXPECT_NE(fileHashes[1], fileHashes[2]);
 	EXPECT_NE(fileHashes[2], fileHashes[0]);

@@ -32,9 +32,9 @@
     #include "easy/profiler.h"
 #endif
 
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 	#include <engine/system.h>
-	#include <gl/gles3_window.h>
+	#include <gl/gl_window.h>
 	#include <gl/graphics.h>
 	#include "aer/aer_engine.h"
 	#include "aer/scene.h"
@@ -142,8 +142,8 @@ TEST(Scene, TestExampleSceneImporteur)
 	config.windowName   = "AerEditor";
 	config.windowSize   = Vec2u(1400, 900);
 
-	sdl::Gles3Window window;
-	gl::Gles3Renderer renderer;
+	sdl::GlWindow window;
+	gl::GlRenderer renderer;
 	Filesystem filesystem;
 	AerEngine engine(filesystem, &config, ModeEnum::EDITOR);
 
@@ -173,8 +173,8 @@ TEST(Scene, TestUnitySceneImporteur)
 	config.windowName   = "AerEditor";
 	config.windowSize   = Vec2u(1400, 900);
 
-	sdl::Gles3Window window;
-	gl::Gles3Renderer renderer;
+	sdl::GlWindow window;
+	gl::GlRenderer renderer;
 	Filesystem filesystem;
 	AerEngine engine(filesystem, &config, ModeEnum::EDITOR);
 
@@ -339,8 +339,8 @@ TEST(Scene, TestSceneExporteur)
 	config.windowName   = "AerEditor";
 	config.windowSize   = Vec2u(1400, 900);
 
-	sdl::Gles3Window window;
-	gl::Gles3Renderer renderer;
+	sdl::GlWindow window;
+	gl::GlRenderer renderer;
 	Filesystem filesystem;
 	AerEngine engine(filesystem, &config, ModeEnum::EDITOR);
 
@@ -422,8 +422,8 @@ TEST(Scene, TestUnitySceneView)
     config.windowName = "AerEditor";
     config.windowSize = Vec2u(1400, 900);
 
-    sdl::Gles3Window window;
-    gl::Gles3Renderer renderer;
+    sdl::GlWindow window;
+    gl::GlRenderer renderer;
     Filesystem filesystem;
     AerEngine engine(filesystem, &config, ModeEnum::EDITOR);
 

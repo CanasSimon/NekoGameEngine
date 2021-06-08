@@ -1,10 +1,10 @@
-if (Neko_GLES3)
+if (Neko_OpenGL)
     include_directories("include/")
 
     file(GLOB_RECURSE feature_dev_src include/*.h src/*.cpp)
 
     add_executable(feature_dev ${feature_dev_src})
-    target_link_libraries(feature_dev PUBLIC Neko_Core aer_lib sdl_engine gles3_wrapper PhysX)
+    target_link_libraries(feature_dev PUBLIC Neko_Core aer_lib sdl_engine opengl_wrapper PhysX)
     neko_bin_config(feature_dev)
     data_generate(feature_dev)
     set_target_properties(feature_dev PROPERTIES UNITY_BUILD ON)

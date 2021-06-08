@@ -29,8 +29,8 @@
 
 int main([[maybe_unused]]int argc, [[maybe_unused]]char** argv)
 {
-    neko::gl::Gles3Window window;
-    neko::gl::Gles3Renderer renderer;
+    neko::gl::GlWindow window;
+    neko::gl::GlRenderer renderer;
     neko::Filesystem filesystem;
     neko::CompGraphEngine engine{filesystem};
 

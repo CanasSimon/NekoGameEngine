@@ -1,13 +1,12 @@
 #include "aer/managers/render_manager.h"
 
-#include <core_pch.h>
-	
+#include "engine/engine.h"
 #include "engine/resource_locations.h"
+#include "graphics/camera.h"
 #include "utils/file_utility.h"
+#include "utils/imgui_utility.h"
 
 #include "aer/log.h"
-#include "engine/engine.h"
-#include "graphics/camera.h"
 
 #ifdef NEKO_VULKAN
 #include "vk/vk_resources.h"
@@ -20,7 +19,7 @@
 namespace neko::aer
 {
 RenderManager::RenderManager(EntityManager& entityManager,
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 	gl::ModelManager& modelManager,
 #else
 	vk::ModelManager& modelManager,
@@ -42,7 +41,7 @@ void RenderManager::Init()
     EASY_BLOCK("RenderManager::Init", profiler::colors::Brown);
 #endif
 
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 	preRender_ = Job {[this]()
 		{
 			shader_.LoadFromFile(
@@ -70,7 +69,7 @@ void RenderManager::Render()
 	const auto& entities =
 		entityManager_.get().FilterEntities(static_cast<EntityMask>(ComponentType::MODEL));
 
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	shader_.Bind();
@@ -141,7 +140,7 @@ void RenderManager::Render()
 
 void RenderManager::Destroy()
 {
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 	shader_.Destroy();
 #else
 	auto& cmdBuffers = vk::VkResources::Inst->modelCommandBuffers;
@@ -162,7 +161,7 @@ std::string_view RenderManager::GetModelPath(Entity entity)
 
 void RenderManager::SetModel(Entity entity, const std::string& modelPath)
 {
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 	gl::ModelId modelId = modelManager_.LoadModel(modelPath);
 
 	SetModel(entity, modelId);
@@ -173,7 +172,7 @@ void RenderManager::SetModel(Entity entity, const std::string& modelPath)
 #endif
 }
 
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 void RenderManager::SetModel(Entity entity, gl::ModelId modelId)
 {
 	DrawCmd drawCmd = GetComponent(entity);

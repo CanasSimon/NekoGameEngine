@@ -13,7 +13,7 @@ LightManager::LightManager(EntityManager& entityManager, Transform3dManager& tra
 	 transformManager_(transformManager)
 {}
 
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 void LightManager::SetShaderValues(gl::Shader& shader)
 {
 	// OpenGL Uniform Blocks are spaced by multiple of 16 bytes

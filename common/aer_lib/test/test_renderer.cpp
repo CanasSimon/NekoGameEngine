@@ -26,12 +26,12 @@
 #endif
 #include <aer\aer_engine.h>
 
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 #include "aer/aer_engine.h"
 #include "engine/engine.h"
 #include "engine/system.h"
 #include "engine/transform.h"
-#include "gl/gles3_window.h"
+#include "gl/gl_window.h"
 #include "gl/graphics.h"
 #include "gl/shader.h"
 #include "gl/shape.h"
@@ -155,8 +155,8 @@ TEST(Renderer, Cube_Sphere)
     config.windowName = "AerEditor";
     config.windowSize = Vec2u(1400, 900);
 
-    sdl::Gles3Window window;
-    gl::Gles3Renderer renderer;
+    sdl::GlWindow window;
+    gl::GlRenderer renderer;
     Filesystem filesystem;
     AerEngine engine(filesystem, &config, ModeEnum::EDITOR);
 
@@ -261,8 +261,8 @@ TEST(Renderer, NanosuitMesh)
     config.windowName = "AerEditor";
     config.windowSize = Vec2u(1400, 900);
 
-    sdl::Gles3Window window;
-    gl::Gles3Renderer renderer;
+    sdl::GlWindow window;
+    gl::GlRenderer renderer;
     Filesystem filesystem;
     AerEngine engine(filesystem, &config, ModeEnum::EDITOR);
 
@@ -362,8 +362,8 @@ TEST(Renderer, ProBuilder) {
     config.windowName = "AerEditor";
     config.windowSize = Vec2u(1400, 900);
 
-    sdl::Gles3Window window;
-    gl::Gles3Renderer renderer;
+    sdl::GlWindow window;
+    gl::GlRenderer renderer;
     Filesystem filesystem;
     AerEngine engine(filesystem, &config, ModeEnum::EDITOR);
 
@@ -465,8 +465,8 @@ TEST(Renderer, LevelDesign) {
     config.windowName = "AerEditor";
     config.windowSize = Vec2u(1400, 900);
 
-    sdl::Gles3Window window;
-    gl::Gles3Renderer renderer;
+    sdl::GlWindow window;
+    gl::GlRenderer renderer;
     Filesystem filesystem;
     AerEngine engine(filesystem, &config, ModeEnum::EDITOR);
 

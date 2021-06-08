@@ -1,4 +1,4 @@
-if (Neko_VULKAN)
+if (Neko_Vulkan)
     include_directories("include/")
 
     file(GLOB_RECURSE vk_engine_src include/*.h src/*.cpp)

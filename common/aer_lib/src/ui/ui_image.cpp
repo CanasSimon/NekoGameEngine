@@ -11,7 +11,7 @@ UiImage::UiImage(std::string_view texturePath,
 	: UiElement(position, anchor, color, screenId), size_(size), texturePath_(texturePath)
 {}
 
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 void UiImage::Init(gl::TextureManager& textureManager)
 {
 	textureId_ =
@@ -62,7 +62,7 @@ void UiImage::Draw(const Vec2u&) {}
 
 void UiImage::Destroy()
 {
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 	glDeleteVertexArrays(1, &quad_.VAO);
 
 	gl::DestroyTexture(textureName_);
@@ -70,7 +70,7 @@ void UiImage::Destroy()
 #endif
 }
 
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 void UiImage::Draw() const
 {
 	glBindVertexArray(quad_.VAO);
@@ -95,7 +95,7 @@ void UiImage::SetValues(const Vec2f size, const Vec2f offset)
 }
 #endif
 
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 void UiImage::ChangeTexture(gl::TextureManager& textureManager, const std::string& texturePath)
 {
     texturePath_ = texturePath;

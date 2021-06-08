@@ -32,7 +32,7 @@
 #include "px/filter_group.h"
 #include "px/physics_callbacks.h"
 
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 #include "gl/model_manager.h"
 #else
 #include "vk/models/model_manager.h"
@@ -116,7 +116,7 @@ protected:
 		const CapsuleColliderData& capsuleCollider);
 	static physx::PxShape* InitMeshCollider(const PhysicsEngine& physics,
 		physx::PxMaterial* material,
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 		const gl::Mesh& mesh,
 #else
 		const vk::Mesh& mesh,
@@ -231,7 +231,7 @@ protected:
 	PhysicsEngine& physicsEngine_;
 	aer::RenderManager& renderManager_;
 
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 	std::map<Entity, gl::ModelId> meshColliderToCreate_;
 #else
 	std::map<Entity, vk::ModelId> meshColliderToCreate_;

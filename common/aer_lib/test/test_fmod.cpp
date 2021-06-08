@@ -3,7 +3,7 @@
 #ifdef NEKO_FMOD
 #include "engine/resource_locations.h"
 
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 #include "gl/graphics.h"
 #else
 #include "vk/graphics.h"
@@ -121,9 +121,9 @@ TEST(Fmod, TestFmod)
 
 	Filesystem filesystem;
 	AerEngine engine(filesystem, &config, ModeEnum::EDITOR);
-#ifdef NEKO_GLES3
-	sdl::Gles3Window window;
-	gl::Gles3Renderer renderer;
+#ifdef NEKO_OPENGL
+	sdl::GlWindow window;
+	gl::GlRenderer renderer;
 #elif NEKO_VULKAN
 	sdl::VulkanWindow window;
 	vk::VkRenderer renderer(&window);

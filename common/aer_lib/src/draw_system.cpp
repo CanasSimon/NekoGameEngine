@@ -19,7 +19,7 @@ DrawSystem::DrawSystem(AerEngine& engine)
 	{
 		engine.RegisterSystem(camera_);
 
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 		gizmosRenderer_ = std::make_unique<GizmoRenderer>(&camera_.GetCamera(0));
 		engine.RegisterSystem(*gizmosRenderer_);
 #endif
@@ -43,7 +43,7 @@ void DrawSystem::Init()
 	camera_.SetCameras(camera);
 	CameraLocator::provide(&camera_.GetCamera(0));
 
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 	gizmosRenderer_->SetCamera(&camera_.GetCamera(0));
 
 	// Create Skybox
@@ -95,7 +95,7 @@ void DrawSystem::Render()
 	EASY_BLOCK("DrawSystem::Render");
 #endif
 
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 	gl::Shader& shader = cContainer_.renderManager.GetShader();
 	const Vec2i size   = Vec2i(BasicEngine::GetInstance()->GetConfig().windowSize);
 	switch (playerNum_)
@@ -196,7 +196,7 @@ void DrawSystem::Render()
 #endif
 }
 
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 void DrawSystem::RenderScene(const std::size_t playerNum)
 {
 #ifdef EASY_PROFILE_USE

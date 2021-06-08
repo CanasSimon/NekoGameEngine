@@ -26,7 +26,7 @@
 #include "aer/ui/ui_image.h"
 #include "aer/ui/ui_text.h"
 
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 #include "gl/font.h"
 #include "gl/shader.h"
 #endif
@@ -101,14 +101,14 @@ private:
 	Mat4f projection_;
 
 	//Font
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 	gl::FontManager fontManager_;
 #endif
 	FontId robotoId_                = INVALID_FONT_ID;
 	FontId droidSansId_             = INVALID_FONT_ID;
 
 	//UiImage
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 	gl::Shader uiImageShader_;
 #endif
 	std::vector<UiImage*> uiImages_ {};

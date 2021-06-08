@@ -1,5 +1,5 @@
 #pragma once
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 	#include "gl/shader.h"
 	#include "gl/shape.h"
 #endif
@@ -121,7 +121,7 @@ public:
 	Vec3f GetCameraPos() const override { return {}; }
 };
 
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 //-----------------------------------------------------------------------------
 // GizmoRenderer
 //-----------------------------------------------------------------------------

@@ -26,179 +26,92 @@
  Co-Author :
  Date : 22.11.2020
 ---------------------------------------------------------- */
-
-
-#include "filter_group.h"
 #include "PxPhysicsAPI.h"
-#include "raycast.h"
-#include "rigidbody.h"
+
 #include "engine/entity.h"
 #include "engine/transform.h"
 
-namespace neko::physics {
-//class PxAllocatorCallback
-//{
-//public:
-//    virtual ~PxAllocatorCallback() {}
-//    virtual void* allocate(size_t size, const char* typeName, const char* filename,
-//        int line) = 0;
-//    virtual void deallocate(void* ptr) = 0;
-//};
-//
-//class UserErrorCallback : public physx::PxErrorCallback
-//{
-//public:
-//    virtual void reportError(
-//        physx::PxErrorCode::Enum code, const char* message, const char* file,
-//        int line)
-//    {
-//        // error processing implementation
-//    }
-//};
+#include "px/filter_group.h"
+#include "px/raycast.h"
+#include "px/rigidbody.h"
 
-/**
- * \brief Use to init PhysX element and simulate 
- */
+namespace neko::physics
+{
+/// Wrapper around PhysX elements
 class PhysicsEngine : public neko::SystemInterface
 {
 public:
-    explicit PhysicsEngine(
-        EntityManager& entityManager,
-        Transform3dManager& transform3d);
-
-    void Init() override;
-
-    /**
-     * \brief Init the PxFoundation, PxPhysics and the PxScene
-     */
+    void Init() override {}
     void InitPhysics();
-
-    /**
-     * \brief Use to call FixedUpdate at fixed step
-     */
     void Update(seconds dt) override;
-
-    /**
-     * \brief Deconnect and release all physx stuff
-     */
     void Destroy() override;
 
-    physx::PxPhysics* GetPhysx() const;
+	/// Launch a raycast through the scene
+	/// \param origin Origin position of the ray
+	/// \param direction Vector of direction of the ray
+	/// \param maxDistance MaxDistance of the ray
+	/// \return the RaycastInfo with all raycast infos
+	[[nodiscard]] RaycastInfo Raycast(const Vec3f& origin,
+		const Vec3f& direction,
+		float maxDistance,
+		FilterGroup::Enum filterGroup = FilterGroup::EVERYTHING) const;
 
-    physx::PxScene* GetScene() const;
-
-    physx::PxCooking* GetCooking() const;
-
-    /**
-     * \brief Launch a raycast through the scene
-     * \param origin Origin position of the ray
-     * \param direction Vector of direction of the ray
-     * \param maxDistance MaxDistance of the ray
-     * \return the RaycastInfo with all raycast infos
-     */
-    const RaycastInfo Raycast(
-        const Vec3f& origin,
-        const Vec3f& direction,
-        float maxDistance,
-        FilterGroup::Enum filterGroup = FilterGroup::EVERYTHING) const;
-
-    /**
-     * \brief Register a class for the OnCollision event
-     */
+	/// Register an object for the OnCollision event
     void RegisterCollisionListener(OnCollisionInterface& collisionInterface);
 
-    /**
-     * \brief Register a class for the OnTrigger event
-     */
+    /// Register an object for the OnTrigger event
     void RegisterTriggerListener(OnTriggerInterface& triggerInterface);
 
-    /**
-     * \brief Register a class for the FixedUpdate event
-     */
+    /// Register an object for the FixedUpdate event
     void RegisterFixedUpdateListener(FixedUpdateInterface& fixedUpdateInterface);
 
-    /**
-     * \brief Start the physics simulation and fixed update event
-     */
-    void StartPhysic();
+    /// Start the physics simulation
+    void StartPhysic() { physicRunning_ = true; }
 
-    /**
-     * \brief Stop the physics simulation and fixed update event
-     */
-    void StopPhysic();
+    /// Stop the physics simulation
+    void StopPhysic() { physicRunning_ = false; }
 
-    /**
-     * \return if the physics simulation and fixed update event are running
-     */
-    bool IsPhysicRunning() const;
+    [[nodiscard]] physx::PxPhysics* GetPhysx() const { return physics_; }
+    [[nodiscard]] physx::PxScene* GetScene() const { return scene_; }
+    [[nodiscard]] physx::PxCooking* GetCooking() const { return cooking_; }
 
-    /**
-     * \return Reset the physics when a new scene is loaded
-     */
-    void ResetPhysics() const;
+    /// \return if the physics simulation is running
+    [[nodiscard]] bool IsPhysicRunning() const { return physicRunning_; }
 
 private:
+	/// Create the PxScene and set scene parameters
+	void CreateScene();
 
-    /**
-     * \brief Create the PxScene and set scene parameters
-     */
-    void CreateScene();
+	/// Check if the fixed step is done
+	bool Advance(physx::PxReal dt);
 
-    /**
-     * \brief Check if the fixed step is done
-     */
-    bool Advance(physx::PxReal dt);
+	/// Simulate the physic and call FixedUpdate Listener
+	void FixedUpdate(seconds dt);
 
-    /**
-     * \brief Simulate the physic and call FixedUpdate Listener
-     */
-    void FixedUpdate(seconds dt);
+	static physx::PxFilterFlags ContactReportFilterShader(
+		physx::PxFilterObjectAttributes attributes0,
+		physx::PxFilterData,
+		physx::PxFilterObjectAttributes attributes1,
+		physx::PxFilterData,
+		physx::PxPairFlags& pairFlags,
+		const void*,
+		physx::PxU32);
 
-    static physx::PxFilterFlags ContactReportFilterShader(
-        physx::PxFilterObjectAttributes attributes0,
-        physx::PxFilterData filterData0,
-        physx::PxFilterObjectAttributes attributes1,
-        physx::PxFilterData filterData1,
-        physx::PxPairFlags& pairFlags,
-        const void* constantBlock,
-        physx::PxU32 constantBlockSize);
+	physx::PxFoundation* foundation_              = nullptr;
+	physx::PxPhysics* physics_                    = nullptr;
+	physx::PxPvd* pvd_                            = nullptr;
+	physx::PxPvdTransport* transport_             = nullptr;
+	physx::PxCooking* cooking_                    = nullptr;
+	physx::PxDefaultCpuDispatcher* cpuDispatcher_ = nullptr;
+	physx::PxScene* scene_                        = nullptr;
 
-    physx::PxFoundation* foundation_ = nullptr;
-    physx::PxPhysics* physics_ = nullptr;
-    physx::PxPvd* pvd_ = nullptr;
-    physx::PxPvdTransport* transport_ = nullptr;
-    physx::PxCooking* cooking_ = nullptr;
-    physx::PxDefaultCpuDispatcher* cpuDispatcher_ = nullptr;
-    physx::PxScene* scene_ = nullptr;
+	float accumulator_ = 0.0f;
+    seconds stepSize_ = seconds(0.02f); // FixedStep duration
 
-    float accumulator_ = 0.0f;
-    /**
-     * \brief FixedStep duration
-     */
-    seconds stepSize_ = seconds(0.02f);
-
-    /**
-     * \brief if the physics must be stopped
-     */
-    bool physicsStopped_ = false;
-
-    /**
-     * \brief if the physics is running
-     */
     bool physicRunning_ = false;
 
     PhysicsSimulationEventCallback eventCallback_;
 
-    EntityManager& entityManager_;
-    neko::Transform3dManager& transform3d_;
-
-    Action<seconds> fixedUpdateAction_;
-    //To use if physics layer filtering
-    //std::unordered_map<physx::PxU32, physx::PxU32> mapFilter_ =
-    //{
-    //    {physx::PxU32(FilterGroup::GROUND), physx::PxU32(FilterGroup::SHIP | FilterGroup::WALL)},
-    //    {physx::PxU32(FilterGroup::SHIP), physx::PxU32(FilterGroup::LAYER4)}
-    //};
+	Action<seconds> fixedUpdateAction_;
 };
-
-}
+}    // namespace neko::physics

@@ -158,9 +158,7 @@ struct Obb2d
 			return true;
 		};
 
-		if (std::all_of(perpendicularAxis.cbegin(), perpendicularAxis.cend(), func)) return true;
-
-		return false;
+        return std::all_of(perpendicularAxis.cbegin(), perpendicularAxis.cend(), func);
 	}
 
 	/// \return the normal of the upper side

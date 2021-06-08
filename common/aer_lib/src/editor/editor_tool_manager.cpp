@@ -28,7 +28,7 @@ EditorToolManager::EditorToolManager(AerEngine& engine)
 
 void EditorToolManager::Init()
 {
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 	const float fontSizeInPixels = 16.0f;
 	const std::string path       = GetFontsFolderPath() + "droid_sans.ttf";
 	ImGui::GetIO().Fonts->AddFontFromFileTTF(path.c_str(), fontSizeInPixels);
@@ -184,8 +184,8 @@ void EditorToolManager::DrawImGui()
 		ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoBackground;
 
 	ImGuiViewport* viewport = ImGui::GetMainViewport();
-	ImGui::SetNextWindowPos(viewport->GetWorkPos());
-	ImGui::SetNextWindowSize(viewport->GetWorkSize());
+	ImGui::SetNextWindowPos(viewport->WorkPos);
+	ImGui::SetNextWindowSize(viewport->WorkSize);
 	ImGui::SetNextWindowViewport(viewport->ID);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
@@ -266,7 +266,7 @@ void EditorToolManager::DrawImGui()
 		if (!hasInit_)
 		{
 			const auto* winSettings = ImGui::FindOrCreateWindowSettings(id.c_str());
-			tool->isVisible         = winSettings->IsOpen;
+			//tool->isVisible         = winSettings->IsOpen;
 		}
 
 		if (!tool->isVisible) continue;

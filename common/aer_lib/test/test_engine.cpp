@@ -27,9 +27,9 @@
 ---------------------------------------------------------- */
 #include <gtest/gtest.h>
 
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 #include "gl/graphics.h"
-#include "gl/gles3_window.h"
+#include "gl/gl_window.h"
 #elif NEKO_VULKAN
 #include "vk/graphics.h"
 #include "vk/renderers/renderer_editor.h"
@@ -91,9 +91,9 @@ TEST(Engine, Test)
 
 	neko::Filesystem filesystem;
 	neko::aer::AerEngine engine(filesystem, &config, neko::aer::ModeEnum::TEST);
-#ifdef NEKO_GLES3
-	neko::sdl::Gles3Window window;
-	neko::gl::Gles3Renderer renderer;
+#ifdef NEKO_OPENGL
+	neko::sdl::GlWindow window;
+	neko::gl::GlRenderer renderer;
 #elif NEKO_VULKAN
 	neko::sdl::VulkanWindow window;
 	neko::vk::VkRenderer renderer(&window);
@@ -116,9 +116,9 @@ TEST(Engine, Editor)
 
 	neko::Filesystem filesystem;
 	neko::aer::AerEngine engine(filesystem, &config, neko::aer::ModeEnum::EDITOR);
-#ifdef NEKO_GLES3
-	neko::sdl::Gles3Window window;
-	neko::gl::Gles3Renderer renderer;
+#ifdef NEKO_OPENGL
+	neko::sdl::GlWindow window;
+	neko::gl::GlRenderer renderer;
 #elif NEKO_VULKAN
 	neko::sdl::VulkanWindow window;
 	neko::vk::VkRenderer renderer(&window);
@@ -142,9 +142,9 @@ TEST(Engine, Game)
 
 	neko::Filesystem filesystem;
 	neko::aer::AerEngine engine(filesystem, &config, neko::aer::ModeEnum::GAME);
-#ifdef NEKO_GLES3
-	neko::sdl::Gles3Window window;
-	neko::gl::Gles3Renderer renderer;
+#ifdef NEKO_OPENGL
+	neko::sdl::GlWindow window;
+	neko::gl::GlRenderer renderer;
 #elif NEKO_VULKAN
 	neko::sdl::VulkanWindow window;
 	neko::vk::VkRenderer renderer(&window);

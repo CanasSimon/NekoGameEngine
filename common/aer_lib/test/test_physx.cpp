@@ -34,8 +34,8 @@
 #include "aer/aer_engine.h"
 #include "aer/gizmos_renderer.h"
 
-#ifdef NEKO_GLES3
-#include "gl/gles3_window.h"
+#ifdef NEKO_OPENGL
+#include "gl/gl_window.h"
 #include "gl/graphics.h"
 #else
 #include "vk/graphics.h"
@@ -146,7 +146,7 @@ private:
 };
 #pragma endregion
 
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 #pragma region CubeFall
 class SceneCubeFall final : public SceneInterface
 {
@@ -321,8 +321,8 @@ TEST(PhysX, TestCubeFall)
 	config.windowName = "AerEditor";
 	config.windowSize = Vec2u(1400, 900);
 
-	sdl::Gles3Window window;
-	gl::Gles3Renderer renderer;
+	sdl::GlWindow window;
+	gl::GlRenderer renderer;
 	Filesystem filesystem;
 	aer::AerEngine engine(filesystem, &config, aer::ModeEnum::EDITOR);
 
@@ -563,8 +563,8 @@ TEST(PhysX, TestRotation)
 	config.windowName = "AerEditor";
 	config.windowSize = Vec2u(1400, 900);
 
-	sdl::Gles3Window window;
-	gl::Gles3Renderer renderer;
+	sdl::GlWindow window;
+	gl::GlRenderer renderer;
 	Filesystem filesystem;
 	aer::AerEngine engine(filesystem, &config, aer::ModeEnum::EDITOR);
 
@@ -758,8 +758,8 @@ TEST(PhysX, TestRaycast)
 	config.windowName = "AerEditor";
 	config.windowSize = Vec2u(1400, 900);
 
-	sdl::Gles3Window window;
-	gl::Gles3Renderer renderer;
+	sdl::GlWindow window;
+	gl::GlRenderer renderer;
 	Filesystem filesystem;
 	aer::AerEngine engine(filesystem, &config, aer::ModeEnum::EDITOR);
 
@@ -948,8 +948,8 @@ TEST(PhysX, TestTriggerCollision)
 	config.windowName = "AerEditor";
 	config.windowSize = Vec2u(1400, 900);
 
-	sdl::Gles3Window window;
-	gl::Gles3Renderer renderer;
+	sdl::GlWindow window;
+	gl::GlRenderer renderer;
 	Filesystem filesystem;
 	aer::AerEngine engine(filesystem, &config, aer::ModeEnum::EDITOR);
 
@@ -1046,8 +1046,8 @@ TEST(PhysX, TestMeshCollider)
 	config.windowName = "AerEditor";
 	config.windowSize = Vec2u(1400, 900);
 
-	sdl::Gles3Window window;
-	gl::Gles3Renderer renderer;
+	sdl::GlWindow window;
+	gl::GlRenderer renderer;
 	Filesystem filesystem;
 	aer::AerEngine engine(filesystem, &config, aer::ModeEnum::EDITOR);
 
@@ -1064,7 +1064,7 @@ TEST(PhysX, TestMeshCollider)
 }
 #pragma endregion
 #pragma region GroundMeshCollider
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 class SceneGroundMeshCollider final : public SceneInterface
 {
 public:
@@ -1113,7 +1113,7 @@ public:
 
 	void FixedUpdate(seconds dt) override
 	{
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 		if (gl::ModelManagerLocator::get().IsLoaded(
 				renderManager_->GetComponent(planeEntity_).modelId) &&
 			!entityManager_->HasComponent(planeEntity_, EntityMask(ComponentType::RIGID_STATIC)) &&
@@ -1163,9 +1163,9 @@ TEST(PhysX, TestGroundMeshCollider)
 
 	Filesystem filesystem;
 	aer::AerEngine engine(filesystem, &config, neko::aer::ModeEnum::EDITOR);
-#ifdef NEKO_GLES3
-	sdl::Gles3Window window;
-	gl::Gles3Renderer renderer;
+#ifdef NEKO_OPENGL
+	sdl::GlWindow window;
+	gl::GlRenderer renderer;
 #elif NEKO_VULKAN
 	sdl::VulkanWindow window;
 	vk::VkRenderer renderer(&window);
@@ -1294,9 +1294,9 @@ namespace aer
 
         neko::Filesystem filesystem;
         neko::aer::AerEngine engine(filesystem, &config, neko::aer::ModeEnum::EDITOR);
-    #ifdef NEKO_GLES3
-        neko::sdl::Gles3Window window;
-        neko::gl::Gles3Renderer renderer;
+    #ifdef NEKO_OPENGL
+        neko::sdl::GlWindow window;
+        neko::gl::GlRenderer renderer;
     #elif NEKO_VULKAN
 		    neko::sdl::VulkanWindow window;
 		    neko::vk::VkRenderer renderer(&window);
@@ -1342,9 +1342,9 @@ namespace aer
 
         neko::Filesystem filesystem;
         neko::aer::AerEngine engine(filesystem, &config, neko::aer::ModeEnum::EDITOR);
-    #ifdef NEKO_GLES3
-        neko::sdl::Gles3Window window;
-        neko::gl::Gles3Renderer renderer;
+    #ifdef NEKO_OPENGL
+        neko::sdl::GlWindow window;
+        neko::gl::GlRenderer renderer;
     #elif NEKO_VULKAN
 		    neko::sdl::VulkanWindow window;
 		    neko::vk::VkRenderer renderer(&window);
@@ -1390,9 +1390,9 @@ namespace aer
 
         neko::Filesystem filesystem;
         neko::aer::AerEngine engine(filesystem, &config, neko::aer::ModeEnum::EDITOR);
-    #ifdef NEKO_GLES3
-        neko::sdl::Gles3Window window;
-        neko::gl::Gles3Renderer renderer;
+    #ifdef NEKO_OPENGL
+        neko::sdl::GlWindow window;
+        neko::gl::GlRenderer renderer;
     #elif NEKO_VULKAN
 		    neko::sdl::VulkanWindow window;
 		    neko::vk::VkRenderer renderer(&window);

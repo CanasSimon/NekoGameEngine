@@ -27,11 +27,11 @@
 #endif
 
 #include "aer/gizmos_renderer.h"
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 #include "aer/aer_engine.h"
 #include "engine/engine.h"
 #include <engine/system.h>
-#include <gl/gles3_window.h>
+#include <gl/gl_window.h>
 #include <gl/graphics.h>
 
 namespace neko::aer {
@@ -77,8 +77,8 @@ namespace neko::aer {
         Configuration config;
         config.windowName = "AerEditor";
         config.windowSize = neko::Vec2u(1400, 900);
-        sdl::Gles3Window window;
-        gl::Gles3Renderer renderer;
+        sdl::GlWindow window;
+        gl::GlRenderer renderer;
         Filesystem filesystem;
         AerEngine engine(filesystem, &config, ModeEnum::EDITOR);
         engine.SetWindowAndRenderer(&window, &renderer);
@@ -142,8 +142,8 @@ namespace neko::aer {
         Configuration config;
         config.windowName = "AerEditor";
         config.windowSize = neko::Vec2u(1400, 900);
-        sdl::Gles3Window window;
-        gl::Gles3Renderer renderer;
+        sdl::GlWindow window;
+        gl::GlRenderer renderer;
         Filesystem filesystem;
         AerEngine engine(filesystem, &config, ModeEnum::EDITOR);
         engine.SetWindowAndRenderer(&window, &renderer);

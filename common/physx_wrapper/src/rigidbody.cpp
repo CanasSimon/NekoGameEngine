@@ -239,14 +239,14 @@ physx::PxShape* RigidActor::InitCapsuleShape(physx::PxPhysics* physics,
 
 physx::PxShape* RigidActor::InitMeshCollider(const PhysicsEngine& physics,
 	physx::PxMaterial* material,
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 	const gl::Mesh& mesh,
 #else
 	const vk::Mesh& mesh,
 #endif
 	const physx::PxMeshScale& scale)
 {
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 	std::vector<gl::Vertex> vertices   = mesh.GetVertices();
 	std::vector<std::uint32_t> indices = mesh.GetIndices();
 	std::vector<physx::PxVec3> pxVertices;
@@ -497,7 +497,7 @@ void RigidStatic::Init(const PhysicsEngine& physics,
 
 	if (rigidStatic.colliderType == ColliderType::MESH)
 	{
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 		const auto& modelManager = gl::ModelManagerLocator::get();
 		if (modelManager.IsLoaded(rigidStatic.meshColliderData.modelId))
 		{
@@ -664,7 +664,7 @@ void RigidStaticManager::FixedUpdate(seconds dt)
 
 	for (auto& toCreate : meshColliderToCreate_)
 	{
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 		if (gl::ModelManagerLocator::get().IsLoaded(toCreate.second))
 #else
 		if (vk::ModelManagerLocator::get().IsLoaded(toCreate.second))
@@ -750,7 +750,7 @@ void RigidStaticManager::AddMeshColliderStatic(Entity entity, std::string_view m
 	const std::string modelPath =
 		GetModelsFolderPath() + modelName.data() + "/" + modelName.data() + ".obj";
 
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 	gl::ModelId modelId = gl::ModelManagerLocator::get().LoadModel(modelPath);
 	if (gl::ModelManagerLocator::get().IsLoaded(modelId))
 #else

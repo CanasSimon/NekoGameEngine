@@ -1,0 +1,12 @@
+[submodule "externals/tracy"]
+	path = externals/tracy
+	url = https://github.com/wolfpld/tracy.git
+	branch = master
+[submodule "externals/benchmark"]
+	path = externals/benchmark
+	url = https://github.com/google/benchmark.git
+	branch = main
+[submodule "externals/easy_profiler"]
+	path = externals/easy_profiler
+	url = https://github.com/yse/easy_profiler.git
+	branch = develop

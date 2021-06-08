@@ -28,7 +28,7 @@
 #include "engine/assert.h"
 #include "sdl_engine/sdl_engine.h"
 
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 #include "gl/shader.h"
 #endif
 
@@ -95,7 +95,7 @@ public:
 	/// Creates the projection matrix for the specified camera
 	[[nodiscard]] virtual Mat4f GenerateProjectionMatrix(std::size_t) const = 0;
 
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 	virtual void Bind(std::size_t, gl::Shader&) = 0;
 #endif
 
@@ -145,7 +145,7 @@ public:
 	[[nodiscard]] Mat4f GenerateViewMatrix(std::size_t) const override { return {}; }
 	[[nodiscard]] Mat4f GenerateProjectionMatrix(std::size_t) const override { return {}; }
 
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 	void Bind(std::size_t, gl::Shader&) override {}
 #endif
 
@@ -183,7 +183,7 @@ public:
 	[[nodiscard]] Mat4f GenerateViewMatrix(std::size_t index) const override;
 	[[nodiscard]] Mat4f GenerateProjectionMatrix(std::size_t index) const override;
 
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 	void Bind(std::size_t index, gl::Shader& shader) override;
 #endif
 

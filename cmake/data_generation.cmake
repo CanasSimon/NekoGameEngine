@@ -7,7 +7,6 @@ file(GLOB_RECURSE JSON_VALIDATOR_FILES "${CMAKE_SOURCE_DIR}/scripts/validator/js
 source_group("Scripts"   FILES ${SCRIPT_FILES})
 source_group("Validator" FILES ${JSON_VALIDATOR_FILES})
 function(data_generate BINARY)
-    set(CMAKE_BUILD_TYPE Release)
     file(GLOB_RECURSE AER_FILES
             "${CMAKE_CURRENT_SOURCE_DIR}/data/*.aermat"
             "${CMAKE_CURRENT_SOURCE_DIR}/data/*.aerscene"
@@ -102,6 +101,7 @@ function(data_generate BINARY)
 
     add_custom_target(${data_generate_name} DEPENDS ${DATA_BINARY_FILES} ${DATA_FILES})
     add_dependencies(${BINARY} ${data_generate_name})
+    add_dependencies(${data_generate_name} GenerateDataTool)
 endfunction()
 
 if (MSVC)
@@ -119,19 +119,18 @@ IF(NOT GLSL_VALIDATOR_FOUND)
     message(FATAL_ERROR "Please install VulkanSDK and put it in path (current path: $ENV{VULKAN_SDK})")
 ENDIF()
 
+set(TOOLS_FOLDER ${CMAKE_SOURCE_DIR}/tools)
+if (WIN32)
+    set(TOOL_EXTENSION ".exe")
+endif()
+
 add_custom_target(GenerateDataTool)
-set_target_properties(GenerateDataTool PROPERTIES FOLDER __DO_THAT_FIRST_IN_RELEASE)
 add_custom_command(TARGET GenerateDataTool
         COMMAND ${CMAKE_COMMAND} -E env
-        BASISU_EXE=$<TARGET_FILE:basisu>
+        BASISU_EXE=${TOOLS_FOLDER}/basisu${TOOL_EXTENSION}
         GLSLANG_VALIDATOR_EXE=${GLSL_VALIDATOR}
-        IMAGE_FORMAT_EXE=$<TARGET_FILE:image_format>
+        IMAGE_FORMAT_EXE=${TOOLS_FOLDER}/image_format${TOOL_EXTENSION}
         SRC_FOLDER=${CMAKE_CURRENT_SOURCE_DIR}
-        VALIDATE_JSON_EXE=$<TARGET_FILE:validate_json>
-        VALIDATOR_FOLDER=${CMAKE_SOURCE_DIR}/validator/
+        VALIDATE_JSON_EXE=${TOOLS_FOLDER}/validate_json${TOOL_EXTENSION}
+        VALIDATOR_FOLDER=${CMAKE_SOURCE_DIR}/scripts/validator/json/
         "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/scripts/data_tool_env.py")
-
-if (Neko_KTX)
-    add_dependencies(GenerateDataTool basisu image_format)
-endif ()
-add_dependencies(GenerateDataTool validate_json)

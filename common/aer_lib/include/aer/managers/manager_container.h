@@ -1,7 +1,7 @@
 #pragma once
 #include "engine/transform.h"
 
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 #include "gl/model.h"
 #include "gl/texture.h"
 #elif NEKO_VULKAN
@@ -41,7 +41,7 @@ struct ResourceManagerContainer : public SystemInterface
 		modelManager.Destroy();
 	}
 
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 	gl::TextureManager textureManager;
 	gl::ModelManager modelManager;
 #else

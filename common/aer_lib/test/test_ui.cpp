@@ -26,7 +26,7 @@
 
 #include "aer/aer_engine.h"
 
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 #include "gl/graphics.h"
 #else
 #include "vk/graphics.h"
@@ -205,9 +205,9 @@ TEST(UIManager, TestWithEngine)
 
 	Filesystem filesystem;
 	AerEngine engine(filesystem, &config, ModeEnum::EDITOR);
-#ifdef NEKO_GLES3
-	sdl::Gles3Window window;
-	gl::Gles3Renderer renderer;
+#ifdef NEKO_OPENGL
+	sdl::GlWindow window;
+	gl::GlRenderer renderer;
 #elif NEKO_VULKAN
 	sdl::VulkanWindow window;
 	vk::VkRenderer renderer(&window);
@@ -537,9 +537,9 @@ TEST(UIManager, TestMenu)
 
 	Filesystem filesystem;
 	AerEngine engine(filesystem, &config, ModeEnum::EDITOR);
-#ifdef NEKO_GLES3
-	sdl::Gles3Window window;
-	gl::Gles3Renderer renderer;
+#ifdef NEKO_OPENGL
+	sdl::GlWindow window;
+	gl::GlRenderer renderer;
 #elif NEKO_VULKAN
 	sdl::VulkanWindow window;
 	vk::VkRenderer renderer(&window);

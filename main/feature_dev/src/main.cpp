@@ -26,7 +26,7 @@
  Date : 16.02.2021
 ---------------------------------------------------------- */
 #include "gl/graphics.h"
-#include "gl/gles3_window.h"
+#include "gl/gl_window.h"
 
 #include "dev/dev_engine.h"
 
@@ -36,8 +36,8 @@ int main(int, char**)
 	config.windowName   = "Feature Development Lab";
 	config.windowSize   = neko::Vec2u(1280, 720);
 
-	neko::sdl::Gles3Window window;
-	neko::gl::Gles3Renderer renderer;
+	neko::sdl::GlWindow window;
+	neko::gl::GlRenderer renderer;
 	neko::Filesystem filesystem;
 	neko::dev::DevEngine engine(filesystem, &config);
 

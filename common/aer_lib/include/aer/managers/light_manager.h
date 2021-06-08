@@ -29,7 +29,7 @@
 #include "engine/transform.h"
 #include "graphics/lights.h"
 
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 #include "gl/shader.h"
 #endif
 
@@ -41,7 +41,7 @@ public:
 	using ComponentManager::ComponentManager;
 	LightManager(EntityManager& entityManager, Transform3dManager& transformManager);
 
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 	void SetShaderValues(gl::Shader& shader);
 #else
 	void SetShaderValues();

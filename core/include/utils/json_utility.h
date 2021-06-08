@@ -26,7 +26,7 @@
 #include <memory>
 #include <string>
 
-#include <json.hpp>
+#include <nlohmann/json.hpp>
 
 #include "mathematics/rect.h"
 #include "mathematics/vector.h"

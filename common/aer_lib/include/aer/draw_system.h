@@ -31,7 +31,7 @@
 #include "aer/editor/editor_tool_manager.h"
 #include "aer/ui/ui_manager.h"
 
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 #include "aer/gizmos_renderer.h"
 #endif
 
@@ -61,7 +61,7 @@ public:
 	sdl::MultiCamera& GetCameras() { return camera_; }
 
 private:
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 	void RenderScene(std::size_t playerNum);
 #endif
 
@@ -70,7 +70,7 @@ private:
 
 	ComponentManagerContainer& cContainer_;
 
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 	std::unique_ptr<GizmoRenderer> gizmosRenderer_;
 
 	Job preRender_;

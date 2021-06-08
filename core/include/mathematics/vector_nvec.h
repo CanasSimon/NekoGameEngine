@@ -23,8 +23,10 @@
  SOFTWARE.
  */
 
-#include <mathematics/vector.h>
 #include "engine/intrinsincs.h"
+#include "mathematics/const.h"
+#include "mathematics/vector.h"
+
 namespace neko
 {
 //-----------------------------------------------------------------------------

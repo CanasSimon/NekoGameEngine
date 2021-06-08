@@ -323,7 +323,7 @@ Mat4f MultiCamera::GenerateProjectionMatrix(std::size_t index) const
 	return cameras_[index].GenerateProjectionMatrix();
 }
 
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 void MultiCamera::Bind(std::size_t index, gl::Shader& shader)
 {
 	Mat4f camProj = GenerateProjectionMatrix(index);

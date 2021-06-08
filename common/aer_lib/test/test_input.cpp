@@ -27,8 +27,8 @@
 ---------------------------------------------------------- */
 #include <gtest/gtest.h>
 
-#ifdef NEKO_GLES3
-	#include "gl/gles3_window.h"
+#ifdef NEKO_OPENGL
+	#include "gl/gl_window.h"
 	#include "gl/graphics.h"
 	#include "sdl_engine/sdl_engine.h"
 	#include "sdl_engine/sdl_input.h"
@@ -171,8 +171,8 @@ TEST(Input, TestSimulateInput)
 	config.windowName = "AerEditor";
 	config.windowSize = Vec2u(1400, 900);
 
-	sdl::Gles3Window window;
-	gl::Gles3Renderer renderer;
+	sdl::GlWindow window;
+	gl::GlRenderer renderer;
 	Filesystem filesystem;
 	AerEngine engine(filesystem, &config, ModeEnum::TEST);
 
@@ -371,8 +371,8 @@ TEST(Input, TestInteractiveInput)
 	config.windowName = "AerEditor";
 	config.windowSize = Vec2u(1400, 900);
 
-	sdl::Gles3Window window;
-	gl::Gles3Renderer renderer;
+	sdl::GlWindow window;
+	gl::GlRenderer renderer;
 	Filesystem filesystem;
 	AerEngine engine(filesystem, &config, ModeEnum::TEST);
 

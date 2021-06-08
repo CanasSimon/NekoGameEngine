@@ -35,7 +35,7 @@ set(NEKO_SRC_DIR "${CMAKE_SOURCE_DIR}/../../../../../../")
 set(EXTERNAL_DIR "${NEKO_SRC_DIR}/externals/")
 
 add_definitions(-DXXH_FORCE_MEMORY_ACCESS=0)
-add_definitions(-DNEKO_GLES3=1)
+add_definitions(-DNEKO_OPENGL=1)
 add_definitions(-DFMT_HEADER_ONLY=1)
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 set(ASSIMP_NO_EXPORT ON CACHE INTERNAL "")
@@ -60,7 +60,7 @@ if(Neko_Profile)
     add_definitions(-DEASY_PROFILE_USE=1)
     add_subdirectory(${EASY_PROFILE_DIR} ${CMAKE_CURRENT_BINARY_DIR}/easy_profiler)
 endif()
-set(Neko_GLES3 ON CACHE BOOL "Activate OpenGL ES 3.0")
+set(Neko_OpenGL ON CACHE BOOL "Activate OpenGL ES 3.0")
 set(Neko_SDL2 ON CACHE BOOL "Activate SDL2")
 set(Neko_Android ON CACHE BOOL "Android port")
 set(EXTERNAL_DIR "${NEKO_SRC_DIR}/externals" CACHE STRING "")
@@ -81,7 +81,7 @@ include(${NEKO_SRC_DIR}/cmake/data.cmake)
 include(${NEKO_SRC_DIR}/cmake/neko_executable.cmake)
 add_subdirectory(${NEKO_SRC_DIR}/core ${CMAKE_CURRENT_BINARY_DIR}/core)
 add_subdirectory(${NEKO_SRC_DIR}/common/sdl_engine ${CMAKE_CURRENT_BINARY_DIR}/sdl_engine)
-add_subdirectory(${NEKO_SRC_DIR}/common/gles3_wrapper ${CMAKE_CURRENT_BINARY_DIR}/gles3_wrapper)
+add_subdirectory(${NEKO_SRC_DIR}/common/opengl_wrapper ${CMAKE_CURRENT_BINARY_DIR}/opengl_wrapper)
 add_subdirectory(${NEKO_SRC_DIR}/common/assimp_wrapper ${CMAKE_CURRENT_BINARY_DIR}/assimp_wrapper)
 
 #comp_graph
@@ -105,4 +105,4 @@ target_link_libraries(
         # included in the NDK.
         ${log-lib} ${opengl-lib}
         Neko_Core SDL2-static sdl_engine
-        glad gles3_wrapper imgui assimp_wrapper)
+        glad opengl_wrapper imgui assimp_wrapper)

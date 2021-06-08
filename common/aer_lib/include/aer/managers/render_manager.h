@@ -1,7 +1,7 @@
 #pragma once
 #include "engine/transform.h"
 
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 #include "gl/model.h"
 #include "gl/model_manager.h"
 #else
@@ -15,7 +15,7 @@ namespace neko::aer
 {
 struct DrawCmd
 {
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 	gl::ModelId modelId = gl::INVALID_MODEL_ID;
 #else
 	vk::ModelId modelId = vk::INVALID_MODEL_ID;
@@ -31,7 +31,7 @@ class RenderManager final : public SystemInterface,
 {
 public:
 	RenderManager(EntityManager& entityManager,
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 		gl::ModelManager& modelManager,
 #else
 		vk::ModelManager& modelManager,
@@ -47,7 +47,7 @@ public:
 	[[nodiscard]] std::string GetModelName(Entity entity);
 	[[nodiscard]] std::string_view GetModelPath(Entity entity);
 
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 	gl::Shader& GetShader() { return shader_; }
 
 	void SetModel(Entity entity, gl::ModelId modelId);
@@ -61,7 +61,7 @@ public:
 	void UpdateDirtyComponent(Entity entity) override;
 
 protected:
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 	gl::Shader shader_;
 	gl::ModelManager& modelManager_;
 

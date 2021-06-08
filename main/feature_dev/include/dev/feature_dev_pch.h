@@ -23,8 +23,8 @@
  SOFTWARE.
  */
 
-#ifdef NEKO_GLES3
-#include "gl/gles3_include.h"
+#ifdef NEKO_OPENGL
+#include "gl/gl_include.h"
 #include "SDL.h"
 #include "imgui.h"
 #include "mathematics/matrix.h"

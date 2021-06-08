@@ -25,7 +25,7 @@
 
 #include "aer/ui/ui_element.h"
 
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 #include "gl/font.h"
 #endif
 
@@ -69,7 +69,7 @@ public:
 		 scale_(scale)
 	{}
 
-#ifdef NEKO_GLES3
+#ifdef NEKO_OPENGL
 	void Draw(gl::FontManager& fontManager, const FontId& fontId, std::uint8_t playerNmb) const;
 #else
 #endif

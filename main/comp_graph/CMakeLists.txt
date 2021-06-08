@@ -1,4 +1,4 @@
-if (NOT Neko_GLES3 OR NOT Neko_SDL2 OR NOT Neko_Freetype)
+if (NOT Neko_OpenGL OR NOT Neko_SDL2 OR NOT Neko_Freetype)
     return()
 endif()
 
@@ -12,7 +12,7 @@ add_library(comp_graph_lib STATIC ${comp_graph_src} ${shaders_src})
 add_executable(comp_graph main/main.cpp)
 target_include_directories(comp_graph_lib PUBLIC "include/")
 
-target_link_libraries(comp_graph_lib PUBLIC Neko_Core sdl_engine gles3_wrapper)
+target_link_libraries(comp_graph_lib PUBLIC Neko_Core sdl_engine opengl_wrapper)
 neko_lib_config(comp_graph_lib)
 data_generate(comp_graph_lib)
 set_target_properties(comp_graph_lib PROPERTIES UNITY_BUILD ON)

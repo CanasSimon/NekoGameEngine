@@ -30,8 +30,8 @@
 #include "engine/engine.h"
 #include "engine/system.h"
 #include "engine/transform.h"
-#ifdef NEKO_GLES3
-    #include "gl/gles3_window.h"
+#ifdef NEKO_OPENGL
+    #include "gl/gl_window.h"
     #include "gl/graphics.h"
     #include "gl/shader.h"
     #include "gl/shape.h"
@@ -260,8 +260,8 @@ TEST(Arts, Ship)
     config.windowName = "AerEditor";
     config.windowSize = Vec2u(1400, 900);
 
-    sdl::Gles3Window window;
-    gl::Gles3Renderer renderer;
+    sdl::GlWindow window;
+    gl::GlRenderer renderer;
     Filesystem filesystem;
     AerEngine engine(filesystem, &config, ModeEnum::EDITOR);
 
@@ -386,8 +386,8 @@ TEST(Arts, Block)
     config.windowName = "AerEditor";
     config.windowSize = Vec2u(1400, 900);
 
-    sdl::Gles3Window window;
-    gl::Gles3Renderer renderer;
+    sdl::GlWindow window;
+    gl::GlRenderer renderer;
     Filesystem filesystem;
     AerEngine engine(filesystem, &config, ModeEnum::EDITOR);
 
@@ -504,8 +504,8 @@ TEST(Arts, Totem)
     config.windowName = "AerEditor";
     config.windowSize = Vec2u(1400, 900);
 
-    sdl::Gles3Window window;
-    gl::Gles3Renderer renderer;
+    sdl::GlWindow window;
+    gl::GlRenderer renderer;
     Filesystem filesystem;
     AerEngine engine(filesystem, &config, ModeEnum::EDITOR);
 
@@ -588,8 +588,8 @@ TEST(Arts, TestLevelDesignSceneViewer)
     config.windowName = "AerEditor";
     config.windowSize = Vec2u(1400, 900);
 
-    sdl::Gles3Window window;
-    gl::Gles3Renderer renderer;
+    sdl::GlWindow window;
+    gl::GlRenderer renderer;
     Filesystem filesystem;
     AerEngine engine(filesystem, &config, ModeEnum::EDITOR);
 
@@ -786,8 +786,8 @@ TEST(Arts, Stb)
     config.windowName = "AerEditor";
     config.windowSize = Vec2u(1400, 900);
 
-    sdl::Gles3Window window;
-    gl::Gles3Renderer renderer;
+    sdl::GlWindow window;
+    gl::GlRenderer renderer;
     Filesystem filesystem;
     AerEngine engine(filesystem, &config, ModeEnum::EDITOR);
 
@@ -879,9 +879,9 @@ TEST(Arts, TestLevelDesignSceneViewer)
 
     neko::Filesystem filesystem;
     neko::aer::AerEngine engine(filesystem, &config, neko::aer::ModeEnum::EDITOR);
-#ifdef NEKO_GLES3
-    neko::sdl::Gles3Window window;
-    neko::gl::Gles3Renderer renderer;
+#ifdef NEKO_OPENGL
+    neko::sdl::GlWindow window;
+    neko::gl::GlRenderer renderer;
 #elif NEKO_VULKAN
     neko::sdl::VulkanWindow window;
     neko::vk::VkRenderer renderer(&window);
