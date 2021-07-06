@@ -9,7 +9,7 @@ UniformBuffer::UniformBuffer(const VkDeviceSize size, const std::vector<char>& u
 		 uniformData.data())
 {}
 
-void UniformBuffer::Update(const std::vector<char>& newUniformData) const
+void UniformBuffer::Update(const std::vector<char>& newUniformData)
 {
 	char* dataPtr;
 	MapMemory(&dataPtr);

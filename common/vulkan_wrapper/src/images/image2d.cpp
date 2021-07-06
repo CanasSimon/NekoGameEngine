@@ -187,9 +187,18 @@ void Image2d::CreateFromStb(const neko::Image& image)
 	sampler_ = CreateImageSampler(filter_, addressMode_, anisotropic_, mipLevels_);
 	view_    = CreateImageView(image_, GetViewType(), format_, kAspect, mipLevels_, 0, 1, 0);
 
+	TransitionImageLayout(image_,
+		VK_IMAGE_LAYOUT_UNDEFINED,
+		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+		kAspect,
+		mipLevels_,
+		0,
+		arrayLayers_,
+		0);
+
 	// Copy pixel data to image
 	VkDeviceSize imageSize = image.width * image.height * image.nbChannels;
-	const Buffer stagingBuffer(imageSize,
+	Buffer stagingBuffer(imageSize,
 		VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 

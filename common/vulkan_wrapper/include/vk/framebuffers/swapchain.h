@@ -25,6 +25,7 @@
  Author: Canas Simon
  Date:
 ---------------------------------------------------------- */
+#include "vk/commands/command_buffer.h"
 #include "vk/core/surface.h"
 
 namespace neko::vk
@@ -47,6 +48,7 @@ public:
 
 	[[nodiscard]] VkFormat GetFormat() const { return format_; }
 	[[nodiscard]] const VkExtent2D& GetExtent() const { return extent_; }
+	[[nodiscard]] const std::vector<VkImage>& GetImages() const { return images_; }
 	[[nodiscard]] const std::vector<VkImageView>& GetImageViews() const { return imageViews_; }
 	[[nodiscard]] std::uint32_t GetCurrentImageIndex() const { return currentImage_; }
 	[[nodiscard]] std::uint32_t GetImageCount() const
@@ -55,6 +57,14 @@ public:
 	}
 
 	[[nodiscard]] bool CompareExtent(const VkExtent2D& extent2D) const;
+
+	void SetImageLayout(CommandBuffer& commandBuffer,
+		std::size_t imageIndex,
+		VkImageLayout oldLayout,
+		VkImageLayout newLayout,
+		VkImageSubresourceRange subresourceRange,
+		VkPipelineStageFlags srcMask = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,
+		VkPipelineStageFlags dstMask = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT) const;
 
 private:
 	void CreateImageViews(VkDevice device);

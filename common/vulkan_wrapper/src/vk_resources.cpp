@@ -1,26 +1,29 @@
 #include "vk/vk_resources.h"
 
+#include "vk/material/material_manager.h"
+
 namespace neko::vk
 {
 VkResources::VkResources(sdl::VulkanWindow* window) : vkWindow(window) { Inst = this; }
 
-VkResources::~VkResources()
-{
-}
+VkResources::~VkResources() {}
+
 void VkResources::DestroyResources()
 {
-	vkDeviceWaitIdle(VkDevice(device));
+	vkDeviceWaitIdle(device);
 
 	const auto& graphicsQueue = device.GetGraphicsQueue();
 	vkQueueWaitIdle(graphicsQueue);
-	vkDestroyPipelineCache(VkDevice(device), pipelineCache, nullptr);
+	vkDestroyPipelineCache(device, pipelineCache, nullptr);
 
 	for (size_t i = 0; i < inFlightFences_.size(); i++)
 	{
-		vkDestroyFence(VkDevice(device), inFlightFences_[i], nullptr);
-		vkDestroySemaphore(VkDevice(device), availableSemaphores_[i], nullptr);
-		vkDestroySemaphore(VkDevice(device), finishedSemaphores_[i], nullptr);
+		vkDestroyFence(device, inFlightFences_[i], nullptr);
+		vkDestroySemaphore(device, availableSemaphores_[i], nullptr);
+		vkDestroySemaphore(device, finishedSemaphores_[i], nullptr);
 	}
+	
+    vk::MaterialManagerLocator::get().Clear();
 
 	imgui_.Destroy();
 	renderer_->Destroy();
@@ -31,12 +34,8 @@ void VkResources::DestroyResources()
 	for (const auto& commandPool : commandPools_)
 		commandPool.second.Destroy();
 
-	renderer_->Destroy();
-
-
 	swapchain.Destroy();
 
-	imgui_.Destroy();
 	device.Destroy();
 	surface.Destroy();
 	instance.Destroy();
@@ -75,5 +74,22 @@ const CommandPool& VkResources::GetCurrentCmdPool()
 
 	it = commandPools_.find(threadId);
 	return it->second;
+}
+
+void VkResources::GetRaytracingFuncsPtr() const
+{
+    // Get the function pointers required for ray tracing
+    vkGetAccelerationStructureDeviceAddressKHR = reinterpret_cast<PFN_vkGetAccelerationStructureDeviceAddressKHR>(vkGetDeviceProcAddr(device, "vkGetAccelerationStructureDeviceAddressKHR"));
+    vkGetAccelerationStructureBuildSizesKHR = reinterpret_cast<PFN_vkGetAccelerationStructureBuildSizesKHR>(vkGetDeviceProcAddr(device, "vkGetAccelerationStructureBuildSizesKHR"));
+    vkCreateAccelerationStructureKHR = reinterpret_cast<PFN_vkCreateAccelerationStructureKHR>(vkGetDeviceProcAddr(device, "vkCreateAccelerationStructureKHR"));
+    vkBuildAccelerationStructuresKHR = reinterpret_cast<PFN_vkBuildAccelerationStructuresKHR>(vkGetDeviceProcAddr(device, "vkBuildAccelerationStructuresKHR"));
+    vkCmdBuildAccelerationStructuresKHR = reinterpret_cast<PFN_vkCmdBuildAccelerationStructuresKHR>(vkGetDeviceProcAddr(device, "vkCmdBuildAccelerationStructuresKHR"));
+    vkDestroyAccelerationStructureKHR = reinterpret_cast<PFN_vkDestroyAccelerationStructureKHR>(vkGetDeviceProcAddr(device, "vkDestroyAccelerationStructureKHR"));
+
+    vkGetBufferDeviceAddressKHR = reinterpret_cast<PFN_vkGetBufferDeviceAddressKHR>(vkGetDeviceProcAddr(device, "vkGetBufferDeviceAddressKHR"));
+
+    vkCmdTraceRaysKHR = reinterpret_cast<PFN_vkCmdTraceRaysKHR>(vkGetDeviceProcAddr(device, "vkCmdTraceRaysKHR"));
+    vkGetRayTracingShaderGroupHandlesKHR = reinterpret_cast<PFN_vkGetRayTracingShaderGroupHandlesKHR>(vkGetDeviceProcAddr(device, "vkGetRayTracingShaderGroupHandlesKHR"));
+    vkCreateRayTracingPipelinesKHR = reinterpret_cast<PFN_vkCreateRayTracingPipelinesKHR>(vkGetDeviceProcAddr(device, "vkCreateRayTracingPipelinesKHR"));
 }
 }    // namespace neko::vk

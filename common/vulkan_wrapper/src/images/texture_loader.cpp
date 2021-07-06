@@ -26,7 +26,8 @@ TextureLoader::TextureLoader(TextureLoader&& other) noexcept
 
 void TextureLoader::Start()
 {
-	BasicEngine::GetInstance()->ScheduleJob(&loadingTextureJob_, JobThreadType::RESOURCE_THREAD);
+	//BasicEngine::GetInstance()->ScheduleJob(&loadingTextureJob_, JobThreadType::MAIN_THREAD);
+	LoadTexture();
 }
 
 void TextureLoader::LoadTexture()
@@ -38,7 +39,8 @@ void TextureLoader::LoadTexture()
 		return;
 	}
 
-	BasicEngine::GetInstance()->ScheduleJob(&decompressTextureJob_, JobThreadType::RESOURCE_THREAD);
+	//BasicEngine::GetInstance()->ScheduleJob(&decompressTextureJob_, JobThreadType::MAIN_THREAD);
+	DecompressTexture();
 }
 
 void TextureLoader::DecompressTexture()
@@ -61,7 +63,8 @@ void TextureLoader::DecompressTexture()
 		return;
 	}
 
-	BasicEngine::GetInstance()->ScheduleJob(&uploadJob_, JobThreadType::RESOURCE_THREAD);
+	//BasicEngine::GetInstance()->ScheduleJob(&uploadJob_, JobThreadType::MAIN_THREAD);
+	Upload();
 }
 
 void TextureLoader::Upload()
@@ -79,8 +82,8 @@ void TextureLoader::Upload()
 		flags_ & Texture::SMOOTH_TEXTURE ? VK_FILTER_LINEAR : VK_FILTER_NEAREST,
 		flags_ & Texture::REPEAT_WRAP ? VK_SAMPLER_ADDRESS_MODE_REPEAT :
                                         VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
-		true,
-		flags_ & Texture::MIPMAPS_TEXTURE,
+		false,
+		false,
 		false);
 	texture_.CreateFromStb(image_);
 	image_.Destroy();

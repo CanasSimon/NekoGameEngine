@@ -49,9 +49,13 @@ public:
 	operator const VkBuffer*() const { return &buffer_; }
 	operator const VkBuffer&() const { return buffer_; }
 
+	void Init(VkDeviceSize size,
+		VkBufferUsageFlags usage,
+		VkMemoryPropertyFlags properties,
+		const void* data = nullptr);
 	virtual void Destroy() const;
 
-	void MapMemory(char** dataPtr) const;
+	void MapMemory(char** dataPtr = nullptr);
 	void UnmapMemory() const;
 
 	[[nodiscard]] VkDeviceSize GetSize() const { return size_; }
@@ -71,9 +75,15 @@ public:
 	[[maybe_unused]] static void CopyBuffer(
 		VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 
+	[[nodiscard]] VkDescriptorBufferInfo GetDescriptor() const { return descriptor_; }
+
+    void* mapped {};
+
 protected:
 	VkDeviceSize size_ = 0;
 	VkBuffer buffer_ {};
 	VkDeviceMemory memory_ {};
+
+    VkDescriptorBufferInfo descriptor_ {};
 };
 }    // namespace neko::vk

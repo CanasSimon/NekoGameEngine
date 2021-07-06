@@ -1,3 +1,6 @@
+
+#include <vk/buffers/buffer.h>
+
 #include "vk/vk_resources.h"
 
 namespace neko::vk
@@ -8,12 +11,20 @@ Buffer::Buffer(const VkDeviceSize size,
 	const void* data)
    : size_(size)
 {
+	Init(size, usage, properties, data);
+}
+
+void Buffer::Init(VkDeviceSize size,
+	VkBufferUsageFlags usage,
+	VkMemoryPropertyFlags properties,
+	const void* data)
+{
 	const VkResources* vkObj                     = VkResources::Inst;
 	const QueueFamilyIndices& queueFamilyIndices = vkObj->gpu.GetQueueFamilyIndices();
-	std::array<std::uint32_t, 2> queueFamilies = {
-		queueFamilyIndices.graphicsFamily, queueFamilyIndices.presentFamily,
-		//computeFamily
-	};
+	std::array<std::uint32_t, 2> queueFamilies   = {
+        queueFamilyIndices.graphicsFamily, queueFamilyIndices.presentFamily,
+        //computeFamily
+    };
 
 	// Create the buffer handle.
 	VkBufferCreateInfo bufferInfo    = {};
@@ -36,6 +47,14 @@ Buffer::Buffer(const VkDeviceSize size,
 	allocInfo.allocationSize       = memRequirements.size;
 	allocInfo.memoryTypeIndex      = FindMemoryType(memRequirements.memoryTypeBits, properties);
 
+	VkMemoryAllocateFlagsInfoKHR allocFlagsInfo {};
+	if (usage & VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT)
+	{
+		allocFlagsInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_FLAGS_INFO_KHR;
+		allocFlagsInfo.flags = VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT_KHR;
+		allocInfo.pNext      = &allocFlagsInfo;
+	}
+
 	//TODO Stop allocating for every new buffer.
 	res = vkAllocateMemory(vkObj->device, &allocInfo, nullptr, &memory_);
 	vkCheckError(res, "Failed to allocate vertex buffer memory!");
@@ -43,9 +62,8 @@ Buffer::Buffer(const VkDeviceSize size,
 	// If a pointer to the buffer data has been passed, map the buffer and copy over the data.
 	if (data)
 	{
-		char* dataPtr;
-		MapMemory(&dataPtr);
-		std::memcpy(dataPtr, data, size);
+		MapMemory();
+		std::memcpy(mapped, data, size);
 
 		// If host coherency hasn't been requested, do a manual flush to make writes visible.
 		if ((properties & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT) == 0)
@@ -61,6 +79,10 @@ Buffer::Buffer(const VkDeviceSize size,
 		UnmapMemory();
 	}
 
+	descriptor_.range  = VK_WHOLE_SIZE;
+	descriptor_.offset = 0;
+	descriptor_.buffer = buffer_;
+
 	res = vkBindBufferMemory(vkObj->device, buffer_, memory_, 0);
 	vkCheckError(res, "Failed to bind buffer memory!");
 }
@@ -72,10 +94,13 @@ void Buffer::Destroy() const
 	vkFreeMemory(device, memory_, nullptr);
 }
 
-void Buffer::MapMemory(char** dataPtr) const
+void Buffer::MapMemory(char** dataPtr)
 {
 	const LogicalDevice& device = VkResources::Inst->device;
-	VkResult res = vkMapMemory(device, memory_, 0, size_, 0, reinterpret_cast<void**>(dataPtr));
+
+    VkResult res;
+	if (dataPtr) res = vkMapMemory(device, memory_, 0, size_, 0, reinterpret_cast<void**>(dataPtr));
+	else res = vkMapMemory(device, memory_, 0, size_, 0, &mapped);
 	vkCheckError(res, "Failed to map buffer memory!");
 }
 

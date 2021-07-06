@@ -57,6 +57,18 @@ public:
 	[[nodiscard]] std::uint8_t GetViewportCount() const { return viewportCount_; }
 	void SetViewportCount(std::uint8_t count) { viewportCount_ = count; }
 
+	[[nodiscard]] VkPhysicalDeviceRayTracingPipelinePropertiesKHR GetRayPipelineProperties() const
+	{
+		return rayTracingPipelineProperties;
+	}
+
+	[[nodiscard]] VkPhysicalDeviceAccelerationStructureFeaturesKHR GetAccelerationStructProperties() const
+	{
+		return accelerationStructureFeatures;
+	}
+
+	void GetRaytracingFuncsPtr() const;
+
 	static VkResources* Inst;
 
 	std::unique_ptr<sdl::VulkanWindow> vkWindow = nullptr;
@@ -72,6 +84,20 @@ public:
 	LightCommandBuffer lightCommandBuffer;
 
 	VkPipelineCache pipelineCache {};
+
+    // Function pointers for ray tracing related stuff
+    static PFN_vkGetAccelerationStructureDeviceAddressKHR vkGetAccelerationStructureDeviceAddressKHR;
+    static PFN_vkGetAccelerationStructureBuildSizesKHR vkGetAccelerationStructureBuildSizesKHR;
+    static PFN_vkCreateAccelerationStructureKHR vkCreateAccelerationStructureKHR;
+    static PFN_vkBuildAccelerationStructuresKHR vkBuildAccelerationStructuresKHR;
+    static PFN_vkCmdBuildAccelerationStructuresKHR vkCmdBuildAccelerationStructuresKHR;
+    static PFN_vkDestroyAccelerationStructureKHR vkDestroyAccelerationStructureKHR;
+
+    static PFN_vkGetBufferDeviceAddressKHR vkGetBufferDeviceAddressKHR;
+
+    static PFN_vkCmdTraceRaysKHR vkCmdTraceRaysKHR;
+    static PFN_vkGetRayTracingShaderGroupHandlesKHR vkGetRayTracingShaderGroupHandlesKHR;
+    static PFN_vkCreateRayTracingPipelinesKHR vkCreateRayTracingPipelinesKHR;
 
 protected:
 	bool isFramebufferResized_ = false;
@@ -91,7 +117,22 @@ protected:
 
 	VkImGui imgui_;
 	std::unique_ptr<IRenderer> renderer_{};
+
+	// Available features and properties
+	VkPhysicalDeviceRayTracingPipelinePropertiesKHR rayTracingPipelineProperties {};
+	VkPhysicalDeviceAccelerationStructureFeaturesKHR accelerationStructureFeatures {};
 };
 
+// Init static members
 inline VkResources* VkResources::Inst = nullptr;
+inline PFN_vkGetAccelerationStructureDeviceAddressKHR VkResources::vkGetAccelerationStructureDeviceAddressKHR = nullptr;
+inline PFN_vkGetAccelerationStructureBuildSizesKHR VkResources::vkGetAccelerationStructureBuildSizesKHR = nullptr;
+inline PFN_vkCreateAccelerationStructureKHR VkResources::vkCreateAccelerationStructureKHR = nullptr;
+inline PFN_vkBuildAccelerationStructuresKHR VkResources::vkBuildAccelerationStructuresKHR = nullptr;
+inline PFN_vkCmdBuildAccelerationStructuresKHR VkResources::vkCmdBuildAccelerationStructuresKHR = nullptr;
+inline PFN_vkDestroyAccelerationStructureKHR VkResources::vkDestroyAccelerationStructureKHR = nullptr;
+inline PFN_vkGetBufferDeviceAddressKHR VkResources::vkGetBufferDeviceAddressKHR = nullptr;
+inline PFN_vkCmdTraceRaysKHR VkResources::vkCmdTraceRaysKHR = nullptr;
+inline PFN_vkGetRayTracingShaderGroupHandlesKHR VkResources::vkGetRayTracingShaderGroupHandlesKHR = nullptr;
+inline PFN_vkCreateRayTracingPipelinesKHR VkResources::vkCreateRayTracingPipelinesKHR = nullptr;
 }    // namespace neko::vk

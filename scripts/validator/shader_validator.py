@@ -8,13 +8,13 @@ from pathlib import Path
 
 
 class ShaderType(Enum):
-    MISC = 0
-    VERT = 1
-    FRAG = 2
-    TESC = 3
-    TESE = 4
-    GEOM = 5
-    COMP = 6
+    MISC  = 0
+    VERT  = 1
+    FRAG  = 2
+    TESC  = 3
+    TESE  = 4
+    GEOM  = 5
+    COMP  = 6
 
 
 class UniformObject:
@@ -47,8 +47,6 @@ def validate_shader(data_src, data_out, meta_content):
         shader_type = ShaderType.GEOM
     elif extension == '.comp':
         shader_type = ShaderType.COMP
-    elif extension == '.glsl':
-        shader_type = ShaderType.MISC
 
     meta_content["shader_type"] = shader_type.value
 

@@ -119,17 +119,7 @@ public:
 	const static Mat3<T> Zero;
 
 	Mat3() : columns_(Identity.columns_) {}
-
-	Mat3& operator=(Mat3 m)
-	{
-		columns_ = m.columns_;
-		return *this;
-	}
-
-	Mat3(const Mat3& m) noexcept : columns_(m.columns_) {}
-
 	explicit Mat3(const std::array<Vec3<T>, 3>& v) : columns_(v) {}
-
 	explicit Mat3(const Mat4<T>& mat)
 	{
 		columns_[0] = Vec3<T>(mat[0]);
@@ -283,7 +273,6 @@ public:
 	const static Mat4<T> Zero;
 
 	Mat4() : columns_(Identity.columns_) {}
-	Mat4(const Mat4& m) noexcept : columns_(m.columns_) {}
 	explicit Mat4(const std::array<Vec4<T>, 4>& v) : columns_(v) {}
 	explicit Mat4(const Mat3<T>& m) noexcept : columns_(Identity.columns_)
 	{
@@ -298,12 +287,6 @@ public:
 
 	const Vec4<T>& operator[](size_t column) const { return columns_[column]; }
 	Vec4<T>& operator[](size_t column) { return columns_[column]; }
-
-	Mat4& operator=(Mat4 m)
-	{
-		columns_ = m.columns_;
-		return *this;
-	}
 
 	Mat4<T> operator+(const Mat4<T>& rhs) const
 	{

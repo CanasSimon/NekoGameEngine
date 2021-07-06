@@ -34,7 +34,7 @@ void VulkanWindow::Destroy()
 	EASY_BLOCK("DestroyWindow");
 #endif
 
-	SdlWindow::Destroy();
+    SDL_DestroyWindow(window_);
 }
 
 void VulkanWindow::MinimizedLoop() const

@@ -23,10 +23,8 @@ void Instance::Init()
 	VkApplicationInfo appInfo {};
 	appInfo.sType              = VK_STRUCTURE_TYPE_APPLICATION_INFO;
 	appInfo.pApplicationName   = "Vulkan Application";
-	appInfo.applicationVersion = VK_MAKE_VERSION(0, 1, 0);
 	appInfo.pEngineName        = "Neko Engine";
-	appInfo.engineVersion      = VK_MAKE_VERSION(1, 0, 0);
-	appInfo.apiVersion         = VK_API_VERSION_1_0;
+	appInfo.apiVersion         = VK_API_VERSION_1_1;
 
 	VkInstanceCreateInfo createInfo {};
 	createInfo.sType            = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
@@ -37,11 +35,7 @@ void Instance::Init()
 	createInfo.enabledExtensionCount    = static_cast<std::uint32_t>(extensions.size());
 	createInfo.ppEnabledExtensionNames  = extensions.data();
 
-#ifdef NN_NINTENDO_SDK
-	std::array<const char*, 1> switchLayers = {"VK_LAYER_NN_vi_swapchain"};
-	createInfo.enabledLayerCount   = static_cast<std::uint32_t>(switchLayers.size());
-	createInfo.ppEnabledLayerNames = switchLayers.data();
-#elif defined(VALIDATION_LAYERS)
+#ifdef VALIDATION_LAYERS
 	createInfo.enabledLayerCount   = static_cast<std::uint32_t>(kValidationLayers.size());
 	createInfo.ppEnabledLayerNames = kValidationLayers.data();
 
@@ -98,7 +92,6 @@ void Instance::DestroyDebugUtilsMessengerExt(const VkAllocationCallbacks* pAlloc
 
 std::vector<const char*> Instance::GetRequiredInstanceExtensions()
 {
-#ifndef NN_NINTENDO_SDK
 	std::uint32_t sdlExtCount = 0;
 	SDL_bool res              = SDL_Vulkan_GetInstanceExtensions(nullptr, &sdlExtCount, nullptr);
 	neko_assert(res, "Unable to query the number of Vulkan instance extensions!");
@@ -116,14 +109,6 @@ std::vector<const char*> Instance::GetRequiredInstanceExtensions()
 	neko_assert(res, "Required instance extensions not available!");
 
 	return sdlExtensions;
-#else
-	std::vector<const char*> sdlExtensions;
-    sdlExtensions.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
-    sdlExtensions.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
-    sdlExtensions.push_back(VK_NN_VI_SURFACE_EXTENSION_NAME);
-
-	return sdlExtensions;
-#endif
 }
 
 static VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(

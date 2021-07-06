@@ -42,10 +42,11 @@ struct QueueFamilyIndices
 {
 	std::uint32_t graphicsFamily = INVALID_INDEX;
 	std::uint32_t presentFamily  = INVALID_INDEX;
+	std::uint32_t computeFamily  = INVALID_INDEX;
 
 	[[nodiscard]] bool IsComplete() const
 	{
-		return graphicsFamily != INVALID_INDEX && presentFamily != INVALID_INDEX;
+		return graphicsFamily != INVALID_INDEX && presentFamily != INVALID_INDEX && computeFamily != INVALID_INDEX;
 	}
 };
 
@@ -77,13 +78,22 @@ public:
 		VkMemoryPropertyFlags properties,
 		VkBool32* memTypeFound = nullptr) const;
 
+	[[nodiscard]] void* GetEnabledFeatures() const { return deviceCreatepNextChain; }
+
 private:
 	[[nodiscard]] QueueFamilyIndices FindQueueFamilies(VkSurfaceKHR surface) const;
 
 	[[nodiscard]] bool CheckDeviceExtensionSupport() const;
 	[[nodiscard]] bool IsDeviceSuitable(VkSurfaceKHR surface) const;
 
+	void SetEnabledFeatures();
+
 	VkPhysicalDevice gpu_ {};
 	QueueFamilyIndices queueFamilyIndices_ {};
+
+	VkPhysicalDeviceBufferDeviceAddressFeatures enabledBufferDeviceAddressFeatures {};
+	VkPhysicalDeviceRayTracingPipelineFeaturesKHR enabledRayTracingPipelineFeatures {};
+	VkPhysicalDeviceAccelerationStructureFeaturesKHR enabledAccelerationStructureFeatures {};
+	void* deviceCreatepNextChain {};
 };
 }    // namespace neko::vk

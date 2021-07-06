@@ -20,13 +20,14 @@ ModelLoader::ModelLoader(ModelLoader&& other) noexcept
 void ModelLoader::Start()
 {
 	directory_ = path_.substr(0, path_.find_last_of('/'));
-	BasicEngine::GetInstance()->ScheduleJob(&loadModelJob_, JobThreadType::RESOURCE_THREAD);
+	//BasicEngine::GetInstance()->ScheduleJob(&loadModelJob_, JobThreadType::MAIN_THREAD);
+	LoadModel();
 }
 
 void ModelLoader::Update()
 {
 	if (flags_ & ERROR_LOADING) return;
-	if (!(flags_ & LOADED) && processModelJob_.IsDone())
+	//if (!(flags_ & LOADED) && processModelJob_.IsDone())
 	{
 		const auto& textureManager = TextureManagerLocator::get();
 		auto& materialManager = MaterialManagerLocator::get();
@@ -67,7 +68,11 @@ void ModelLoader::Update()
 				}
 			}
 
-			if (loadedTextures == textureMaps_) isLoaded++;
+			if (loadedTextures == textureMaps_)
+			{
+				isLoaded++;
+				material.CreatePipeline(true);
+			}
 		}
 
 		if (isLoaded == model_.meshes_.size()) flags_ |= LOADED;
@@ -81,7 +86,8 @@ void ModelLoader::LoadModel()
 	if (!war.empty()) LogDebug(war);
 	if (!err.empty()) LogDebug(err);
 
-	BasicEngine::GetInstance()->ScheduleJob(&processModelJob_, JobThreadType::OTHER_THREAD);
+	//BasicEngine::GetInstance()->ScheduleJob(&processModelJob_, JobThreadType::MAIN_THREAD);
+	ProcessModel();
 }
 
 void ModelLoader::ProcessModel()
@@ -90,12 +96,22 @@ void ModelLoader::ProcessModel()
 	EASY_BLOCK("vk::Process Model");
 #endif
 	model_.meshes_.reserve(shapes_.size());
-	for (const auto& shape : shapes_)
+	for (std::size_t i = 0; i < shapes_.size(); ++i)
 	{
 		auto& mesh = model_.meshes_.emplace_back();
-		if (!shape.mesh.material_ids.empty() && shape.mesh.material_ids[0] != -1)
+		Vec4f color = Color::white * 0.8f;
+		if (!shapes_[i].mesh.material_ids.empty() && shapes_[i].mesh.material_ids[0] != -1)
 		{
-			const tinyobj::material_t mat = materials_[shape.mesh.material_ids[0]];
+			const tinyobj::material_t mat = materials_[shapes_[i].mesh.material_ids[0]];
+
+			auto& materialManager       = MaterialManagerLocator::get();
+			const MaterialId materialId = sole::rebuild(modelId_.ab + i, modelId_.cd + i);
+			mesh.materialId_ = materialManager.AddNewMaterial(MaterialType::DIFFUSE, materialId);
+
+			color = {mat.diffuse[0], mat.diffuse[1], mat.diffuse[2], 1.0f};
+			materialManager.GetDiffuseMaterial(mesh.materialId_).SetShininess(mat.shininess);
+			materialManager.GetDiffuseMaterial(mesh.materialId_).SetColor(color);
+
 			if (!mat.diffuse_texname.empty())
 				LoadMaterialTextures(mat, mesh, DiffuseMaterial::DIFFUSE, mat.diffuse_texname);
 			if (!mat.specular_texname.empty())
@@ -107,31 +123,37 @@ void ModelLoader::ProcessModel()
 		}
 
 		std::vector<Vertex> vertices;
-		vertices.reserve(shape.mesh.indices.size());
+		vertices.reserve(shapes_[i].mesh.indices.size());
 
 		std::vector<std::uint32_t> indices;
-		indices.reserve(shape.mesh.indices.size());
+		indices.reserve(shapes_[i].mesh.indices.size());
 
 		std::unordered_map<Vertex, std::size_t> uniqueVertices;
-		for (const auto& index : shape.mesh.indices)
+		for (const auto& index : shapes_[i].mesh.indices)
 		{
-			Vertex vertex{};
+			Vertex vertex {};
 			vertex.position = {
 				attrib_.vertices[3 * index.vertex_index + 0],
 				attrib_.vertices[3 * index.vertex_index + 1],
-				attrib_.vertices[3 * index.vertex_index + 2]
+				attrib_.vertices[3 * index.vertex_index + 2],
 			};
+
 			vertex.normal = {
 				attrib_.normals[3 * index.normal_index + 0],
 				attrib_.normals[3 * index.normal_index + 1],
-				attrib_.normals[3 * index.normal_index + 2]
+				attrib_.normals[3 * index.normal_index + 2],
 			};
 
 			// Y coordinates are inverted in Vulkan
-			vertex.texCoords = {
-				attrib_.texcoords[2 * index.texcoord_index + 0],
-				-attrib_.texcoords[2 * index.texcoord_index + 1]
-			};
+			if (!attrib_.texcoords.empty())
+			{
+				vertex.texCoords = {
+					attrib_.texcoords[2 * index.texcoord_index + 0],
+					-attrib_.texcoords[2 * index.texcoord_index + 1],
+				};
+			}
+
+			vertex.color = color;
 
 			if (uniqueVertices.count(vertex) == 0)
 			{
@@ -190,11 +212,6 @@ void ModelLoader::LoadMaterialTextures(const tinyobj::material_t& mat,
 			mesh.materialId_ = materialId;
 			return;
 		}
-
-		const Vec3f diffuseCol = {mat.diffuse[0], mat.diffuse[1], mat.diffuse[2]};
-		mesh.materialId_       = materialManager.AddNewMaterial(MaterialType::DIFFUSE, materialId);
-		materialManager.GetDiffuseMaterial(mesh.materialId_).SetShininess(mat.shininess);
-		materialManager.GetDiffuseMaterial(mesh.materialId_).SetColor(Vec4f(diffuseCol, 1.0f));
 
 		const ResourceHash textureId =
 			textureManager.AddTexture(fmt::format("{}/{}", directory_, texName));

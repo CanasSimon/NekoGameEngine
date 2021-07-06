@@ -31,16 +31,16 @@ void GameCamera::Update(const seconds dt)
 		move += cameras_[i].reverseDirection * zMove * dt.count();
 
 		// Vertical Joystick Movement
-		if (inputManager.GetControllerButtonState(i, sdl::ControllerButtonType::BUTTON_B) ==
+		if (inputManager.GetControllerButtonState(i, sdl::ControllerButtonType::B) ==
 			sdl::ButtonState::HELD)
 			move += Vec3f::up * dt.count();
-		else if (inputManager.GetControllerButtonState(i, sdl::ControllerButtonType::BUTTON_A) ==
+		else if (inputManager.GetControllerButtonState(i, sdl::ControllerButtonType::A) ==
 				 sdl::ButtonState::HELD)
 			move += Vec3f::down * dt.count();
 
 		// Apply movement and check for turbo mode
 		const sdl::ButtonState buttonState =
-			inputManager.GetControllerButtonState(i, sdl::ControllerButtonType::BUTTON_X);
+			inputManager.GetControllerButtonState(i, sdl::ControllerButtonType::X);
 		if (buttonState == sdl::ButtonState::DOWN)
 			cameras_[i].position += move * cameras_[i].moveSpeed * 5.0f;
 		else
@@ -59,21 +59,21 @@ void GameCamera::Update(const seconds dt)
 	// Query Keyboard movement
 	Vec3f move {};
 	const Vec3f right = cameras_[0].GetRight();
-	if (inputManager.GetKeyState(sdl::KeyCodeType::D) == sdl::ButtonState::HELD)
+	if (inputManager.GetKeyState(sdl::KeyCode::D) == sdl::ButtonState::HELD)
 		move += right * dt.count();
-	if (inputManager.GetKeyState(sdl::KeyCodeType::A) == sdl::ButtonState::HELD)
+	if (inputManager.GetKeyState(sdl::KeyCode::A) == sdl::ButtonState::HELD)
 		move -= right * dt.count();
-	if (inputManager.GetKeyState(sdl::KeyCodeType::W) == sdl::ButtonState::HELD)
+	if (inputManager.GetKeyState(sdl::KeyCode::W) == sdl::ButtonState::HELD)
 		move -= cameras_[0].reverseDirection * dt.count();
-	if (inputManager.GetKeyState(sdl::KeyCodeType::S) == sdl::ButtonState::HELD)
+	if (inputManager.GetKeyState(sdl::KeyCode::S) == sdl::ButtonState::HELD)
 		move += cameras_[0].reverseDirection * dt.count();
-	if (inputManager.GetKeyState(sdl::KeyCodeType::SPACE) == sdl::ButtonState::HELD)
+	if (inputManager.GetKeyState(sdl::KeyCode::SPACE) == sdl::ButtonState::HELD)
 		move.y += dt.count();
-	if (inputManager.GetKeyState(sdl::KeyCodeType::KEY_LEFT_SHIFT) == sdl::ButtonState::HELD)
+	if (inputManager.GetKeyState(sdl::KeyCode::KEY_LEFT_SHIFT) == sdl::ButtonState::HELD)
 		move.y -= dt.count();
 
 	// Apply movement and check for turbo mode
-	if (inputManager.GetKeyState(sdl::KeyCodeType::R) == sdl::ButtonState::HELD)
+	if (inputManager.GetKeyState(sdl::KeyCode::R) == sdl::ButtonState::HELD)
 		cameras_[0].position += move * cameras_[0].moveSpeed * 5.0f;
 	else
 		cameras_[0].position += move * cameras_[0].moveSpeed;

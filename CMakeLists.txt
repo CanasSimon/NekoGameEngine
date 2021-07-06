@@ -49,9 +49,14 @@ set(Neko_ImGui      ON  CACHE BOOL "Activate ImGui")
 set(Neko_PhysFS     ON  CACHE BOOL "Activate PhysFS")
 set(Neko_PhysX      ON  CACHE BOOL "Activate PhysX")
 set(Neko_Profile    OFF CACHE BOOL "Activate Easy Profile")
+set(Neko_Raytracing ON  CACHE BOOL "Activate SDL2")
 set(Neko_SDL2       ON  CACHE BOOL "Activate SDL2")
 set(Neko_Test       ON  CACHE BOOL "Activate Neko Test")
-set(Neko_Vulkan     OFF CACHE BOOL "Activate Vulkan")
+set(Neko_Vulkan     ON  CACHE BOOL "Activate Vulkan")
+
+if (Neko_Raytracing)
+    add_compile_definitions("NEKO_RAYTRACING=1")
+endif()
 
 # Enables google test
 if(Neko_Test)

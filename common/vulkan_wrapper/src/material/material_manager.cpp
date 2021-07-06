@@ -18,7 +18,7 @@ void MaterialManager::Clear()
 	//particleMaterialIds_.clear();
 
 	diffuseMaterials_.emplace(kDefaultMaterialId, DiffuseMaterial());
-	diffuseMaterials_[kDefaultMaterialId].CreatePipeline(Vertex::GetVertexInput(0));
+	diffuseMaterials_[kDefaultMaterialId].CreatePipeline(false);
 }
 
 MaterialId MaterialManager::AddMaterial(std::string_view materialPath)
@@ -45,7 +45,7 @@ MaterialId MaterialManager::AddMaterial(std::string_view materialPath)
 				textureManager.AddTexture(materialJson["normalPath"].get<std::string_view>());
 
 			diffuseMaterials_[resourceId].FromJson(materialJson);
-			diffuseMaterials_[resourceId].CreatePipeline(Vertex::GetVertexInput(0));
+			diffuseMaterials_[resourceId].CreatePipeline(false);
 			break;
 		}
 	}
@@ -75,7 +75,7 @@ Material& MaterialManager::GetMaterial(const MaterialId resourceId)
 		diffuseMaterials_.find(resourceId) == diffuseMaterials_.cend())
 	{
 		diffuseMaterials_.emplace(kDefaultMaterialId, DiffuseMaterial());
-		diffuseMaterials_[kDefaultMaterialId].CreatePipeline(Vertex::GetVertexInput(0));
+		diffuseMaterials_[kDefaultMaterialId].CreatePipeline(false);
 	}
 
 	//Diffuse materials
@@ -103,7 +103,7 @@ DiffuseMaterial& MaterialManager::GetDiffuseMaterial(MaterialId resourceId)
 	    diffuseMaterials_.find(resourceId) == diffuseMaterials_.cend())
 	{
 		diffuseMaterials_.emplace(kDefaultMaterialId, DiffuseMaterial());
-		diffuseMaterials_[kDefaultMaterialId].CreatePipeline(Vertex::GetVertexInput(0));
+		diffuseMaterials_[kDefaultMaterialId].CreatePipeline(false);
 	}
 
 	return diffuseMaterials_[resourceId];

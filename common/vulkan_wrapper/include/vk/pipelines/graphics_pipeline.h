@@ -152,9 +152,10 @@ struct GraphicsPipelineCreateInfo
 
 	bool operator==(const GraphicsPipelineCreateInfo& other) const
 	{
-		return mode == other.mode && depth == other.depth && topology == other.topology &&
-		       polygonMode == other.polygonMode && cullMode == other.cullMode &&
-		       frontFace == other.frontFace && isPushDescriptor == other.isPushDescriptor;
+		return shaderStages == other.shaderStages && mode == other.mode && depth == other.depth &&
+		       topology == other.topology && polygonMode == other.polygonMode &&
+		       cullMode == other.cullMode && frontFace == other.frontFace &&
+		       isPushDescriptor == other.isPushDescriptor && shaderJson == other.shaderJson;
 	}
 
 	bool operator!=(const GraphicsPipelineCreateInfo& other) const { return !(*this == other); }

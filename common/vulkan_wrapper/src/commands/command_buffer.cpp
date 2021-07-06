@@ -28,6 +28,8 @@ void CommandBuffer::Init(bool begin, VkQueueFlagBits queueType, VkCommandBufferL
 
 void CommandBuffer::Destroy()
 {
+	if (running_) SubmitIdle(false);
+
 	VkResources* vkObj = VkResources::Inst;
 	vkFreeCommandBuffers(vkObj->device, vkObj->GetCurrentCmdPool(), 1, &commandBuffer_);
 }
@@ -80,8 +82,8 @@ void CommandBuffer::SubmitIdle(bool destroy)
 	vkCheckError(res, "Could not submit command buffer to queue!");
 
 	res = vkWaitForFences(vkObj->device, 1, &fence, VK_TRUE, kDefaultFenceTimeout);
+    vkCheckError(res, "Error while waiting for queue!");
 	vkDestroyFence(vkObj->device, fence, nullptr);
-	vkCheckError(res, "Error while waiting for queue!");
 
 	if (destroy) Destroy();
 }

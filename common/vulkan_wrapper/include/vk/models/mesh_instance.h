@@ -42,14 +42,6 @@ constexpr static std::uint32_t kMaxInstances     = 32;
 class ModelInstance
 {
 public:
-	struct Instance
-	{
-		[[nodiscard]] static VertexInput GetVertexInput(std::uint32_t baseBinding = 0);
-
-		Mat4f modelMatrix = Mat4f::Identity;
-		Mat3f normalMatrix = Mat3f::Identity;
-	};
-
 	explicit ModelInstance(const ModelId& modelId);
 
 	[[nodiscard]] static std::unique_ptr<ModelInstance> Create(const ModelId& modelId);

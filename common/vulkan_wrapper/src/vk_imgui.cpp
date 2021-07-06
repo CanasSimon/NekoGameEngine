@@ -22,9 +22,6 @@ void VkImGui::Init()
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-#ifdef NN_NINTENDO_SDK
-	io.IniFilename = NULL;
-#endif
 
 	ImGui::StyleColorsDark();
 

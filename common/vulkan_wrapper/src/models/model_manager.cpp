@@ -57,8 +57,13 @@ ModelId ModelManager::LoadModel(std::string_view path)
 	}
 
 	pathMap_.emplace(path.data(), modelId);
-	loaders_.push(ModelLoader(path, modelId));
-	loaders_.back().Start();
+
+	ModelLoader loader(path, modelId);
+	loader.Start();
+	loader.Update();
+
+	models_[modelId] = *loader.GetModel();
+
 	return modelId;
 }
 

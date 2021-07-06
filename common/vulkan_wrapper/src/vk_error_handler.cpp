@@ -32,7 +32,6 @@ void CheckVkError(VkResult err, const char* msg, const char* file, int line)
 		case VK_ERROR_NATIVE_WINDOW_IN_USE_KHR: log += "VK Native Window in Use KHR"; break;
 		case VK_ERROR_OUT_OF_DATE_KHR: log += "VK Out of Date KHR"; break;
 		case VK_ERROR_INCOMPATIBLE_DISPLAY_KHR: log += "VK Incompatible Display KHR"; break;
-        case VK_ERROR_INCOMPATIBLE_VERSION_KHR: log += "VK Incompatible Version KHR"; break;
 
 		case VK_ERROR_LAYER_NOT_PRESENT: log += "VK Layer Not Present"; break;
 		case VK_ERROR_EXTENSION_NOT_PRESENT: log += "VK Extension Not Present"; break;

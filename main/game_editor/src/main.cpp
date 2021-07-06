@@ -39,9 +39,9 @@ int main(int, char**)
 {
 	using namespace neko;
 	Configuration config;
-	config.windowName = "Neko Game Editor";
-	config.flags      = Configuration::NONE;
-	config.windowSize = Vec2u(1280, 720);
+	config.windowName   = "Neko Game Editor";
+	config.flags        = Configuration::NONE;
+	config.windowSize   = Vec2u(1280, 720);
 
 	Filesystem filesystem;
 	aer::AerEngine engine(filesystem, &config, aer::ModeEnum::EDITOR);

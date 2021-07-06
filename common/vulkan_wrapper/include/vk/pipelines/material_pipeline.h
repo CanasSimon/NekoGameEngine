@@ -38,6 +38,8 @@ public:
 	MaterialPipeline() = default;
 	MaterialPipeline(PipelineStage pipelineStage, GraphicsPipelineCreateInfo pipelineCreate);
 
+	void Destroy() const;
+
 	static MaterialPipeline& CreateMaterialPipeline(
 		const PipelineStage& pipelineStage, const GraphicsPipelineCreateInfo& pipelineCreate);
 

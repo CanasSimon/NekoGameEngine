@@ -4,10 +4,6 @@
 
 #include "sdl_engine/sdl_engine.h"
 
-#ifdef NN_NINTENDO_SDK
-#include <nn/hid/hid_ControllerSupport.h>
-#endif
-
 namespace neko::sdl
 {
 InputManager::InputManager() { InputLocator::provide(this); }
@@ -22,36 +18,33 @@ void InputManager::Init()
 	{
 		int device              = 0;
 		SDL_Joystick* joystick_ = SDL_JoystickOpen(device);
-
-		if (joystick_ != nullptr)
-		{
+		if (joystick_)
 			SDL_assert(SDL_JoystickFromInstanceID(SDL_JoystickInstanceID(joystick_)) == joystick_);
-		}
 	}
 
 	for (auto& controllerInputs : controllerInputs_)
 	{
-		controllerInputs.controllerAxis[static_cast<size_t>(ControllerAxes::LEFT_BUMPER)] =
-			-1.0f;
-		controllerInputs.controllerAxis[static_cast<size_t>(ControllerAxes::RIGHT_BUMPER)] =
-			-1.0f;
+		controllerInputs.controllerAxes[static_cast<size_t>(ControllerAxes::LEFT_TRIGGER)]  = -1.0f;
+		controllerInputs.controllerAxes[static_cast<size_t>(ControllerAxes::RIGHT_TRIGGER)] = -1.0f;
 	}
 }
 
 void InputManager::OnPreUserInput()
 {
-	for (size_t i = 0; i < static_cast<size_t>(KeyCodeType::KEYBOARD_SIZE); i++)
+	for (size_t i = 0; i < static_cast<size_t>(KeyCode::LENGTH); i++)
 	{
-		if (keyPressedState_[i] == ButtonState::UP) keyPressedState_[i] = ButtonState::NONE;
-		else if (keyPressedState_[i] == ButtonState::DOWN)
-			keyPressedState_[i] = ButtonState::HELD;
+		if (keyboardInputs_.keyStates[i] == ButtonState::UP)
+			keyboardInputs_.keyStates[i] = ButtonState::NONE;
+		else if (keyboardInputs_.keyStates[i] == ButtonState::DOWN)
+			keyboardInputs_.keyStates[i] = ButtonState::HELD;
 	}
 
 	for (size_t i = 0; i < static_cast<size_t>(MouseButtonType::LENGTH); i++)
 	{
-		if (buttonState_[i] == ButtonState::UP) buttonState_[i] = ButtonState::NONE;
-		else if (buttonState_[i] == ButtonState::DOWN)
-			buttonState_[i] = ButtonState::HELD;
+		if (keyboardInputs_.mouseButtonStates[i] == ButtonState::UP)
+			keyboardInputs_.mouseButtonStates[i] = ButtonState::NONE;
+		else if (keyboardInputs_.mouseButtonStates[i] == ButtonState::DOWN)
+			keyboardInputs_.mouseButtonStates[i] = ButtonState::HELD;
 	}
 
 	for (auto& controllerInputs : controllerInputs_)
@@ -64,6 +57,7 @@ void InputManager::OnPreUserInput()
 				controllerInputs.controllerButtonStates[i] = ButtonState::HELD;
 		}
 	}
+
 	mouseScroll_ = Vec2f::zero;
 }
 
@@ -95,41 +89,10 @@ unsigned InputManager::FindControllerIndexFromPlayerId(JoyPlayerId controllerId)
 	return index;
 }
 
-unsigned InputManager::FindSwitchIndexFromId(const JoystickId switchJoyId) const
-{
-	const auto switchInputIt = std::find_if(switchInputs_.begin(),
-		switchInputs_.end(),
-		[switchJoyId](SwitchInputs switchInputs)
-		{ return switchInputs.switchJoyInstanceId == switchJoyId; });
-	if (switchInputIt >= switchInputs_.end())
-	{
-		LogDebug("Invalid switchJoyInstanceId : " + std::to_string(switchJoyId));
-		return switchInputs_.size();
-	}
-	const unsigned index = std::distance(switchInputs_.begin(), switchInputIt);
-	return index;
-}
-
-unsigned InputManager::FindSwitchIndexFromPlayerId(JoyPlayerId switchJoyId) const
-{
-	const auto switchInputIt = std::find_if(switchInputs_.begin(),
-		switchInputs_.end(),
-		[switchJoyId](SwitchInputs switchInputs)
-		{ return switchInputs.switchJoyPlayerId == switchJoyId; });
-	if (switchInputIt >= switchInputs_.end())
-	{
-		LogDebug("Invalid switchJoyPlayerId : " + std::to_string(switchJoyId));
-		return switchInputs_.size();
-	}
-	const unsigned index = std::distance(switchInputs_.begin(), switchInputIt);
-	return index;
-}
-
 void InputManager::OnEvent(SDL_Event event)
 {
 	switch (event.type)
 	{
-#pragma region keyboard
 		case SDL_TEXTINPUT:
 		{
 			// TODO(@Luca) Setup Text Input
@@ -144,52 +107,48 @@ void InputManager::OnEvent(SDL_Event event)
 		case SDL_KEYDOWN:
 		{
 			const size_t index = event.key.keysym.scancode;
-			if (keyPressedState_[index] != ButtonState::HELD)
-			{
-				keyPressedState_[index] = ButtonState::DOWN;
-			}
+			if (keyboardInputs_.keyStates[index] != ButtonState::HELD)
+				keyboardInputs_.keyStates[index] = ButtonState::DOWN;
 			break;
 		}
 		case SDL_KEYUP:
 		{
-			const size_t index      = event.key.keysym.scancode;
-			keyPressedState_[index] = ButtonState::UP;
+			const size_t index               = event.key.keysym.scancode;
+			keyboardInputs_.keyStates[index] = ButtonState::UP;
 			break;
 		}
-#pragma endregion
 
-#pragma region Mouse
+		// Mouse
 		case SDL_MOUSEMOTION:
 		{
-			mousePos_.x         = event.motion.x;
-			mousePos_.y         = event.motion.y;
-			mouseRelativePos_.x = event.motion.xrel;
-			mouseRelativePos_.y = event.motion.yrel;
+			mousePos_.x         = static_cast<float>(event.motion.x);
+			mousePos_.y         = static_cast<float>(event.motion.y);
+			mouseRelativePos_.x = static_cast<float>(event.motion.xrel);
+			mouseRelativePos_.y = static_cast<float>(event.motion.yrel);
 			break;
 		}
 		case SDL_MOUSEBUTTONDOWN:
 		{
-			const size_t index  = event.button.button - 1;
-			buttonState_[index] = ButtonState::DOWN;
+			const size_t index                       = event.button.button - 1;
+			keyboardInputs_.mouseButtonStates[index] = ButtonState::DOWN;
 
 			break;
 		}
 		case SDL_MOUSEBUTTONUP:
 		{
-			const size_t index  = event.button.button - 1;
-			buttonState_[index] = ButtonState::UP;
+			const size_t index                       = event.button.button - 1;
+			keyboardInputs_.mouseButtonStates[index] = ButtonState::UP;
 
 			break;
 		}
 		case SDL_MOUSEWHEEL:
 		{
-			mouseScroll_.x = event.wheel.x;
-			mouseScroll_.y = event.wheel.y;
+			mouseScroll_.x = static_cast<float>(event.wheel.x);
+			mouseScroll_.y = static_cast<float>(event.wheel.y);
 			break;
 		}
-#pragma endregion
 
-#pragma region Joystick
+        // Joystick
 		case SDL_JOYDEVICEREMOVED:
 		case SDL_CONTROLLERDEVICEREMOVED:
 		{
@@ -304,7 +263,7 @@ void InputManager::OnEvent(SDL_Event event)
 			const unsigned controllerIndex = FindControllerIndexFromId(event.caxis.which);
 			if (controllerIndex < controllerInputs_.size())
 			{
-				controllerInputs_[controllerIndex].controllerAxis[event.caxis.axis] = value;
+				controllerInputs_[controllerIndex].controllerAxes[event.caxis.axis] = value;
 			}
 			else
 			{
@@ -329,38 +288,29 @@ void InputManager::OnEvent(SDL_Event event)
 			LogDebug("Finger up");
 			break;
 		}
-#pragma endregion
 
 		default: break;
 	}
 }
 
-ButtonState InputManager::GetKeyState(KeyCodeType key) const
+ButtonState InputManager::GetKeyState(KeyCode key) const
 {
-	return keyPressedState_[static_cast<size_t>(key)];
+	return keyboardInputs_.keyStates[static_cast<size_t>(key)];
 }
 
-ButtonState InputManager::GetSwitchButtonState(
-	JoyPlayerId switchJoyId, SwitchButtonType switchButton) const
+bool InputManager::IsKeyDown(KeyCode key) const
 {
-	const unsigned switchIndex = FindSwitchIndexFromPlayerId(switchJoyId);
-	if (switchIndex >= switchInputs_.size())
-	{
-		LogDebug("Unknown Joystick : " + std::to_string(switchJoyId));
-		return ButtonState::NONE;
-	}
-	return switchInputs_[switchIndex].switchButtonStates[static_cast<size_t>(switchButton)];
+	return GetKeyState(key) == ButtonState::DOWN;
 }
 
-float InputManager::GetSwitchAxis(JoyPlayerId switchJoyId, SwitchAxisType axis) const
+bool InputManager::IsKeyHeld(KeyCode key) const
 {
-	const unsigned switchIndex = FindSwitchIndexFromPlayerId(switchJoyId);
-	if (switchIndex >= switchInputs_.size())
-	{
-		LogDebug("Unknown Joystick : " + std::to_string(switchJoyId));
-		return 0.0f;
-	}
-	return switchInputs_[switchIndex].switchAxis[static_cast<size_t>(axis)];
+    return GetKeyState(key) == ButtonState::HELD;
+}
+
+bool InputManager::IsKeyUp(KeyCode key) const
+{
+    return GetKeyState(key) == ButtonState::UP;
 }
 
 ButtonState InputManager::GetControllerButtonState(
@@ -376,7 +326,7 @@ float InputManager::GetControllerAxis(JoyPlayerId controllerId, ControllerAxes a
 {
 	const unsigned controllerIndex = FindControllerIndexFromPlayerId(controllerId);
 	if (controllerIndex >= controllerInputs_.size()) { return 0.0f; }
-	return controllerInputs_[controllerIndex].controllerAxis[static_cast<size_t>(axis)];
+	return controllerInputs_[controllerIndex].controllerAxes[static_cast<size_t>(axis)];
 }
 
 std::vector<JoyPlayerId> InputManager::GetControllerIdVector() const
@@ -389,24 +339,13 @@ std::vector<JoyPlayerId> InputManager::GetControllerIdVector() const
 	return controllerIdVector;
 }
 
-std::vector<JoyPlayerId> InputManager::GetSwitchJoyIdVector() const
-{
-	std::vector<JoyPlayerId> switchJoyIdVector;
-	for (const SwitchInputs& switchInput : switchInputs_)
-	{
-		switchJoyIdVector.push_back(switchInput.switchJoyPlayerId);
-	}
-	return switchJoyIdVector;
-}
-
 void InputManager::PrintJoystick(const int device)
 {
 	//Print info
 	LogDebug("Joystick DeviceId: " + std::to_string(device));
 	LogDebug("Controller : " + std::to_string(SDL_IsGameController(device)));
 	const auto joystick = SDL_JoystickOpen(device);
-	if (joystick == nullptr) { LogDebug("SDL_JoystickOpen " + std::to_string(device) + " failed"); }
-	else
+	if (joystick)
 	{
 		std::string type;
 
@@ -438,6 +377,10 @@ void InputManager::PrintJoystick(const int device)
 
 		SDL_JoystickClose(joystick);
 	}
+	else
+	{
+		LogDebug("SDL_JoystickOpen " + std::to_string(device) + " failed");
+	}
 }
 
 void InputManager::PrintAllJoystick()
@@ -445,56 +388,53 @@ void InputManager::PrintAllJoystick()
 	LogDebug("-----------Start Print All-----------");
 	unsigned nbJoystick = SDL_NumJoysticks();
 	LogDebug("Nb Joystick : " + std::to_string(nbJoystick));
-	for (int deviceId = 0; deviceId < SDL_NumJoysticks(); ++deviceId)
-	{
-		PrintJoystick(deviceId);
-	}
+	for (int deviceId = 0; deviceId < SDL_NumJoysticks(); ++deviceId) PrintJoystick(deviceId);
 
 	LogDebug("-------------End Print All-----------");
 }
 
-std::string InputManager::PcInputsEnumToString(const KeyCodeType keyCode)
+std::string InputManager::PcInputsEnumToString(const KeyCode keyCode)
 {
 	switch (keyCode)
 	{
-		case KeyCodeType::A: return "A";
-		case KeyCodeType::B: return "B";
-		case KeyCodeType::C: return "C";
-		case KeyCodeType::D: return "D";
-		case KeyCodeType::E: return "E";
-		case KeyCodeType::F: return "F";
-		case KeyCodeType::G: return "G";
-		case KeyCodeType::H: return "H";
-		case KeyCodeType::I: return "I";
-		case KeyCodeType::J: return "J";
-		case KeyCodeType::K: return "K";
-		case KeyCodeType::L: return "L";
-		case KeyCodeType::M: return "M";
-		case KeyCodeType::N: return "N";
-		case KeyCodeType::O: return "O";
-		case KeyCodeType::P: return "P";
-		case KeyCodeType::Q: return "Q";
-		case KeyCodeType::R: return "R";
-		case KeyCodeType::S: return "S";
-		case KeyCodeType::T: return "T";
-		case KeyCodeType::U: return "U";
-		case KeyCodeType::V: return "V";
-		case KeyCodeType::W: return "W";
-		case KeyCodeType::X: return "X";
-		case KeyCodeType::Y: return "Y";
-		case KeyCodeType::Z: return "Z";
-		case KeyCodeType::ESCAPE: return "Escape";
-		case KeyCodeType::SPACE: return "Space";
-		case KeyCodeType::KEY_LEFT_SHIFT: return "Left_Shift";
-		case KeyCodeType::KEY_RIGHT_SHIFT: return "Right_Shift";
-		case KeyCodeType::KEY_LEFT_CTRL: return "Left_Ctrl";
-		case KeyCodeType::KEY_RIGHT_CTRL: return "Right_Ctrl";
-		case KeyCodeType::KEY_LEFT_ALT: return "Left_Alt";
-		case KeyCodeType::LEFT: return "Left";
-		case KeyCodeType::RIGHT: return "Rightt";
-		case KeyCodeType::UP: return "Up";
-		case KeyCodeType::DOWN: return "Down";
-		default: return "Not register key";
+		case KeyCode::A: return "A";
+		case KeyCode::B: return "B";
+		case KeyCode::C: return "C";
+		case KeyCode::D: return "D";
+		case KeyCode::E: return "E";
+		case KeyCode::F: return "F";
+		case KeyCode::G: return "G";
+		case KeyCode::H: return "H";
+		case KeyCode::I: return "I";
+		case KeyCode::J: return "J";
+		case KeyCode::K: return "K";
+		case KeyCode::L: return "L";
+		case KeyCode::M: return "M";
+		case KeyCode::N: return "N";
+		case KeyCode::O: return "O";
+		case KeyCode::P: return "P";
+		case KeyCode::Q: return "Q";
+		case KeyCode::R: return "R";
+		case KeyCode::S: return "S";
+		case KeyCode::T: return "T";
+		case KeyCode::U: return "U";
+		case KeyCode::V: return "V";
+		case KeyCode::W: return "W";
+		case KeyCode::X: return "X";
+		case KeyCode::Y: return "Y";
+		case KeyCode::Z: return "Z";
+		case KeyCode::ESCAPE: return "Escape";
+		case KeyCode::SPACE: return "Space";
+		case KeyCode::KEY_LEFT_SHIFT: return "Left_Shift";
+		case KeyCode::KEY_RIGHT_SHIFT: return "Right_Shift";
+		case KeyCode::KEY_LEFT_CTRL: return "Left_Ctrl";
+		case KeyCode::KEY_RIGHT_CTRL: return "Right_Ctrl";
+		case KeyCode::KEY_LEFT_ALT: return "Left_Alt";
+		case KeyCode::LEFT: return "Left";
+		case KeyCode::RIGHT: return "Right";
+		case KeyCode::UP: return "Up";
+		case KeyCode::DOWN: return "Down";
+		default: return "Unknown";
 	}
 }
 
@@ -518,20 +458,4 @@ std::string InputManager::ControllerInputsEnumToString(const ControllerAxes cont
 {
 	return SDL_GameControllerGetStringForAxis(SDL_GameControllerAxis(controller));
 }
-std::string InputManager::SwitchInputsEnumToString(const SwitchButtonType switchInputs)
-{
-	switch (switchInputs)
-	{
-		default: return "";
-	}
-}
-
-std::string InputManager::SwitchInputsEnumToString(SwitchAxisType switchAxis)
-{
-	switch (switchAxis)
-	{
-		default: return "";
-	}
-}
-
 }    // namespace neko::sdl

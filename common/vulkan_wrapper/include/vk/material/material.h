@@ -55,7 +55,12 @@ public:
 	explicit Material(std::string_view name) : name_(name) {}
 	virtual ~Material() = default;
 
-	virtual void CreatePipeline(const VertexInput& vertexInput) = 0;
+    void Destroy() const
+	{
+        if (pipelineMaterial_) pipelineMaterial_->get().Destroy();
+    }
+
+	virtual void CreatePipeline(bool forceRecreate) = 0;
 	[[nodiscard]] bool BindPipeline(const CommandBuffer& commandBuffer) const
 	{
 		if (pipelineMaterial_) return pipelineMaterial_->get().BindPipeline(commandBuffer);

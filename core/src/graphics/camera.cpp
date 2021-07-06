@@ -90,11 +90,24 @@ void Camera::SetDirectionFromEuler(const EulerAngles& angles)
 
 void Camera::Rotate(const EulerAngles& angles)
 {
-	const Quaternion pitch    = Quaternion::AngleAxis(angles.x, GetRight());
-	const Quaternion yaw      = Quaternion::AngleAxis(angles.y, GetUp());
-	const Quaternion roll     = Quaternion::AngleAxis(angles.z, reverseDirection);
-	const Quaternion rotation = pitch * yaw * roll;
-	reverseDirection = Vec3f(Transform3d::RotationMatrixFrom(rotation) * Vec4f(reverseDirection));
+	Quaternion pitch    = Quaternion::AngleAxis(angles.x, GetRight());
+	Quaternion yaw      = Quaternion::AngleAxis(angles.y, GetUp());
+	Quaternion roll     = Quaternion::AngleAxis(angles.z, reverseDirection);
+	Quaternion rotation = pitch * yaw * roll;
+
+	Vec3f newDir = Vec3f(Transform3d::RotationMatrixFrom(rotation) * Vec4f(reverseDirection));
+	degree_t p   = Asin(-newDir.y);
+
+	if (Abs(p.value()) > kMaxCameraAngleX)
+	{
+		pitch = Quaternion::AngleAxis(
+			degree_t(Abs(p.value()) - kMaxCameraAngleX) * Sign(p.value()), GetRight());
+
+		rotation = pitch * yaw * roll;
+		newDir   = Vec3f(Transform3d::RotationMatrixFrom(rotation) * Vec4f(reverseDirection));
+	}
+
+	reverseDirection = newDir;
 }
 
 //-----------------------------------------------------------------------------

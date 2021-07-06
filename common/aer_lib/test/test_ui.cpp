@@ -426,7 +426,7 @@ public:
 				currentMenu_->SetEnable(true);
 				menuB_.SetEnable(false);
 				menuC_.SetEnable(false);
-				if (sdl::InputLocator::get().GetKeyState(sdl::KeyCodeType::SPACE) ==
+				if (sdl::InputLocator::get().GetKeyState(sdl::KeyCode::SPACE) ==
 					sdl::ButtonState::DOWN)
 				{
 					if (left_) currentMenuState_ = MENU_C;
@@ -440,7 +440,7 @@ public:
 				currentMenu_->SetEnable(true);
 				menuA_.SetEnable(false);
 				menuC_.SetEnable(false);
-				if (sdl::InputLocator::get().GetKeyState(sdl::KeyCodeType::SPACE) ==
+				if (sdl::InputLocator::get().GetKeyState(sdl::KeyCode::SPACE) ==
 					sdl::ButtonState::DOWN)
 				{
 					if (left_) currentMenuState_ = MENU_A;
@@ -454,7 +454,7 @@ public:
 				currentMenu_->SetEnable(true);
 				menuB_.SetEnable(false);
 				menuA_.SetEnable(false);
-				if (sdl::InputLocator::get().GetKeyState(sdl::KeyCodeType::SPACE) ==
+				if (sdl::InputLocator::get().GetKeyState(sdl::KeyCode::SPACE) ==
 					sdl::ButtonState::DOWN)
 				{
 					if (left_) currentMenuState_ = MENU_B;
@@ -472,7 +472,7 @@ public:
 			currentMenu_->textPrevious.SetColor(Color::white);
 			currentMenu_->buttonNext.SetColor(Color::grey);
 			currentMenu_->textNext.SetColor(Color::grey);
-			if (sdl::InputLocator::get().GetKeyState(sdl::KeyCodeType::RIGHT) ==
+			if (sdl::InputLocator::get().GetKeyState(sdl::KeyCode::RIGHT) ==
 				sdl::ButtonState::DOWN)
 			{
 				left_ = false;
@@ -485,7 +485,7 @@ public:
 			currentMenu_->textPrevious.SetColor(Color::grey);
 			currentMenu_->buttonNext.SetColor(Color::white);
 			currentMenu_->textNext.SetColor(Color::white);
-			if (sdl::InputLocator::get().GetKeyState(sdl::KeyCodeType::LEFT) ==
+			if (sdl::InputLocator::get().GetKeyState(sdl::KeyCode::LEFT) ==
 				sdl::ButtonState::DOWN)
 			{
 				left_ = true;

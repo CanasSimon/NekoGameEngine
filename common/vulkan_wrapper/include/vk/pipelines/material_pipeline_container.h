@@ -29,6 +29,12 @@
 
 namespace neko::vk
 {
+struct PipelineInfo
+{
+    PipelineStage stage;
+    GraphicsPipelineCreateInfo createInfo;
+};
+
 class MaterialPipelineContainer
 {
 public:
@@ -40,7 +46,7 @@ public:
 		const PipelineStage& pipelineStage, const GraphicsPipelineCreateInfo& pipelineCreate);
 
 private:
-	std::vector<std::pair<PipelineStage, GraphicsPipelineCreateInfo>> registeredInfos_;
+	std::vector<PipelineInfo> registeredInfos_;
 	std::vector<MaterialPipeline> registeredMaterials_;
 };
 }    // namespace neko::vk

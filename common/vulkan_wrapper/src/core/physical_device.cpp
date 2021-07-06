@@ -1,3 +1,6 @@
+
+#include <vk/core/physical_device.h>
+
 #include "vk/vk_resources.h"
 
 namespace neko::vk
@@ -81,6 +84,8 @@ void PhysicalDevice::Init()
 
 	neko_assert(queueNodeIndex != INVALID_INDEX,
 		"Unable to find a queue command family that accepts graphics commands");
+
+	SetEnabledFeatures();
 }
 
 VkSampleCountFlagBits PhysicalDevice::GetMsaaSamples() const
@@ -107,18 +112,16 @@ QueueFamilyIndices PhysicalDevice::FindQueueFamilies(VkSurfaceKHR surface) const
 	std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
 	vkGetPhysicalDeviceQueueFamilyProperties(gpu_, &queueFamilyCount, queueFamilies.data());
 
-	int i = 0;
-	for (const auto& queueFamily : queueFamilies)
+	for (std::size_t i = 0; i < queueFamilyCount; ++i)
 	{
+		if (queueFamilies[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) indices.graphicsFamily = i;
+		if (queueFamilies[i].queueFlags & VK_QUEUE_COMPUTE_BIT) indices.computeFamily = i;
+
 		VkBool32 presentSupport = false;
-		vkGetPhysicalDeviceSurfaceSupportKHR(gpu_, i, surface, &presentSupport);
-		if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) indices.graphicsFamily = i;
+        vkGetPhysicalDeviceSurfaceSupportKHR(gpu_, i, surface, &presentSupport);
+        if (presentSupport) indices.presentFamily = i;
 
-		if (presentSupport) indices.presentFamily = i;
-
-		if (indices.IsComplete()) break;
-
-		i++;
+        if (indices.IsComplete()) break;
 	}
 
 #ifdef VALIDATION_LAYERS
@@ -262,5 +265,22 @@ uint32_t PhysicalDevice::GetMemoryType(
 
 	*memTypeFound = false;
 	return 0;
+}
+
+void PhysicalDevice::SetEnabledFeatures()
+{
+    // Enable features required for ray tracing using feature chaining via pNext
+    enabledBufferDeviceAddressFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES;
+    enabledBufferDeviceAddressFeatures.bufferDeviceAddress = VK_TRUE;
+
+    enabledRayTracingPipelineFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR;
+    enabledRayTracingPipelineFeatures.rayTracingPipeline = VK_TRUE;
+    enabledRayTracingPipelineFeatures.pNext = &enabledBufferDeviceAddressFeatures;
+
+    enabledAccelerationStructureFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR;
+    enabledAccelerationStructureFeatures.accelerationStructure = VK_TRUE;
+    enabledAccelerationStructureFeatures.pNext = &enabledRayTracingPipelineFeatures;
+
+    deviceCreatepNextChain = &enabledAccelerationStructureFeatures;
 }
 }    // namespace neko::vk

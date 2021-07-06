@@ -97,21 +97,20 @@ void BasicEngine::Update(seconds dt)
     updateJob.AddDependency(&eventJob);
     if (renderer_)
     {
-        Job* rendererSyncJob = renderer_->GetSyncJob();
-        updateJob.AddDependency(rendererSyncJob);
+        //Job* rendererSyncJob = renderer_->GetSyncJob();
+        //updateJob.AddDependency(rendererSyncJob);
 
         Job* renderJob = renderer_->GetRenderAllJob();
-        renderJob->AddDependency(&eventJob);
+        //renderJob->AddDependency(&eventJob);
 
         swapBufferJob = window_->GetSwapBufferJob();
         swapBufferJob->AddDependency(renderJob);
         //swapBufferJob->AddDependency(&updateJob);
 
         renderer_->ScheduleJobs();
-        jobSystem_.ScheduleJob(swapBufferJob, JobThreadType::RENDER_THREAD);
-
-
+        jobSystem_.ScheduleJob(swapBufferJob, JobThreadType::MAIN_THREAD);
     }
+
     jobSystem_.ScheduleJob(&eventJob, JobThreadType::MAIN_THREAD);
     jobSystem_.ScheduleJob(&updateJob, JobThreadType::MAIN_THREAD);
 #ifdef NEKO_PROFILE

@@ -45,7 +45,7 @@ void TextureManager::Update(seconds)
 
 void TextureManager::Destroy()
 {
-	for (auto& textureName : textures_) textureName.second.Destroy();
+	//for (auto& textureName : textures_) textureName.second.Destroy();
 }
 
 ResourceHash TextureManager::AddTexture(std::string_view path)
@@ -67,8 +67,11 @@ ResourceHash TextureManager::AddTexture(std::string_view path, Texture::Flags fl
 		return textureId;
 	}
 
-	loaders_.push({path, textureId, flags});
-	loaders_.back().Start();
+	TextureLoader loader(path, textureId, flags);
+	loader.Start();
+
+    textures_[loader.textureId_] = loader.texture_;
+
 	return textureId;
 }
 

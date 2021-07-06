@@ -27,6 +27,7 @@
 ---------------------------------------------------------- */
 #include "graphics/graphics.h"
 
+#include "vk/shaders/binding_tables.h"
 #include "vk/vk_resources.h"
 
 namespace neko::vk
@@ -79,5 +80,55 @@ private:
 
     /// Executes commands after the render loop has ended
     void AfterRender() override;
+
+    void RenderAll() override;
+
+    //Raytracing stoof
+    void DrawRaytraced();
+
+    VkPipelineShaderStageCreateInfo LoadShader(std::string_view filename, VkShaderStageFlagBits stage);
+
+	void CreateStorageImage(VkFormat format, VkExtent3D extent);
+
+	void CreateUniformBuffer();
+	void UpdateUniformBuffers();
+
+	void CreateRayTracingPipeline();
+	void CreateShaderBindingTables();
+	void CreateDescriptorSets();
+	void BuildCommandBuffers();
+
+    void HandleResize();
+
+	// Holds information for a storage image that the ray tracing shaders output to
+	struct StorageImage
+	{
+		VkDeviceMemory memory {};
+		VkImage image {};
+		VkImageView view {};
+		VkFormat format {};
+	} storageImage_;
+
+	struct UniformData
+	{
+		Mat4f viewInverse;
+		Mat4f projInverse;
+		Vec4f lightPos;
+		std::int32_t vertexSize = 0;
+	} uniformData_;
+	Buffer ubo_;
+
+	VkPipeline pipeline_ {};
+	VkPipelineLayout pipelineLayout_ {};
+
+	VkDescriptorPool descriptorPool_ {};
+	VkDescriptorSet descriptorSet_ {};
+	VkDescriptorSetLayout descriptorSetLayout_ {};
+
+	ShaderBindingTables shaderBindingTables_ {};
+	std::vector<VkRayTracingShaderGroupCreateInfoKHR> shaderGroups {};
+	std::vector<VkShaderModule> shaderModules_ {};
+
+    vk::ModelId sceneModelId_ = sole::uuid();
 };
 }

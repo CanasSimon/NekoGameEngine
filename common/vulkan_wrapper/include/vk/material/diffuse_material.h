@@ -85,7 +85,7 @@ public:
 	void SetRenderMode(RenderMode renderMode) override;
 	[[nodiscard]] RenderMode GetRenderMode() const override { return renderMode_; }
 
-	void CreatePipeline(const VertexInput& vertexInput) override;
+	void CreatePipeline(bool forceRecreate) override;
 
 	[[nodiscard]] ordered_json ToJson() const override;
 	void FromJson(const json& materialJson) override;

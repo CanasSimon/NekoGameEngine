@@ -48,14 +48,16 @@ class Window;
 class BasicEngine : public SystemInterface
 {
 public:
-    explicit BasicEngine(const FilesystemInterface&,std::optional<Configuration> config = std::nullopt);
+	explicit BasicEngine(
+		const FilesystemInterface&, std::optional<Configuration> config = std::nullopt);
 	BasicEngine() = delete;
-    ~BasicEngine() override;
-    void Init() override;
-    void Update(seconds dt) final;
-    void Destroy() override;
+	~BasicEngine() override;
 
-    //Update functions
+	void Init() override;
+	void Update(seconds dt) final;
+	void Destroy() override;
+
+	//Update functions
     virtual void ManageEvent() = 0;
     virtual void GenerateUiFrame();
 

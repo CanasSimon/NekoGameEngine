@@ -35,7 +35,6 @@ package_extensions = [
 shader_extensions = [
     ".vert",
     ".frag",
-    ".glsl",
     ".geom",
     ".comp",
     ".tesc",
@@ -57,7 +56,7 @@ txt_extensions = [
 ]
 
 vk_shader_extensions = [
-    ".vk"
+    ".glsl"
 ]
 
 def iterate_over_type(extensions):

@@ -44,10 +44,8 @@ class SdlEngine;
 using JoystickId  = unsigned;
 using JoyPlayerId = unsigned;
 
-/**
-* \brief Enum all the key on an US keyboard based on SDL value
-*/
-enum class KeyCodeType : std::uint16_t
+/// Enum to use as alias to the SDL one
+enum class KeyCode : std::uint16_t
 {
 	UNKNOWN                   = SDL_SCANCODE_UNKNOWN,
 	A                         = SDL_SCANCODE_A,
@@ -287,109 +285,83 @@ enum class KeyCodeType : std::uint16_t
 	KEY_KBDILLUMUP            = SDL_SCANCODE_KBDILLUMUP,
 	KEY_EJECT                 = SDL_SCANCODE_EJECT,
 	KEY_SLEEP                 = SDL_SCANCODE_SLEEP,
-	KEYBOARD_SIZE             = 282
+	LENGTH                    = 282
 };
 
-/**
-* \brief Enum of the mouse button based on SDL value
-*/
+/// Enum representing the mouse buttons
 enum class MouseButtonType : std::uint8_t
 {
-	LEFT   = 0,
-	MIDDLE = 1,
-	RIGHT  = 2,
+	LEFT = 0,
+	MIDDLE,
+	RIGHT,
 	LENGTH
 };
 
-/**
-* \brief Enum of the controller button based on SDL value
-*/
+/// Enum to use as alias to the SDL one
 enum class ControllerButtonType : std::uint8_t
 {
-	BUTTON_A             = SDL_CONTROLLER_BUTTON_A,
-	BUTTON_B             = SDL_CONTROLLER_BUTTON_B,
-	BUTTON_X             = SDL_CONTROLLER_BUTTON_X,
-	BUTTON_Y             = SDL_CONTROLLER_BUTTON_Y,
-	BUTTON_BACK          = SDL_CONTROLLER_BUTTON_BACK,
-	BUTTON_GUIDE         = SDL_CONTROLLER_BUTTON_GUIDE,
-	BUTTON_START         = SDL_CONTROLLER_BUTTON_START,
-	BUTTON_LEFTSTICK     = SDL_CONTROLLER_BUTTON_LEFTSTICK,
-	BUTTON_RIGHTSTICK    = SDL_CONTROLLER_BUTTON_RIGHTSTICK,
-	BUTTON_LEFTSHOULDER  = SDL_CONTROLLER_BUTTON_LEFTSHOULDER,
-	BUTTON_RIGHTSHOULDER = SDL_CONTROLLER_BUTTON_RIGHTSHOULDER,
-	BUTTON_DPAD_UP       = SDL_CONTROLLER_BUTTON_DPAD_UP,
-	BUTTON_DPAD_DOWN     = SDL_CONTROLLER_BUTTON_DPAD_DOWN,
-	BUTTON_DPAD_LEFT     = SDL_CONTROLLER_BUTTON_DPAD_LEFT,
-	BUTTON_DPAD_RIGHT    = SDL_CONTROLLER_BUTTON_DPAD_RIGHT,
+	A              = SDL_CONTROLLER_BUTTON_A,
+	B              = SDL_CONTROLLER_BUTTON_B,
+	X              = SDL_CONTROLLER_BUTTON_X,
+	Y              = SDL_CONTROLLER_BUTTON_Y,
+	BACK           = SDL_CONTROLLER_BUTTON_BACK,
+	GUIDE          = SDL_CONTROLLER_BUTTON_GUIDE,
+	START          = SDL_CONTROLLER_BUTTON_START,
+	LEFT_STICK     = SDL_CONTROLLER_BUTTON_LEFTSTICK,
+	RIGHT_STICK    = SDL_CONTROLLER_BUTTON_RIGHTSTICK,
+	LEFT_SHOULDER  = SDL_CONTROLLER_BUTTON_LEFTSHOULDER,
+	RIGHT_SHOULDER = SDL_CONTROLLER_BUTTON_RIGHTSHOULDER,
+	UP             = SDL_CONTROLLER_BUTTON_DPAD_UP,
+	DOWN           = SDL_CONTROLLER_BUTTON_DPAD_DOWN,
+	LEFT           = SDL_CONTROLLER_BUTTON_DPAD_LEFT,
+	RIGHT          = SDL_CONTROLLER_BUTTON_DPAD_RIGHT,
 	LENGTH
 };
 
-/**
-* \brief Enum of the controller axis based on SDL value
-*/
+/// Enum to use as alias to the SDL one
 enum class ControllerAxes : std::uint8_t
 {
-	HORIZONTAL_L          = SDL_CONTROLLER_AXIS_LEFTX,
-	VERTICAL_L            = SDL_CONTROLLER_AXIS_LEFTY,
-	HORIZONTAL_R = SDL_CONTROLLER_AXIS_RIGHTX,
-	VERTICAL_R            = SDL_CONTROLLER_AXIS_RIGHTY,
-	LEFT_BUMPER           = SDL_CONTROLLER_AXIS_TRIGGERLEFT,
-	RIGHT_BUMPER          = SDL_CONTROLLER_AXIS_TRIGGERRIGHT,
+	HORIZONTAL_L  = SDL_CONTROLLER_AXIS_LEFTX,
+	VERTICAL_L    = SDL_CONTROLLER_AXIS_LEFTY,
+	HORIZONTAL_R  = SDL_CONTROLLER_AXIS_RIGHTX,
+	VERTICAL_R    = SDL_CONTROLLER_AXIS_RIGHTY,
+	LEFT_TRIGGER  = SDL_CONTROLLER_AXIS_TRIGGERLEFT,
+	RIGHT_TRIGGER = SDL_CONTROLLER_AXIS_TRIGGERRIGHT,
 	LENGTH
 };
 
-/**
-* \brief Enum of the switch button based on SDL value
-*/
-enum class SwitchButtonType : std::uint8_t
-{
-	LENGTH
-};
-
-/**
-* \brief Enum of the switch axis based on SDL value
-*/
-enum class SwitchAxisType : std::uint8_t
-{
-	LENGTH
-};
-
-/**
-* \brief Enum of the button state
-*/
+/// Represents the states a button can take
 enum class ButtonState : std::uint8_t
 {
 	NONE = 0,
 	DOWN,
 	HELD,
 	UP,
+	LENGTH
 };
 
-/**
- * \brief Struct of inputs (button state and axis) and id of a controller
- */
+constexpr std::size_t kKeyboardKeyNum      = static_cast<int>(KeyCode::LENGTH);
+constexpr std::size_t kMouseButtonNum      = static_cast<int>(MouseButtonType::LENGTH);
+constexpr std::size_t kControllerButtonNum = static_cast<int>(ControllerButtonType::LENGTH);
+constexpr std::size_t kControllerAxesNum   = static_cast<int>(ControllerAxes::LENGTH);
+
+/// Contains the values needed for a keyboard
+struct KeyboardInputs
+{
+	std::array<ButtonState, kKeyboardKeyNum> keyStates =
+		std::array<ButtonState, kKeyboardKeyNum>();
+	std::array<ButtonState, kMouseButtonNum> mouseButtonStates =
+		std::array<ButtonState, kMouseButtonNum>();
+};
+
+/// Contains the values needed for a controller
 struct ControllerInputs
 {
-	std::array<ButtonState, static_cast<size_t>(ControllerButtonType::LENGTH)>
-		controllerButtonStates =
-			std::array<ButtonState, static_cast<size_t>(ControllerButtonType::LENGTH)>();
-	std::array<float, static_cast<size_t>(ControllerAxes::LENGTH)> controllerAxis =
-		std::array<float, static_cast<size_t>(ControllerAxes::LENGTH)>();
-	JoystickId controllerId        = 0;
-	JoyPlayerId controllerPlayerId = 0;
-};
-
-/**
- * \brief Struct of inputs (button state and axis) and id of a switch controller
- */
-struct SwitchInputs
-{
-	std::array<ButtonState, static_cast<size_t>(SwitchButtonType::LENGTH)> switchButtonStates =
-		std::array<ButtonState, static_cast<size_t>(SwitchButtonType::LENGTH)>();
-	std::array<float, static_cast<size_t>(SwitchAxisType::LENGTH)> switchAxis =
-		std::array<float, static_cast<size_t>(SwitchAxisType::LENGTH)>();
-	JoystickId switchJoyInstanceId = 0;
-	JoyPlayerId switchJoyPlayerId  = 0;
+	std::array<ButtonState, kControllerButtonNum> controllerButtonStates =
+		std::array<ButtonState, kControllerButtonNum>();
+	std::array<float, kControllerAxesNum> controllerAxes = std::array<float, kControllerAxesNum>();
+	JoystickId controllerId                              = 0;
+	JoyPlayerId controllerPlayerId                       = 0;
 };
 
 /**
@@ -407,26 +379,11 @@ public:
 	/**
      * \brief Get the button state of a key
      */
-	[[nodiscard]] virtual ButtonState GetKeyState(KeyCodeType key) const = 0;
+	[[nodiscard]] virtual ButtonState GetKeyState(KeyCode key) const = 0;
 
-	/**
-     * \brief Get a vector of all switchJoy Ids registered
-     */
-	[[nodiscard]] virtual std::vector<JoyPlayerId> GetSwitchJoyIdVector() const = 0;
-
-	/**
-     * \brief Get switch button state
-     * \param switchJoyId Id of the joycon to get
-     */
-	[[nodiscard]] virtual ButtonState GetSwitchButtonState(
-		JoyPlayerId switchJoyId, SwitchButtonType switchButton) const = 0;
-
-	/**
-     * \brief Get switch axis value
-     * \param switchJoyId Id of the joycon to get
-     */
-	[[nodiscard]] virtual float GetSwitchAxis(
-		JoyPlayerId switchJoyId, SwitchAxisType axis) const = 0;
+	[[nodiscard]] virtual bool IsKeyDown(KeyCode key) const = 0;
+	[[nodiscard]] virtual bool IsKeyHeld(KeyCode key) const = 0;
+	[[nodiscard]] virtual bool IsKeyUp(KeyCode key) const   = 0;
 
 	/**
      * \brief Get a vector of all controller Ids registered
@@ -450,22 +407,12 @@ public:
 	/**
     * \brief Translate KeyCodeType enum to string
     */
-	virtual std::string PcInputsEnumToString(KeyCodeType keyCode) = 0;
+	virtual std::string PcInputsEnumToString(KeyCode keyCode) = 0;
 
 	/**
     * \brief Translate KeyCodeType enum to string
     */
 	virtual std::string MouseInputsEnumToString(MouseButtonType mouseButton) = 0;
-
-	/**
-    * \brief Translate SwitchInputs enum to string
-    */
-	virtual std::string SwitchInputsEnumToString(SwitchButtonType switchInputs) = 0;
-
-	/**
-    * \brief Translate KeyCodeType enum to string
-    */
-	virtual std::string SwitchInputsEnumToString(SwitchAxisType switchAxis) = 0;
 
 	/**
     * \brief Translate ControllerInputs enum to string
@@ -476,6 +423,38 @@ public:
     * \brief Translate KeyCodeType enum to string
     */
 	virtual std::string ControllerInputsEnumToString(ControllerAxes controller) = 0;
+};
+
+class NullInputManager final : public IInputManager
+{
+public:
+	~NullInputManager() override = default;
+
+	void Init() override {}
+
+	[[nodiscard]] ButtonState GetKeyState(KeyCode) const override { return ButtonState::NONE; }
+
+	[[nodiscard]] bool IsKeyDown(KeyCode) const override { return false; }
+	[[nodiscard]] bool IsKeyHeld(KeyCode) const override { return false; }
+	[[nodiscard]] bool IsKeyUp(KeyCode) const override { return false; }
+
+	[[nodiscard]] ButtonState GetControllerButtonState(
+		JoyPlayerId, ControllerButtonType) const override
+	{
+		return ButtonState::NONE;
+	}
+
+	[[nodiscard]] float GetControllerAxis(JoyPlayerId, ControllerAxes) const override
+	{
+		return 0.0f;
+	}
+
+	[[nodiscard]] std::vector<JoyPlayerId> GetControllerIdVector() const override { return {}; }
+
+	std::string PcInputsEnumToString(KeyCode) override { return ""; }
+	std::string MouseInputsEnumToString(MouseButtonType) override { return ""; }
+	std::string ControllerInputsEnumToString(ControllerButtonType) override { return ""; }
+	std::string ControllerInputsEnumToString(ControllerAxes) override { return ""; }
 };
 
 class InputManager final : public IInputManager
@@ -495,12 +474,11 @@ public:
      */
 	void OnEvent(SDL_Event event);
 
-	[[nodiscard]] ButtonState GetKeyState(KeyCodeType key) const override;
+	[[nodiscard]] ButtonState GetKeyState(KeyCode key) const override;
 
-	[[nodiscard]] ButtonState GetSwitchButtonState(
-		JoyPlayerId switchJoyId, SwitchButtonType switchButton) const override;
-
-	[[nodiscard]] float GetSwitchAxis(JoyPlayerId switchJoyId, SwitchAxisType axis) const override;
+	[[nodiscard]] bool IsKeyDown(KeyCode key) const override;
+	[[nodiscard]] bool IsKeyHeld(KeyCode key) const override;
+	[[nodiscard]] bool IsKeyUp(KeyCode key) const override;
 
 	[[nodiscard]] ButtonState GetControllerButtonState(
 		JoyPlayerId controllerId, ControllerButtonType controllerButton) const override;
@@ -510,37 +488,22 @@ public:
 
 	[[nodiscard]] std::vector<JoyPlayerId> GetControllerIdVector() const override;
 
-	[[nodiscard]] std::vector<JoyPlayerId> GetSwitchJoyIdVector() const override;
-
-	std::string PcInputsEnumToString(KeyCodeType keyCode) override;
+	std::string PcInputsEnumToString(KeyCode keyCode) override;
 
 	std::string MouseInputsEnumToString(MouseButtonType mouseButton) override;
-
-	std::string SwitchInputsEnumToString(SwitchButtonType switchInputs) override;
-
-	std::string SwitchInputsEnumToString(SwitchAxisType switchAxis) override;
 
 	std::string ControllerInputsEnumToString(ControllerButtonType controller) override;
 
 	std::string ControllerInputsEnumToString(ControllerAxes controller) override;
 
 private:
-	void PrintJoystick(int device);
-	void PrintAllJoystick();
+	static void PrintJoystick(int device);
+	static void PrintAllJoystick();
 
 	[[nodiscard]] unsigned FindControllerIndexFromId(JoystickId controllerId) const;
 	[[nodiscard]] unsigned FindControllerIndexFromPlayerId(JoyPlayerId switchJoyId) const;
 
-	[[nodiscard]] unsigned FindSwitchIndexFromId(JoystickId switchJoyId) const;
-	[[nodiscard]] unsigned FindSwitchIndexFromPlayerId(JoyPlayerId switchJoyId) const;
-
-	std::array<ButtonState, static_cast<int>(KeyCodeType::KEYBOARD_SIZE)> keyPressedState_ =
-		std::array<ButtonState, static_cast<int>(KeyCodeType::KEYBOARD_SIZE)>();
-	std::array<ButtonState, static_cast<int>(MouseButtonType::LENGTH)> buttonState_ =
-		std::array<ButtonState, static_cast<int>(MouseButtonType::LENGTH)>();
-
-	std::vector<SwitchInputs> switchInputs_;
-
+	KeyboardInputs keyboardInputs_;
 	std::vector<ControllerInputs> controllerInputs_;
 
 	Vec2f mousePos_         = Vec2f::zero;
@@ -548,82 +511,6 @@ private:
 	Vec2f mouseScroll_      = Vec2f::zero;
 
 	const float kMaxJoyValue_ = 32768.0f;
-};
-
-class NullInputManager final : public IInputManager
-{
-public:
-	~NullInputManager() override = default;
-
-	void Init() override {}
-
-	[[nodiscard]] ButtonState GetKeyState([[maybe_unused]] KeyCodeType key) const override
-	{
-		return ButtonState::NONE;
-	}
-
-	[[nodiscard]] ButtonState GetSwitchButtonState([[maybe_unused]] JoyPlayerId switchJoyId,
-		[[maybe_unused]] SwitchButtonType switchButton) const override
-	{
-		return ButtonState::NONE;
-	}
-
-	[[nodiscard]] float GetSwitchAxis([[maybe_unused]] JoyPlayerId switchJoyId,
-		[[maybe_unused]] SwitchAxisType axis) const override
-	{
-		return 0.0f;
-	}
-
-	[[nodiscard]] ButtonState GetControllerButtonState([[maybe_unused]] JoyPlayerId controllerId,
-		[[maybe_unused]] ControllerButtonType controllerButton) const override
-	{
-		return ButtonState::NONE;
-	}
-
-	[[nodiscard]] float GetControllerAxis([[maybe_unused]] JoyPlayerId controllerId,
-		[[maybe_unused]] ControllerAxes axis) const override
-	{
-		return 0.0f;
-	}
-
-	[[nodiscard]] std::vector<JoyPlayerId> GetControllerIdVector() const override
-	{
-		return std::vector<JoyPlayerId>();
-	}
-
-	[[nodiscard]] std::vector<JoyPlayerId> GetSwitchJoyIdVector() const override
-	{
-		return std::vector<JoyPlayerId>();
-	}
-
-	std::string PcInputsEnumToString([[maybe_unused]] KeyCodeType keyCode) override { return ""; }
-
-	std::string MouseInputsEnumToString([[maybe_unused]] MouseButtonType mouseButton) override
-	{
-		return "";
-	}
-
-	std::string SwitchInputsEnumToString([[maybe_unused]] SwitchButtonType switchInputs) override
-	{
-		return "";
-	}
-
-	std::string SwitchInputsEnumToString([[maybe_unused]] SwitchAxisType switchAxis) override
-	{
-		return "";
-	}
-
-	std::string ControllerInputsEnumToString(
-		[[maybe_unused]] ControllerButtonType controller) override
-	{
-		return "";
-	}
-
-	std::string ControllerInputsEnumToString(
-		[[maybe_unused]] ControllerAxes controller) override
-	{
-		return "";
-	}
 };
 
 using InputLocator = Locator<IInputManager, NullInputManager>;

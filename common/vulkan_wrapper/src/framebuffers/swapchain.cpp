@@ -1,3 +1,6 @@
+
+#include <vk/framebuffers/swapchain.h>
+
 #include "vk/vk_resources.h"
 
 namespace neko::vk
@@ -24,12 +27,12 @@ void Swapchain::Init()
 	createInfo.imageColorSpace  = surfaceFormat.colorSpace;
 	createInfo.imageExtent      = extent_;
 	createInfo.imageArrayLayers = 1;
-	createInfo.imageUsage       = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-	createInfo.preTransform     = swapChainSupport.capabilities.currentTransform;
-	createInfo.compositeAlpha   = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-	createInfo.presentMode      = presentMode;
-	createInfo.clipped          = VK_TRUE;
-	createInfo.oldSwapchain     = {};
+	createInfo.imageUsage   = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+	createInfo.preTransform = swapChainSupport.capabilities.currentTransform;
+	createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+	createInfo.presentMode    = presentMode;
+	createInfo.clipped        = VK_TRUE;
+	createInfo.oldSwapchain   = {};
 
 	const QueueFamilyIndices& queueIndices = vkObj->gpu.GetQueueFamilyIndices();
 	std::uint32_t queueFamilyIndices[] = {queueIndices.graphicsFamily, queueIndices.presentFamily};
@@ -45,6 +48,13 @@ void Swapchain::Init()
 		createInfo.queueFamilyIndexCount = 0;
 		createInfo.pQueueFamilyIndices   = nullptr;
 	}
+
+	if (swapChainSupport.capabilities.supportedUsageFlags & VK_IMAGE_USAGE_TRANSFER_SRC_BIT)
+		createInfo.imageUsage |= VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
+
+	// Enable transfer destination on swap chain images if supported
+	if (swapChainSupport.capabilities.supportedUsageFlags & VK_IMAGE_USAGE_TRANSFER_DST_BIT)
+		createInfo.imageUsage |= VK_IMAGE_USAGE_TRANSFER_DST_BIT;
 
 	// Create new one
 	vkCheckError(vkCreateSwapchainKHR(vkObj->device, &createInfo, nullptr, &swapchain_),
@@ -101,6 +111,13 @@ void Swapchain::Init(Swapchain& oldSwapchain)
 		createInfo.queueFamilyIndexCount = 0;
 		createInfo.pQueueFamilyIndices   = nullptr;
 	}
+
+	if (swapChainSupport.capabilities.supportedUsageFlags & VK_IMAGE_USAGE_TRANSFER_SRC_BIT)
+		createInfo.imageUsage |= VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
+
+	// Enable transfer destination on swap chain images if supported
+	if (swapChainSupport.capabilities.supportedUsageFlags & VK_IMAGE_USAGE_TRANSFER_DST_BIT)
+		createInfo.imageUsage |= VK_IMAGE_USAGE_TRANSFER_DST_BIT;
 
 	// Create new one
 	vkCheckError(vkCreateSwapchainKHR(vkObj->device, &createInfo, nullptr, &swapchain_),
@@ -227,5 +244,17 @@ void Swapchain::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities)
         std::min(capabilities.minImageExtent.width, config.windowSize.x));
 	extent_.height = std::max(capabilities.minImageExtent.height,
 		std::min(capabilities.minImageExtent.height, config.windowSize.y));
+}
+
+void Swapchain::SetImageLayout(CommandBuffer& commandBuffer,
+	std::size_t imageIndex,
+	VkImageLayout oldLayout,
+	VkImageLayout newLayout,
+	VkImageSubresourceRange subresourceRange,
+	VkPipelineStageFlags srcMask,
+	VkPipelineStageFlags dstMask) const
+{
+	commandBuffer.SetImageLayout(
+		images_[imageIndex], oldLayout, newLayout, subresourceRange, srcMask, dstMask);
 }
 }    // namespace neko::vk

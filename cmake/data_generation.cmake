@@ -48,12 +48,11 @@ function(data_generate BINARY)
             "${CMAKE_CURRENT_SOURCE_DIR}/data/*.comp"
             "${CMAKE_CURRENT_SOURCE_DIR}/data/*.frag"
             "${CMAKE_CURRENT_SOURCE_DIR}/data/*.geom"
-            "${CMAKE_CURRENT_SOURCE_DIR}/data/*.glsl"
             "${CMAKE_CURRENT_SOURCE_DIR}/data/*.tesc"
             "${CMAKE_CURRENT_SOURCE_DIR}/data/*.tese"
             "${CMAKE_CURRENT_SOURCE_DIR}/data/*.vert")
 	file(GLOB_RECURSE VK_SHADER_FILES
-			"${CMAKE_CURRENT_SOURCE_DIR}/data/*.vk")
+			"${CMAKE_CURRENT_SOURCE_DIR}/data/*.glsl")
 
     set(data_generate_name "${BINARY}_Generate_Data")
     source_group("Data/AerFiles"    FILES ${AER_FILES})

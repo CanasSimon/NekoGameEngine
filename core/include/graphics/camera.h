@@ -4,6 +4,8 @@
 
 namespace neko
 {
+constexpr float kMaxCameraAngleX = 80.0f;
+
 struct Camera
 {
     Vec3f position         = Vec3f::back;

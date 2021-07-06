@@ -34,6 +34,6 @@ class InstanceBuffer : public Buffer
 public:
 	explicit InstanceBuffer(VkDeviceSize size);
 
-	void Update(const std::vector<char>& newInstanceData) const;
+	void Update(const std::vector<char>& newInstanceData);
 };
 }    // namespace neko::vk

@@ -72,8 +72,8 @@ void Renderer::RenderAll()
 void Renderer::ScheduleJobs()
 {
 	auto* engine = BasicEngine::GetInstance();
-	engine->ScheduleJob(&syncJob_, JobThreadType::RENDER_THREAD);
-	engine->ScheduleJob(&renderAllJob_, JobThreadType::RENDER_THREAD);
+	engine->ScheduleJob(&syncJob_, JobThreadType::MAIN_THREAD);
+	engine->ScheduleJob(&renderAllJob_, JobThreadType::MAIN_THREAD);
 }
 
 void Renderer::RegisterSyncBuffersFunction(SyncBuffersInterface* syncBuffersInterface)

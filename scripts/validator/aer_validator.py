@@ -69,113 +69,13 @@ stage_flags = {
     '.tese': 4,
     '.tesc': 2,
 }
+
+
 def removeprefix(extension, prefix) :
     if extension.startswith(prefix):
         return extension[len(prefix):]
     else:
         return extension[:]
-
-def validate_vkshader(data_src, data_out, meta_content):
-    path = Path(data_src)
-    extension = path.suffixes
-    data_out = data_out.replace('.vk', '.spv')
-    if extension[0] == '.vert':
-        shader_type = ShaderType.VERT
-    elif extension[0] == '.frag':
-        shader_type = ShaderType.FRAG
-    elif extension[0] == '.tesc':
-        shader_type = ShaderType.TESC
-    elif extension[0] == '.tese':
-        shader_type = ShaderType.TESE
-    elif extension[0] == '.geom':
-        shader_type = ShaderType.GEOM
-    elif extension[0] == '.comp':
-        shader_type = ShaderType.COMP
-    else:
-        shader_type = ShaderType.MISC
-
-    command = [program, "-V", "-S", removeprefix(extension[0],"."), data_src, "-o", data_out]
-    status = subprocess.run(command)
-    if status.returncode != 0:
-        exit(1)
-
-    meta_content["shader_type"] = shader_type.value
-
-    attributes = []
-    uniforms = []
-    uniform_blocks = []
-    with open(path, 'r') as shader_file:
-        lines = shader_file.readlines()
-        for count, line in enumerate(lines):
-            colon = False
-            if ';' in line:
-                colon = True
-            line = line.replace('\n', '')
-            line = line.replace(';', '')
-            line = line.replace('//', '// ')
-            split_line = line.split(' ')
-            if "in" in split_line:
-                comment_index = len(split_line)
-                if "//" in split_line:
-                    comment_index = split_line.index("//")
-                index = split_line.index('=')
-                if index > comment_index:
-                    continue
-                in_variable = {
-                    "name": split_line[index + 4],
-                    "location": int(split_line[index + 1][0]),
-                    "size": type_sizes.get(split_line[index + 3]),
-                    "type": type_to_enum.get(split_line[index + 3]),
-                }
-                attributes.append(in_variable)
-            if "uniform" in split_line and colon:
-                uniform_obj = {
-                    "name": split_line[5],
-                    "binding": int(split_line[2][0]),
-                    "offset": -1,
-                    "size": -1,
-                    "type": 0,
-                }
-                uniforms.append(uniform_obj)
-            elif "uniform" in split_line:
-                i = 1
-                size = 0
-                ub_uniforms = []
-                while '}' not in lines[count]:
-                    count += 1
-                    line1 = lines[count].replace('\n', '')
-                    line1 = line1.replace(';', '')
-                    line1 = line1.replace('  ', '')
-                    line1 = line1.replace('\t', '')
-                    split_line1 = line1.split(' ')
-                    if len(split_line1) < 2:
-                        continue
-                    for type_size in type_sizes:
-                        if type_size in split_line1:
-                            size += type_sizes.get(type_size)
-                            ub_uniform = {
-                                "name": split_line1[1],
-                                "binding": 0,
-                                "offset": size - type_sizes.get(type_size),
-                                "size": type_sizes.get(type_size),
-                                "type": 0,
-                                "readOnly": False,
-                                "writeOnly": False,
-                            }
-                            ub_uniforms.append(ub_uniform)
-                            break
-
-                uniform_block_obj = {
-                    "name": split_line[4],
-                    "binding": int(split_line[2][0]),
-                    "size": size,
-                    "type": 0,
-                    "uniforms": ub_uniforms,
-                }
-                uniform_blocks.append(uniform_block_obj)
-    meta_content["attributes"] = attributes
-    meta_content["uniforms"] = uniforms
-    meta_content["uniformBlocks"] = uniform_blocks
 
 
 def validate_aer_material(data_src, data_out, meta_content):

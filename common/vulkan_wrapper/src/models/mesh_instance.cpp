@@ -4,32 +4,9 @@
 
 namespace neko::vk
 {
-VertexInput ModelInstance::Instance::GetVertexInput(uint32_t baseBinding)
-{
-	VkVertexInputBindingDescription bindingDescription {};
-	bindingDescription.binding   = baseBinding;
-	bindingDescription.stride    = sizeof(Instance);
-	bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_INSTANCE;
-
-	const VkFormat format3 = VK_FORMAT_R32G32B32_SFLOAT;
-	const VkFormat format4 = VK_FORMAT_R32G32B32A32_SFLOAT;
-	const std::vector<VkVertexInputAttributeDescription> attributeDescriptions = {
-		{0, baseBinding, format4, offsetof(Instance, modelMatrix)},
-		{1, baseBinding, format4, offsetof(Instance, modelMatrix) + sizeof(Vec4f)},
-		{2, baseBinding, format4, offsetof(Instance, modelMatrix) + 2 * sizeof(Vec4f)},
-		{3, baseBinding, format4, offsetof(Instance, modelMatrix) + 3 * sizeof(Vec4f)},
-
-		{4, baseBinding, format3, offsetof(Instance, normalMatrix)},
-		{5, baseBinding, format3, offsetof(Instance, normalMatrix) + sizeof(Vec3f)},
-		{6, baseBinding, format3, offsetof(Instance, normalMatrix) + 2 * sizeof(Vec3f)},
-	};
-
-	return VertexInput(0, bindingDescription, attributeDescriptions);
-}
-
 ModelInstance::ModelInstance(const ModelId& modelId)
    : modelId_(modelId),
-	 instanceBuffer_(sizeof(Instance) * kMaxInstances),
+	 instanceBuffer_(sizeof(Mesh::Instance) * kMaxInstances),
 	 uniformObject_(false)
 {}
 
@@ -44,7 +21,7 @@ void ModelInstance::Update(std::vector<Mat4f>& modelMatrices)
 	instances_    = 0;
 	if (modelMatrices.empty()) return;
 
-	Instance* instances;
+    Mesh::Instance* instances;
 	instanceBuffer_.MapMemory(reinterpret_cast<char**>(&instances));
 	{
 		for (auto& modelMatrix : modelMatrices)
@@ -57,6 +34,7 @@ void ModelInstance::Update(std::vector<Mat4f>& modelMatrices)
 			instances_++;
 		}
 	}
+
 	instanceBuffer_.UnmapMemory();
 }
 

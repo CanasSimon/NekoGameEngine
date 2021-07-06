@@ -25,6 +25,8 @@
  Author: Canas Simon
  Date:
 ---------------------------------------------------------- */
+#include "mathematics/hash.h"
+
 #include "vk/shaders/uniform.h"
 
 namespace neko::vk

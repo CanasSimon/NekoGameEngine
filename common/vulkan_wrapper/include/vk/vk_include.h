@@ -33,6 +33,9 @@
 #define VALIDATION_LAYERS
 #endif
 
+#ifdef NEKO_RAYTRACING
+#define VK_ENABLE_BETA_EXTENSIONS
+#endif
 #include "vulkan/vulkan.h"
 #include "vulkan/vulkan_core.h"
 

@@ -1,3 +1,6 @@
+
+#include <vk/pipelines/material_pipeline.h>
+
 #include "vk/vk_resources.h"
 
 namespace neko::vk
@@ -8,6 +11,11 @@ MaterialPipeline::MaterialPipeline(
 	 pipelineGraphicsCreate_(std::move(pipelineCreate)),
 	 renderStage_(std::nullopt)
 {}
+
+void MaterialPipeline::Destroy() const
+{
+	pipeline_.Destroy();
+}
 
 MaterialPipeline& MaterialPipeline::CreateMaterialPipeline(
 	const PipelineStage& pipelineStage, const GraphicsPipelineCreateInfo& pipelineCreate)

@@ -43,7 +43,7 @@ struct UniformBuffer final : IDescriptor, Buffer
 {
 	explicit UniformBuffer(VkDeviceSize size, const std::vector<char>& uniformData = {});
 
-	void Update(const std::vector<char>& newUniformData) const;
+	void Update(const std::vector<char>& newUniformData);
 	void Destroy() const override;
 
 	static VkDescriptorSetLayoutBinding GetDescriptorSetLayout(

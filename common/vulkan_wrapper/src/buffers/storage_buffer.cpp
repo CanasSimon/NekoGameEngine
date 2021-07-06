@@ -9,7 +9,7 @@ StorageBuffer::StorageBuffer(const VkDeviceSize& size, const std::vector<char>& 
 		 data.data())
 {}
 
-void StorageBuffer::Update(const std::vector<char>& newStorageData) const
+void StorageBuffer::Update(const std::vector<char>& newStorageData)
 {
 	char* dataPtr;
 	MapMemory(&dataPtr);

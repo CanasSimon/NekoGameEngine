@@ -54,9 +54,9 @@ bool DiffuseMaterial::operator==(const DiffuseMaterial& other) const
 			   (!normal_ && !other.normal_));
 }
 
-void DiffuseMaterial::CreatePipeline(const VertexInput&)
+void DiffuseMaterial::CreatePipeline(bool forceRecreate)
 {
-	if (pipelineMaterial_) return;
+	if (pipelineMaterial_ && !forceRecreate) return;
 
 	ResetPipeline();
 }
@@ -188,16 +188,17 @@ void DiffuseMaterial::ResetPipeline()
 		renderMode_ == RenderMode::VK_OPAQUE ? PipelineStage {0, 0} : PipelineStage {0, 1};
 
 	const Configuration& config = BasicEngine::GetInstance()->GetConfig();
-	pipelineMaterial_ =
-		std::optional_ref<MaterialPipeline>(MaterialPipeline::CreateMaterialPipeline(stage,
-			GraphicsPipelineCreateInfo(GetShaderPath(),
-				{Vertex::GetVertexInput(0), ModelInstance::Instance::GetVertexInput(1)},
-				GraphicsPipeline::Mode::MRT,
-				GraphicsPipeline::Depth::READ_WRITE,
-				VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
-				VK_POLYGON_MODE_FILL,
-				cullMode,
-				VK_FRONT_FACE_CLOCKWISE)));
+	const auto createInfo       = GraphicsPipelineCreateInfo(GetShaderPath(),
+        {Vertex::GetVertexInput(0), Mesh::Instance::GetVertexInput(1)},
+        GraphicsPipeline::Mode::MRT,
+        GraphicsPipeline::Depth::READ_WRITE,
+        VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
+        VK_POLYGON_MODE_FILL,
+        cullMode,
+        VK_FRONT_FACE_CLOCKWISE);
+
+	pipelineMaterial_ = std::optional_ref<MaterialPipeline>(
+		MaterialPipeline::CreateMaterialPipeline(stage, createInfo));
 }
 
 ordered_json DiffuseMaterial::ToJson() const

@@ -35,7 +35,7 @@ class StorageBuffer final : public IDescriptor, public Buffer
 public:
 	explicit StorageBuffer(const VkDeviceSize& size, const std::vector<char>& data = {});
 
-	void Update(const std::vector<char>& newStorageData) const;
+	void Update(const std::vector<char>& newStorageData);
 	void Destroy() const override;
 
 	static VkDescriptorSetLayoutBinding GetDescriptorSetLayout(

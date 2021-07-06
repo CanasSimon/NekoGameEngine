@@ -25,6 +25,7 @@
  Author: Canas Simon
  Date:
 ---------------------------------------------------------- */
+#include "graphics/color.h"
 #include "mathematics/vector.h"
 
 #include "vk/vk_include.h"
@@ -74,5 +75,6 @@ struct Vertex
 	Vec2f texCoords = Vec2f::zero;
 	Vec3f tangent   = Vec3f::zero;
 	Vec3f bitangent = Vec3f::zero;
+	Vec4f color     = Color::white * 0.5f;
 };
 }    // namespace neko::vk

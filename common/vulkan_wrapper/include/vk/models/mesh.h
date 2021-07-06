@@ -32,12 +32,22 @@
 #include "vk/images/texture_manager.h"
 #include "vk/material/material.h"
 #include "vk/models/vertex_input.h"
+#include "vk/ray_tracing/acceleration_structure.h"
+#include "vk/ray_tracing/scratch_buffer.h"
 
 namespace neko::vk
 {
 class Mesh
 {
 public:
+    struct Instance
+    {
+        [[nodiscard]] static VertexInput GetVertexInput(std::uint32_t baseBinding = 0);
+
+        Mat4f modelMatrix = Mat4f::Identity;
+        Mat3f normalMatrix = Mat3f::Identity;
+    };
+
 	Mesh() = default;
     virtual ~Mesh() = default;
 
@@ -68,11 +78,22 @@ public:
 
 	static constexpr VkIndexType GetIndexType() { return VK_INDEX_TYPE_UINT32; }
 
+    void CreateTopLevelAS(const std::vector<Instance>& instances = {});
+
+	[[nodiscard]] const AccelerationStructure& GetTopLevelAS() const { return topLevelAs_; }
+	[[nodiscard]] const AccelerationStructure& GetBottomLevelAS() const { return bottomLevelAs_; }
+
 	void SetMaterialId(MaterialId resourceId) { materialId_ = resourceId; }
 
 protected:
+	void CreateBottomLevelAS(
+		const std::vector<Vertex>& vertices, const std::vector<std::uint32_t>& indices);
+
 	Buffer vertexBuffer_ {};
 	std::optional<Buffer> indexBuffer_ = std::nullopt;
+
+    AccelerationStructure bottomLevelAs_;
+    AccelerationStructure topLevelAs_;
 
 	friend class ModelLoader;
 	MaterialId materialId_ = sole::uuid();

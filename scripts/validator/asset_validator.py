@@ -8,7 +8,7 @@ from pathlib import Path
 from enum import Enum
 
 from shader_validator import validate_shader
-from aer_validator import validate_vkshader
+from vk_shader_validator import validate_vkshader
 from texture_validator import validate_texture
 from material_validator import validate_material
 from skybox_validator import validate_skybox
@@ -61,7 +61,7 @@ def define_asset_type(filename) -> AssetType:
         return AssetType.VERT_SHADER
     if extension == '.frag':
         return AssetType.FRAG_SHADER
-    if extension == '.vk':
+    if extension == '.glsl':
         return AssetType.VK_SHADER
     if extension == '.ttf':
         return AssetType.FONT
