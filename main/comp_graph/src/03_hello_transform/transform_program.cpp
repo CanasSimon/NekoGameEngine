@@ -26,7 +26,7 @@
 #include <engine/engine.h>
 #include <imgui.h>
 #include "03_hello_transform/transform_program.h"
-#include "mathematics/transform.h"
+#include "math/transform.h"
 
 #define ROTATE_OVER_TIME
 

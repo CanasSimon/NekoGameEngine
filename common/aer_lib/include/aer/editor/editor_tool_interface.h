@@ -28,7 +28,7 @@
 ---------------------------------------------------------- */
 #include <sdl_engine/sdl_engine.h>
 
-#include "mathematics/hash.h"
+#include "math/hash.h"
 
 namespace neko::aer
 {

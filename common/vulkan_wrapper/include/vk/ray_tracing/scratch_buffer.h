@@ -1,4 +1,6 @@
 #pragma once
+#ifdef NEKO_RAYTRACING
+#include "vk/vk_include.h"
 
 namespace neko::vk
 {
@@ -17,3 +19,4 @@ private:
     PFN_vkGetBufferDeviceAddressKHR vkGetBufferDeviceAddressKHR {};
 };
 }
+#endif

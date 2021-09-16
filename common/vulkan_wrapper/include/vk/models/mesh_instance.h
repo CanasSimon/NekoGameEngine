@@ -57,12 +57,31 @@ public:
 	void AddInstance(const std::size_t instanceNum = 1) { instances_ += instanceNum; }
 	void SetModelId(const ModelId& modelId) { modelId_ = modelId; }
 
+#ifdef NEKO_RAYTRACING
+    void CreateTopLevelAS(std::size_t meshIndex, const std::vector<Mat4f>& instances = {});
+
+    [[nodiscard]] const AccelerationStructure& GetTopLevelAS(std::size_t meshIndex) const
+	{ return topLevelAs_[meshIndex]; }
+
+    [[nodiscard]] const std::vector<AccelerationStructure>& GetTopLevelASs() const
+	{ return topLevelAs_; }
+
+	[[nodiscard]] std::vector<VkAccelerationStructureKHR> GetTopLevelASHandles() const
+	{
+    	std::vector<VkAccelerationStructureKHR> handles(topLevelAs_.size());
+		for (std::size_t i = 0; i < topLevelAs_.size(); ++i)
+			handles[i] = topLevelAs_[i].handle;
+
+		return handles;
+	}
+#endif
+
 private:
 	bool CmdRenderOpaque(const CommandBuffer& commandBuffer,
 		UniformHandle& uniformScene,
 		UniformHandle& uniformLight,
 		const Mesh& mesh,
-		const Material& material);
+		Material& material);
 
 	ModelId modelId_;
 
@@ -70,7 +89,11 @@ private:
 	std::uint32_t instances_    = 0;
 
 	DescriptorHandle descriptorSet_;
-	InstanceBuffer instanceBuffer_;
+    InstanceBuffer instanceBuffer_;
 	UniformHandle uniformObject_;
+
+#ifdef NEKO_RAYTRACING
+    std::vector<AccelerationStructure> topLevelAs_;
+#endif
 };
 }    // namespace neko::vk

@@ -29,7 +29,7 @@
 
 namespace neko::vk
 {
-constexpr std::uint64_t kDefaultFenceTimeout = 100000000000;
+constexpr std::uint64_t kDefaultFenceTimeout = std::numeric_limits<std::uint64_t>::max();
 constexpr VkPipelineStageFlags kSubmitPipelineStages =
 	VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 

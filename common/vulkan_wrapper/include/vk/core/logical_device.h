@@ -39,7 +39,9 @@ constexpr std::array<const char*, 8> kDeviceExtensions = {VK_KHR_SWAPCHAIN_EXTEN
 	VK_KHR_SPIRV_1_4_EXTENSION_NAME,
 	VK_KHR_SHADER_FLOAT_CONTROLS_EXTENSION_NAME};
 #else
-constexpr std::array<const char*, 1> kDeviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+constexpr std::array<const char*, 3> kDeviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+	VK_KHR_SPIRV_1_4_EXTENSION_NAME,
+	VK_KHR_SHADER_FLOAT_CONTROLS_EXTENSION_NAME};
 #endif
 
 class LogicalDevice final

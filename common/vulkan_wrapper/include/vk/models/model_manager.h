@@ -25,6 +25,7 @@
  Author: Canas Simon
  Date:
 ---------------------------------------------------------- */
+#include "vk/models/mesh_quad.h"
 #include "vk/models/model_loader.h"
 
 namespace neko::vk
@@ -41,6 +42,8 @@ public:
 	[[nodiscard]] virtual std::size_t GetLoadedModelsCount() const    = 0;
 	[[nodiscard]] virtual std::size_t GetNonLoadedModelsCount() const = 0;
 	[[nodiscard]] virtual std::size_t GetModelsCount() const     = 0;
+
+    [[nodiscard]] virtual const Mesh* GetQuad() const = 0;
 };
 
 class NullModelManager : public IModelManager
@@ -59,6 +62,8 @@ public:
     [[nodiscard]] std::size_t GetLoadedModelsCount() const override { return 0; }
     [[nodiscard]] std::size_t GetNonLoadedModelsCount() const override { return 0; }
     [[nodiscard]] std::size_t GetModelsCount() const override { return 0; }
+
+    [[nodiscard]] const Mesh* GetQuad() const override { return nullptr; }
 };
 
 class ModelManager : public IModelManager
@@ -80,7 +85,11 @@ public:
 	[[nodiscard]] std::size_t GetLoadedModelsCount() const override { return models_.size(); }
 	[[nodiscard]] std::size_t GetNonLoadedModelsCount() const override { return loaders_.size(); }
 
+	[[nodiscard]] const Mesh* GetQuad() const override { return &quad_; }
+
 private:
+    MeshQuad quad_;
+
 	std::map<std::string, ModelId> pathMap_;
 	std::map<ModelId, Model> models_;
 	std::queue<ModelLoader> loaders_;

@@ -3,9 +3,9 @@
 
 namespace neko::vk
 {
-ModelManager::ModelManager() { ModelManagerLocator::provide(this); }
+ModelManager::ModelManager() : quad_(false) { ModelManagerLocator::provide(this); }
 
-void ModelManager::Init() {}
+void ModelManager::Init() { quad_.Load(); }
 
 void ModelManager::Update(seconds)
 {

@@ -25,7 +25,7 @@
  Author: Canas Simon
  Date:
 ---------------------------------------------------------- */
-#include "mathematics/aabb.h"
+#include "math/aabb.h"
 
 #include "vk/buffers/buffer.h"
 #include "vk/commands/command_buffer.h"
@@ -78,22 +78,24 @@ public:
 
 	static constexpr VkIndexType GetIndexType() { return VK_INDEX_TYPE_UINT32; }
 
-    void CreateTopLevelAS(const std::vector<Instance>& instances = {});
-
-	[[nodiscard]] const AccelerationStructure& GetTopLevelAS() const { return topLevelAs_; }
+#ifdef NEKO_RAYTRACING
 	[[nodiscard]] const AccelerationStructure& GetBottomLevelAS() const { return bottomLevelAs_; }
+#endif
 
 	void SetMaterialId(MaterialId resourceId) { materialId_ = resourceId; }
 
 protected:
+#ifdef NEKO_RAYTRACING
 	void CreateBottomLevelAS(
 		const std::vector<Vertex>& vertices, const std::vector<std::uint32_t>& indices);
+#endif
 
 	Buffer vertexBuffer_ {};
 	std::optional<Buffer> indexBuffer_ = std::nullopt;
 
+#ifdef NEKO_RAYTRACING
     AccelerationStructure bottomLevelAs_;
-    AccelerationStructure topLevelAs_;
+#endif
 
 	friend class ModelLoader;
 	MaterialId materialId_ = sole::uuid();

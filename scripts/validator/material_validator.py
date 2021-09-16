@@ -97,7 +97,7 @@ def validate_mtl_file(data_src, data_out, meta_content):
             # specular exponent
             if key == 'Ns':
                 current_material['specular_exponent'] = float(split_line[1])
-            # transparency
+            # alpha
             if key == 'd':
                 current_material['alpha'] = float(split_line[1])
 

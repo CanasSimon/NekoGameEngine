@@ -1,6 +1,6 @@
 #include <benchmark/benchmark.h>
-#include <mathematics/transform.h>
-#include <mathematics/quaternion.h>
+#include <math/transform.h>
+#include <math/quaternion.h>
 
 namespace neko
 {

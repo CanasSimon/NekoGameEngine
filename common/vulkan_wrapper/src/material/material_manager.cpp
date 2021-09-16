@@ -2,7 +2,13 @@
 
 namespace neko::vk
 {
-MaterialManager::MaterialManager() { MaterialManagerLocator::provide(this); }
+MaterialManager::MaterialManager()
+{
+	diffuseMaterials_.reserve(kMaterialDefaultNum);
+	particleMaterials_.reserve(kMaterialDefaultNum);
+
+	MaterialManagerLocator::provide(this);
+}
 
 void MaterialManager::Clear()
 {
@@ -14,10 +20,9 @@ void MaterialManager::Clear()
 	//trailMaterialIds_.clear();
 	//trailMaterials_.clear();
 
-	//particleMaterials_.clear();
-	//particleMaterialIds_.clear();
+	particleMaterials_.clear();
 
-	diffuseMaterials_.emplace(kDefaultMaterialId, DiffuseMaterial());
+	diffuseMaterials_.emplace(kDefaultMaterialId, DiffuseMaterial {});
 	diffuseMaterials_[kDefaultMaterialId].CreatePipeline(false);
 }
 
@@ -31,7 +36,7 @@ MaterialId MaterialManager::AddMaterial(std::string_view materialPath)
 		case MaterialType::DIFFUSE:
 		{
 			auto& textureManager = TextureManagerLocator::get();
-			diffuseMaterials_.emplace(resourceId, DiffuseMaterial());
+			diffuseMaterials_.emplace(resourceId, DiffuseMaterial {});
 
 			// Textures defined in the material's JSON use the relative path to the data folder
 			// defined in "BasicEngine::config->dataRootPath"
@@ -64,6 +69,12 @@ MaterialId MaterialManager::AddNewMaterial(MaterialType materialType, MaterialId
 			diffuseMaterials_.emplace(id, DiffuseMaterial());
 			break;
 		}
+		case MaterialType::PARTICLE:
+		{
+			if (particleMaterials_.find(id) != particleMaterials_.cend()) return id;
+            particleMaterials_.emplace(id, ParticleMaterial());
+			break;
+		}
 	}
 
 	return id;
@@ -83,8 +94,8 @@ Material& MaterialManager::GetMaterial(const MaterialId resourceId)
 		return diffuseMaterials_[resourceId];
 
 	//Particles materials
-	//for (size_t i = 0; i < particleMaterialIDs_.size(); i++)
-	//	if (particleMaterialIDs_[i] == resourceID) return particleMaterials_[i];
+	if (particleMaterials_.find(resourceId) != particleMaterials_.cend())
+		return particleMaterials_[resourceId];
 
 	//Trails materials
 	//for (size_t i = 0; i < trailMaterialIDs_.size(); i++)
@@ -107,6 +118,11 @@ DiffuseMaterial& MaterialManager::GetDiffuseMaterial(MaterialId resourceId)
 	}
 
 	return diffuseMaterials_[resourceId];
+}
+
+ParticleMaterial& MaterialManager::GetParticleMaterial(MaterialId resourceId)
+{
+    return particleMaterials_[resourceId];
 }
 
 bool MaterialManager::IsMaterialLoaded(MaterialId resourceId)

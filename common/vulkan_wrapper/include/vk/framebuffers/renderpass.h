@@ -25,6 +25,8 @@
  Author: Canas Simon
  Date:
 ---------------------------------------------------------- */
+#include "engine/globals.h"
+
 #include "vk/vk_include.h"
 
 namespace neko::vk

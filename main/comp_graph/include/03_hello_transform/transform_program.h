@@ -26,7 +26,7 @@
 #include "gl/shape.h"
 #include "gl/shader.h"
 #include <gl/texture.h>
-#include "mathematics/matrix.h"
+#include "math/matrix.h"
 
 namespace neko
 {

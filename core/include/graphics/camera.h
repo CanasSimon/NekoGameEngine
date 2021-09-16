@@ -1,5 +1,5 @@
 #pragma once
-#include "mathematics/matrix.h"
+#include "math/matrix.h"
 #include "utils/service_locator.h"
 
 namespace neko

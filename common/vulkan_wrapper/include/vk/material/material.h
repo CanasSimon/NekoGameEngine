@@ -37,7 +37,7 @@ enum class MaterialType : std::uint8_t
 	DIFFUSE = 0,
 	//SKYBOX,
 	//TRAIL,
-	//PARTICLE
+	PARTICLE
 };
 
 class Material
@@ -55,21 +55,21 @@ public:
 	explicit Material(std::string_view name) : name_(name) {}
 	virtual ~Material() = default;
 
-    void Destroy() const
+    void Destroy()
 	{
-        if (pipelineMaterial_) pipelineMaterial_->get().Destroy();
+        if (pipelineMaterial_.IsBuilt()) pipelineMaterial_.Destroy();
     }
 
 	virtual void CreatePipeline(bool forceRecreate) = 0;
-	[[nodiscard]] bool BindPipeline(const CommandBuffer& commandBuffer) const
+	[[nodiscard]] bool BindPipeline(const CommandBuffer& commandBuffer)
 	{
-		if (pipelineMaterial_) return pipelineMaterial_->get().BindPipeline(commandBuffer);
+		if (pipelineMaterial_.IsBuilt()) return pipelineMaterial_.BindPipeline(commandBuffer);
 		else return false;
 	}
 
 	[[nodiscard]] const PushDataContainer& ExportUniformData() const { return uniformData_; }
 	[[nodiscard]] const PushDataContainer& ExportDescriptorData() const { return descriptorData_; }
-	[[nodiscard]] const MaterialPipeline& GetPipelineMaterial() const { return *pipelineMaterial_; }
+	[[nodiscard]] const MaterialPipeline& GetPipelineMaterial() const { return pipelineMaterial_; }
 
 	[[nodiscard]] virtual ordered_json ToJson() const = 0;
 	virtual void FromJson(const json& materialJson)   = 0;
@@ -82,7 +82,7 @@ public:
 	[[nodiscard]] std::string_view GetName() const { return name_; }
 
 protected:
-	std::optional_ref<MaterialPipeline> pipelineMaterial_ = std::nullopt;
+    MaterialPipeline pipelineMaterial_;
 
 	std::string name_;
 

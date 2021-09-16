@@ -1,7 +1,7 @@
 #include "engine/log.h"
 #include "gtest/gtest.h"
-#include "mathematics/checksum.h"
-#include "mathematics/vector.h"
+#include "math/checksum.h"
+#include "math/vector.h"
 
 #include <fmt/format.h>
 

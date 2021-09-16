@@ -5,7 +5,7 @@
 #include <gtest/gtest.h>
 #include <iostream>
 
-#include <mathematics/vector_nvec.h>
+#include <math/vector_nvec.h>
 
 namespace neko
 {

@@ -36,7 +36,7 @@ enum class SubrendererIndex : std::uint8_t
 	//GIZMO,
 	//IMGUI,
 	OPAQUE_S,
-	//PARTICLES,
+	PARTICLES,
 	//TRANSPARENT_S,
 	//FILTER_DEFAULT,
 	//FILTER_BLUR,

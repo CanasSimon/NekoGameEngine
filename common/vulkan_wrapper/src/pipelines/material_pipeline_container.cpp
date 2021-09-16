@@ -9,7 +9,10 @@ MaterialPipeline& MaterialPipelineContainer::AddMaterial(
 		if (registeredInfos_[i].createInfo == pipelineCreate) return registeredMaterials_[i];
 
 	registeredInfos_.push_back(PipelineInfo {pipelineStage, pipelineCreate});
-	return registeredMaterials_.emplace_back(pipelineStage, pipelineCreate);
+	MaterialPipeline& registeredMaterial =
+		registeredMaterials_.emplace_back(pipelineStage, pipelineCreate);
+	registeredMaterial.SetBuilt(true);
+	return registeredMaterial;
 }
 
 std::optional_ref<MaterialPipeline> MaterialPipelineContainer::GetMaterial(

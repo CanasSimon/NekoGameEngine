@@ -25,7 +25,7 @@
  Author: Canas Simon
  Date:
 ---------------------------------------------------------- */
-#include "mathematics/vector.h"
+#include "math/vector.h"
 
 namespace neko::vk
 {

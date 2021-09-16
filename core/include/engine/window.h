@@ -23,7 +23,7 @@
  SOFTWARE.
  */
 #include "engine/system.h"
-#include "mathematics/vector.h"
+#include "math/vector.h"
 #include "engine/jobsystem.h"
 
 namespace neko

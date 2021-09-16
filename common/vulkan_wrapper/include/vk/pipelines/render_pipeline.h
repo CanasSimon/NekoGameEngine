@@ -26,6 +26,7 @@
  Date:
 ---------------------------------------------------------- */
 #include "vk/pipelines/pipeline.h"
+#include "vk/pipelines/pipeline_stage.h"
 
 namespace neko::vk
 {

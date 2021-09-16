@@ -2,9 +2,9 @@
 // Created by efarhan on 09.02.20.
 //
 
-#include "mathematics/const.h"
+#include "math/const.h"
 #include <gtest/gtest.h>
-#include "mathematics/angle.h"
+#include "math/angle.h"
 
 
 TEST(Engine, TestUnits)

@@ -28,6 +28,7 @@
 #include "vk/commands/command_pool.h"
 #include "vk/commands/light_command_buffer.h"
 #include "vk/commands/model_command_buffer.h"
+#include "vk/commands/particle_command_buffer.h"
 #include "vk/core/instance.h"
 #include "vk/core/logical_device.h"
 #include "vk/core/physical_device.h"
@@ -53,10 +54,12 @@ public:
 	[[nodiscard]] const RenderPass& GetRenderPass() const;
 	[[nodiscard]] CommandBuffer& GetCurrentCmdBuffer();
 	[[nodiscard]] const CommandPool& GetCurrentCmdPool();
+    [[nodiscard]] const IDescriptor& GetAttachment(const std::string_view& name) const;
 
 	[[nodiscard]] std::uint8_t GetViewportCount() const { return viewportCount_; }
 	void SetViewportCount(std::uint8_t count) { viewportCount_ = count; }
 
+#ifdef NEKO_RAYTRACING
 	[[nodiscard]] VkPhysicalDeviceRayTracingPipelinePropertiesKHR GetRayPipelineProperties() const
 	{
 		return rayTracingPipelineProperties;
@@ -68,6 +71,7 @@ public:
 	}
 
 	void GetRaytracingFuncsPtr() const;
+#endif
 
 	static VkResources* Inst;
 
@@ -82,9 +86,11 @@ public:
 
 	std::array<ModelCommandBuffer, 4> modelCommandBuffers;
 	LightCommandBuffer lightCommandBuffer;
+	ParticleCommandBuffer particleCommandBuffer;
 
 	VkPipelineCache pipelineCache {};
 
+#ifdef NEKO_RAYTRACING
     // Function pointers for ray tracing related stuff
     static PFN_vkGetAccelerationStructureDeviceAddressKHR vkGetAccelerationStructureDeviceAddressKHR;
     static PFN_vkGetAccelerationStructureBuildSizesKHR vkGetAccelerationStructureBuildSizesKHR;
@@ -98,6 +104,7 @@ public:
     static PFN_vkCmdTraceRaysKHR vkCmdTraceRaysKHR;
     static PFN_vkGetRayTracingShaderGroupHandlesKHR vkGetRayTracingShaderGroupHandlesKHR;
     static PFN_vkCreateRayTracingPipelinesKHR vkCreateRayTracingPipelinesKHR;
+#endif
 
 protected:
 	bool isFramebufferResized_ = false;
@@ -118,13 +125,17 @@ protected:
 	VkImGui imgui_;
 	std::unique_ptr<IRenderer> renderer_{};
 
+#ifdef NEKO_RAYTRACING
 	// Available features and properties
 	VkPhysicalDeviceRayTracingPipelinePropertiesKHR rayTracingPipelineProperties {};
 	VkPhysicalDeviceAccelerationStructureFeaturesKHR accelerationStructureFeatures {};
+#endif
 };
 
 // Init static members
 inline VkResources* VkResources::Inst = nullptr;
+
+#ifdef NEKO_RAYTRACING
 inline PFN_vkGetAccelerationStructureDeviceAddressKHR VkResources::vkGetAccelerationStructureDeviceAddressKHR = nullptr;
 inline PFN_vkGetAccelerationStructureBuildSizesKHR VkResources::vkGetAccelerationStructureBuildSizesKHR = nullptr;
 inline PFN_vkCreateAccelerationStructureKHR VkResources::vkCreateAccelerationStructureKHR = nullptr;
@@ -135,4 +146,5 @@ inline PFN_vkGetBufferDeviceAddressKHR VkResources::vkGetBufferDeviceAddressKHR 
 inline PFN_vkCmdTraceRaysKHR VkResources::vkCmdTraceRaysKHR = nullptr;
 inline PFN_vkGetRayTracingShaderGroupHandlesKHR VkResources::vkGetRayTracingShaderGroupHandlesKHR = nullptr;
 inline PFN_vkCreateRayTracingPipelinesKHR VkResources::vkCreateRayTracingPipelinesKHR = nullptr;
+#endif
 }    // namespace neko::vk

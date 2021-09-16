@@ -2,7 +2,7 @@
 #include <gl/gl_include.h>
 #include <gtest/gtest.h>
 
-#include "mathematics/vector.h"
+#include "math/vector.h"
 
 GLuint CreateTexture(char const* Filename)
 {

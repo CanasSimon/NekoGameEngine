@@ -30,8 +30,8 @@
 #include "engine/assert.h"
 #include "engine/filesystem.h"
 #include "engine/log.h"
-#include "mathematics/hash.h"
-#include "mathematics/vector.h"
+#include "math/hash.h"
+#include "math/vector.h"
 #include "utils/service_locator.h"
 
 namespace neko

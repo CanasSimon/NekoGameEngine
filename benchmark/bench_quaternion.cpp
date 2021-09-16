@@ -2,7 +2,7 @@
 #include <random>
 #include "random_fill.h"
 #include <benchmark/benchmark.h>
-#include "mathematics/quaternion.h"
+#include "math/quaternion.h"
 
 const long fromRange = 2;
 const long toRange = 2048;

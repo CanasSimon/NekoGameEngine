@@ -5,7 +5,7 @@
 #include <random>
 #include <algorithm>
 #include <benchmark/benchmark.h>
-#include "mathematics/func_table.h"
+#include "math/func_table.h"
 #ifdef WIN32
 #include <corecrt_math_defines.h>
 #endif

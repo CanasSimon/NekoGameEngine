@@ -24,7 +24,7 @@
 
 #include "24_hello_cascaded_shadow/cascaded_shadow_program.h"
 #include "imgui.h"
-#include "mathematics/aabb.h"
+#include "math/aabb.h"
 
 namespace neko
 {

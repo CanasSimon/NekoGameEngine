@@ -12,12 +12,13 @@ MaterialPipeline::MaterialPipeline(
 	 renderStage_(std::nullopt)
 {}
 
-void MaterialPipeline::Destroy() const
+void MaterialPipeline::Destroy()
 {
 	pipeline_.Destroy();
+	isBuilt_ = false;
 }
 
-MaterialPipeline& MaterialPipeline::CreateMaterialPipeline(
+MaterialPipeline& MaterialPipeline::Create(
 	const PipelineStage& pipelineStage, const GraphicsPipelineCreateInfo& pipelineCreate)
 {
 	return VkResources::Inst->AddMaterialPipeline(pipelineStage, pipelineCreate);
@@ -31,6 +32,7 @@ bool MaterialPipeline::BindPipeline(const CommandBuffer& commandBuffer)
 		renderStage_.emplace(renderStage);
 
 		pipeline_ = GraphicsPipeline(pipelineStage_, pipelineGraphicsCreate_);
+        isBuilt_ = true;
 	}
 
 	pipeline_.BindPipeline(commandBuffer);

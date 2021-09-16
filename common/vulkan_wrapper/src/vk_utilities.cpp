@@ -7,6 +7,7 @@ std::uint32_t AlignedSize(std::uint32_t value, std::uint32_t alignment)
 	return (value + alignment - 1) & ~(alignment - 1);
 }
 
+#ifdef NEKO_RAYTRACING
 std::uint64_t GetBufferDeviceAddress(VkBuffer buffer)
 {
 	auto* vkObj = vk::VkResources::Inst;
@@ -31,6 +32,7 @@ VkStridedDeviceAddressRegionKHR GetSbtEntryStridedDeviceAddressRegion(
 	stridedDeviceAddressRegionKHR.size          = handleCount * handleSizeAligned;
 	return stridedDeviceAddressRegionKHR;
 }
+#endif
 
 VkWriteDescriptorSet GenerateWriteDescriptorSet(VkDescriptorSet dstSet,
 	VkDescriptorType type,

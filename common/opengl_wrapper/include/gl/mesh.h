@@ -25,7 +25,7 @@
  */
 #ifdef NEKO_OPENGL
 #include "engine/globals.h"
-#include "mathematics/aabb.h"
+#include "math/aabb.h"
 
 #include "gl/mesh.h"
 #include "gl/shader.h"

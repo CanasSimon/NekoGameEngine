@@ -28,7 +28,7 @@
 #include <map>
 #include <queue>
 
-#include "mathematics/hash.h"
+#include "math/hash.h"
 
 #include "vk/images/texture.h"
 #include "vk/images/texture_loader.h"

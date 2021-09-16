@@ -1,12 +1,20 @@
 #include "ray/draw_system.h"
 
 #include "engine/resource_locations.h"
-#include "mathematics/transform.h"
+#include "math/transform.h"
 
 #include "vk/vk_resources.h"
 
 namespace neko
 {
+DrawSystem::DrawSystem()
+{
+    BasicEngine::GetInstance()->RegisterSystem(textureManager_);
+    BasicEngine::GetInstance()->RegisterSystem(modelManager_);
+    BasicEngine::GetInstance()->RegisterSystem(particlesSystem_);
+    BasicEngine::GetInstance()->RegisterOnDrawUi(*this);
+}
+
 void DrawSystem::Init()
 {
 	Camera3D camera;
@@ -26,9 +34,45 @@ void DrawSystem::Init()
 
     DirectionalLight::Instance = &dirLight_;
 
-	BasicEngine::GetInstance()->RegisterSystem(textureManager_);
-	BasicEngine::GetInstance()->RegisterSystem(modelManager_);
-	BasicEngine::GetInstance()->RegisterOnDrawUi(*this);
+	ColorGradient::ColorMark mark1;
+	mark1.position = 0.5f;
+	mark1.color    = Color::white;
+
+	ColorGradient::ColorMark mark2;
+	mark2.position = 1.0f;
+	mark2.color    = Color::clear;
+
+	vk::ParticleSystem particleSystem1;
+	particleSystem1.position     = Vec3f::up * 2.0f;
+	particleSystem1.minSpeed     = 0.2f;
+	particleSystem1.maxSpeed     = 0.5f;
+	particleSystem1.rateOverTime = 10'000.0f;
+	particleSystem1.maxParticles = 10'000;
+	particleSystem1.lifetime     = 20.0f;
+	particleSystem1.maxLifetime  = 20.0f;
+	particleSystem1.materialID   = materialManager_.AddNewMaterial(vk::MaterialType::PARTICLE);
+	particleSystem1.colorOverLifetime.SetMarks({mark1, mark2});
+
+	ColorGradient::ColorMark mark3;
+	mark3.position = 0.5f;
+	mark3.color    = Color::red;
+
+	vk::ParticleSystem particleSystem2;
+	particleSystem2.position     = Vec3f::up + Vec3f::right * 5.0f;
+	particleSystem2.minSpeed     = 0.2f;
+	particleSystem2.maxSpeed     = 2.0f;
+	particleSystem2.rateOverTime = 3.0f;
+	particleSystem2.materialID   = materialManager_.AddNewMaterial(vk::MaterialType::PARTICLE);
+	particleSystem2.colorOverLifetime.SetMarks({mark3, mark2});
+
+	const vk::ResourceHash texId = textureManager_.AddTexture(GetSpritesFolderPath() + "white.png");
+	auto& particleMat1           = materialManager_.GetParticleMaterial(particleSystem1.materialID);
+	auto& particleMat2           = materialManager_.GetParticleMaterial(particleSystem2.materialID);
+	particleMat1.SetDiffuse(*textureManager_.GetTexture(texId));
+	particleMat2.SetDiffuse(*textureManager_.GetTexture(texId));
+
+	particlesSystem_.AddSystem(particleSystem1);
+	//particlesSystem_.AddSystem(particleSystem2);
 }
 
 void DrawSystem::Update(seconds dt)
@@ -56,7 +100,7 @@ void DrawSystem::Render()
 	const Mat4f& modelMat1 = Transform3d::Scale(Mat4f::Identity, Vec3f(20.0f));
 	cmdBuffer.AddMatrix(PLANE, modelMat1);
 
-	const Mat4f& modelMat2 = Transform3d::Translate(Mat4f::Identity, Vec3f::up * 0.5f);
+	const Mat4f& modelMat2 = Transform3d::Transform(Vec3f::up * 2.0f, EulerAngles(), Vec3f(0.2f));
 	cmdBuffer.AddMatrix(CUBE, modelMat2);
 }
 
@@ -88,7 +132,7 @@ void DrawSystem::DrawImGui()
 		PopStyleVar();
 		PopStyleVar(2);
 
-		const ImGuiID dockspaceId = GetID("DockSpace");
+		const ImGuiID dockspaceId = GetID("Dockspace");
 		DockSpace(dockspaceId, ImVec2(0.0f, 0.0f), kDockspaceFlags);
 
 		//Editor Menu

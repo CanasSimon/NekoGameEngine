@@ -29,7 +29,7 @@
 #include "graphics/graphics.h"
 #include "graphics/line.h"
 #include "graphics/shape.h"
-#include "mathematics/vector.h"
+#include "math/vector.h"
 
 namespace neko
 {

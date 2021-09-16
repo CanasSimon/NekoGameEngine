@@ -1,6 +1,6 @@
 #include "vk/shaders/uniform.h"
 
-#include "mathematics/hash.h"
+#include "math/hash.h"
 
 namespace neko::vk
 {

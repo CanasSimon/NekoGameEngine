@@ -33,7 +33,7 @@ RenderStage::RenderStage(std::vector<Attachment> attachments,
 				break;
 			}
 			case Attachment::Type::DEPTH:
-				clearValue.depthStencil = {1.0f, 0};
+				clearValue.depthStencil = {1, 0};
 				depthAttachment_        = Attachment(attachment);
 				break;
 			case Attachment::Type::SWAPCHAIN:

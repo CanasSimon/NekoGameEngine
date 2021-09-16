@@ -38,16 +38,21 @@ public:
 	MaterialPipeline() = default;
 	MaterialPipeline(PipelineStage pipelineStage, GraphicsPipelineCreateInfo pipelineCreate);
 
-	void Destroy() const;
+	void Destroy();
 
-	static MaterialPipeline& CreateMaterialPipeline(
+	static MaterialPipeline& Create(
 		const PipelineStage& pipelineStage, const GraphicsPipelineCreateInfo& pipelineCreate);
 
 	bool BindPipeline(const CommandBuffer& commandBuffer);
 	[[nodiscard]] PipelineStage GetStage() const { return pipelineStage_; }
 	[[nodiscard]] const GraphicsPipeline& GetPipeline() const { return pipeline_; }
 
+	void SetBuilt(bool isBuilt) { isBuilt_ = isBuilt; }
+	[[nodiscard]] bool IsBuilt() const { return isBuilt_; }
+
 private:
+	bool isBuilt_ = false;
+
 	PipelineStage pipelineStage_{};
 	GraphicsPipeline pipeline_ {};
 

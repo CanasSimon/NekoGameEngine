@@ -1,5 +1,5 @@
 #pragma once
-#include "mathematics/hash.h"
+#include "math/hash.h"
 
 namespace neko::vk
 {

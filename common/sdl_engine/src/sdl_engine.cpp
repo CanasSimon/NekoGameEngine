@@ -31,7 +31,7 @@
 
 #include "engine/log.h"
 #include "engine/window.h"
-#include "mathematics/vector.h"
+#include "math/vector.h"
 #include "utils/file_utility.h"
 
 #ifdef NEKO_PROFILE

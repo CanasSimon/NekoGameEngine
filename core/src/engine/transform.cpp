@@ -22,7 +22,7 @@
  SOFTWARE.
  */
 #include "engine/transform.h"
-#include "mathematics/transform.h"
+#include "math/transform.h"
 #include "utils/imgui_utility.h"
 
 #ifdef NEKO_PROFILE

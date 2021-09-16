@@ -40,7 +40,8 @@ struct Uniform
 	{
 		UNDEFINED = 0,
 		SAMPLER_2D,
-		SAMPLER_3D
+		SAMPLER_3D,
+		DEPTH
 	};
 
 	//To use when used without an Uniform Block

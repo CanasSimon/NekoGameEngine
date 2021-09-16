@@ -25,7 +25,7 @@ SOFTWARE.
 #include <gtest/gtest.h>
 #include <fstream>
 #include <iostream>
-#include <mathematics/hash.h>
+#include <math/hash.h>
 #include <sole.hpp>
 #include "engine/engine.h"
 #include "utils/file_utility.h"

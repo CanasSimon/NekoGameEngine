@@ -6,6 +6,7 @@
 
 #include "vk/material/material_manager.h"
 #include "vk/models/model_manager.h"
+#include "vk/particle/particles_system.h"
 
 namespace neko
 {
@@ -18,6 +19,8 @@ class DrawSystem final : public SystemInterface,
 						 public RenderCommandInterface
 {
 public:
+	DrawSystem();
+
 	void Init() override;
 	void Update(seconds dt) override;
 	void Render() override;
@@ -34,14 +37,15 @@ private:
 	};
 
 	seconds dt_ {};
-	float timeSinceUpdate_;
-	float fpsCache_;
+	float timeSinceUpdate_ {};
+	float fpsCache_ {};
 
 	sdl::MultiCamera camera_;
 
 	vk::TextureManager textureManager_;
 	vk::MaterialManager materialManager_;
 	vk::ModelManager modelManager_;
+	vk::ParticlesSystem particlesSystem_;
 
     DirectionalLight dirLight_ {};
 

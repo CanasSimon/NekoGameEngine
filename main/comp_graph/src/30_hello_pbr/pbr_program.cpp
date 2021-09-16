@@ -24,7 +24,7 @@
 
 #include "30_hello_pbr/pbr_program.h"
 #include "imgui.h"
-#include "mathematics/basic.h"
+#include "math/basic.h"
 
 namespace neko
 {

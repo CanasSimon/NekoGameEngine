@@ -76,6 +76,16 @@ const CommandPool& VkResources::GetCurrentCmdPool()
 	return it->second;
 }
 
+const IDescriptor& VkResources::GetAttachment(const std::string_view& name) const
+{
+    const auto hash = HashString(name);
+    const auto it = attachments_.find(hash);
+	neko_assert(it != attachments_.end(), "Attachment " << name << " doesn't exist");
+
+	return it->second;
+}
+
+#ifdef NEKO_RAYTRACING
 void VkResources::GetRaytracingFuncsPtr() const
 {
     // Get the function pointers required for ray tracing
@@ -92,4 +102,5 @@ void VkResources::GetRaytracingFuncsPtr() const
     vkGetRayTracingShaderGroupHandlesKHR = reinterpret_cast<PFN_vkGetRayTracingShaderGroupHandlesKHR>(vkGetDeviceProcAddr(device, "vkGetRayTracingShaderGroupHandlesKHR"));
     vkCreateRayTracingPipelinesKHR = reinterpret_cast<PFN_vkCreateRayTracingPipelinesKHR>(vkGetDeviceProcAddr(device, "vkCreateRayTracingPipelinesKHR"));
 }
+#endif
 }    // namespace neko::vk

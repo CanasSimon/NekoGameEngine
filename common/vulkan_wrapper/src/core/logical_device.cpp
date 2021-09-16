@@ -62,7 +62,9 @@ void LogicalDevice::Init()
 	// Device creation information
 	VkDeviceCreateInfo createInfo {};
 	createInfo.sType                = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+#ifdef NEKO_RAYTRACING
 	createInfo.pNext                = &accelerationFeatures;
+#endif
 	createInfo.pQueueCreateInfos    = queueCreateInfos.data();
 	createInfo.queueCreateInfoCount = static_cast<std::uint32_t>(queueCreateInfos.size());
 	createInfo.pEnabledFeatures     = nullptr;
@@ -78,6 +80,7 @@ void LogicalDevice::Init()
 	createInfo.enabledExtensionCount   = static_cast<std::uint32_t>(kDeviceExtensions.size());
 	createInfo.ppEnabledExtensionNames = kDeviceExtensions.data();
 
+#ifdef NEKO_RAYTRACING
 	// If a pNext(Chain) has been passed, we need to add it to the device creation info
 	void* pNextEnabledFeatures = vkObj->gpu.GetEnabledFeatures();
 	VkPhysicalDeviceFeatures2 physicalDeviceFeatures2 {};
@@ -89,6 +92,7 @@ void LogicalDevice::Init()
         createInfo.pEnabledFeatures = nullptr;
         createInfo.pNext            = &physicalDeviceFeatures2;
 	}
+#endif
 
 	// Finally we're ready to create a new device
 	const VkResult res = vkCreateDevice(vkObj->gpu, &createInfo, nullptr, &device_);

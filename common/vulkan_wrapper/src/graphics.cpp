@@ -28,6 +28,7 @@ VkRenderer::VkRenderer(sdl::VulkanWindow* window) : Renderer(), VkResources(wind
 
 	swapchain.Init(swapchain);
 
+#ifdef NEKO_RAYTRACING
 	// Get properties and features
     rayTracingPipelineProperties.sType  = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_PROPERTIES_KHR;
     accelerationStructureFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR;
@@ -44,7 +45,8 @@ VkRenderer::VkRenderer(sdl::VulkanWindow* window) : Renderer(), VkResources(wind
 
 	GetRaytracingFuncsPtr();
 
-    sceneModelId_ = ModelManagerLocator::get().LoadModel(GetModelsFolderPath() + "vk_statue/vk_statue.obj");
+	cubeModelId_   = ModelManagerLocator::get().LoadModel(GetModelsFolderPath() + "vk_statue/vk_statue.obj");
+	instanceIndex_ = modelCommandBuffers[0].AddModelInstanceIndex(cubeModelId_, Mat4f::Identity);
 
 	const VkExtent2D size = swapchain.GetExtent();
 	CreateStorageImage(kFormat, { size.width, size.height, 1 });
@@ -53,6 +55,7 @@ VkRenderer::VkRenderer(sdl::VulkanWindow* window) : Renderer(), VkResources(wind
 	CreateShaderBindingTables();
 	CreateDescriptorSets();
 	BuildCommandBuffers();
+#endif
 }
 
 void VkRenderer::ClearScreen()
@@ -64,7 +67,9 @@ void VkRenderer::ClearScreen()
 
 void VkRenderer::BeforeRender()
 {
-	/*const std::uint32_t windowFlags = SDL_GetWindowFlags(vkWindow->GetWindow());
+	//TODO implement hybrid pipeline
+#ifndef NEKO_RAYTRACING
+	const std::uint32_t windowFlags = SDL_GetWindowFlags(vkWindow->GetWindow());
 	if (renderer_ == nullptr || windowFlags & SDL_WINDOW_MINIMIZED) return;
 
 	if (!renderer_->HasStarted())
@@ -87,7 +92,8 @@ void VkRenderer::BeforeRender()
 	RenderStage& renderStage = renderer_->GetRenderStage();
 	renderStage.Update();
 
-	if (!StartRenderPass(renderStage)) return;*/
+	if (!StartRenderPass(renderStage)) return;
+#endif
 
 	Renderer::BeforeRender();
 }
@@ -96,9 +102,9 @@ void VkRenderer::AfterRender()
 {
 	Renderer::AfterRender();
 
-    DrawRaytraced();
-
-	/*PipelineStage stage;
+    //TODO implement hybrid pipeline
+#ifndef NEKO_RAYTRACING
+	PipelineStage stage;
 	RenderStage& renderStage = renderer_->GetRenderStage();
 	CommandBuffer& commandBuffer = GetCurrentCmdBuffer();
 	for (const auto& subpass : renderStage.GetSubpasses())
@@ -116,7 +122,10 @@ void VkRenderer::AfterRender()
 	EndRenderPass(renderStage);
 
 	lightCommandBuffer.Clear();
-	stage.renderPassId++;*/
+	stage.renderPassId++;
+#else
+    DrawRaytraced();
+#endif
 }
 
 void VkRenderer::RenderAll()
@@ -124,10 +133,12 @@ void VkRenderer::RenderAll()
     for (auto* renderCommand : currentCommandBuffer_) renderCommand->Render();
 }
 
+#ifdef NEKO_RAYTRACING
 void VkRenderer::DrawRaytraced()
 {
 	CreateDescriptorSets();
     UpdateUniformBuffers();
+    BuildCommandBuffers();
 
     swapchain.AcquireNextImage(availableSemaphores_[currentFrame_], inFlightFences_[currentFrame_]);
     CommandBuffer& commandBuffer = GetCurrentCmdBuffer();
@@ -138,6 +149,7 @@ void VkRenderer::DrawRaytraced()
 	VkQueue presentQueue = device.GetPresentQueue();
     swapchain.QueuePresent(presentQueue, finishedSemaphores_[currentFrame_]);
 }
+#endif
 
 bool VkRenderer::StartRenderPass(RenderStage& renderStage)
 {
@@ -312,6 +324,7 @@ void VkRenderer::Destroy()
 	DestroyResources();
 }
 
+#ifdef NEKO_RAYTRACING
 VkPipelineShaderStageCreateInfo VkRenderer::LoadShader(std::string_view filename, VkShaderStageFlagBits stage)
 {
 	std::string data = LoadFile(filename);
@@ -532,7 +545,10 @@ void VkRenderer::CreateShaderBindingTables()
 
 void VkRenderer::CreateDescriptorSets()
 {
-	const Mesh& mesh = ModelManagerLocator::get().GetModel(sceneModelId_)->GetMesh(0);
+	//TODO Make this not static
+	modelCommandBuffers[0].PrepareData();
+	const auto& modelInstances    = modelCommandBuffers[0].GetModelInstances();
+	const auto& particleInstances = particleCommandBuffer.GetParticleDrawCommands();
 
 	std::vector<VkDescriptorPoolSize> poolSizes = {
 		{VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR, 1},
@@ -555,9 +571,28 @@ void VkRenderer::CreateDescriptorSets()
 	vkAllocateDescriptorSets(device, &descriptorSetAllocateInfo, &descriptorSet_);
 
 	VkWriteDescriptorSetAccelerationStructureKHR descriptorAccelerationStructureInfo {};
-    descriptorAccelerationStructureInfo.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_ACCELERATION_STRUCTURE_KHR;
-    descriptorAccelerationStructureInfo.accelerationStructureCount = 1;
-	descriptorAccelerationStructureInfo.pAccelerationStructures    = &mesh.GetTopLevelAS().handle;
+	descriptorAccelerationStructureInfo.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_ACCELERATION_STRUCTURE_KHR;
+
+	objectCount_ = 0;
+	if (!particleInstances.empty())
+	{
+		objectCount_ = particleInstances.size();
+
+		handles_.clear();
+		handles_.reserve(particleInstances.size());
+		for (const auto& particleInstance : particleInstances)
+			handles_.emplace_back(particleInstance->GetTopLevelAS().handle);
+
+		descriptorAccelerationStructureInfo.pAccelerationStructures = &handles_[0];
+	}
+	else
+	{
+		objectCount_ = 1;
+		descriptorAccelerationStructureInfo.pAccelerationStructures =
+			&modelInstances[0].GetTopLevelAS(0).handle;
+	}
+
+	descriptorAccelerationStructureInfo.accelerationStructureCount = 1;
 
 	// The specialized acceleration structure descriptor has to be chained
 	VkWriteDescriptorSet accelerationStructureWrite {};
@@ -568,11 +603,26 @@ void VkRenderer::CreateDescriptorSets()
 	accelerationStructureWrite.descriptorCount = 1;
 	accelerationStructureWrite.descriptorType  = VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR;
 
-	VkDescriptorImageInfo storageImageDescriptor{ VK_NULL_HANDLE, storageImage_.view, VK_IMAGE_LAYOUT_GENERAL };
-    VkDescriptorBufferInfo vertexBufferDescriptor{ mesh.GetVertexBuffer(), 0, VK_WHOLE_SIZE };
-    VkDescriptorBufferInfo indexBufferDescriptor{ mesh.GetIndexBuffer(), 0, VK_WHOLE_SIZE };
+	VkDescriptorImageInfo storageImageDescriptor {VK_NULL_HANDLE, storageImage_.view, VK_IMAGE_LAYOUT_GENERAL};
 
-    std::vector<VkWriteDescriptorSet> writeDescriptorSets = {
+	VkBuffer vertexBuffer, indexBuffer;
+	if (!particleInstances.empty())
+	{
+		const Mesh* mesh = ModelManagerLocator::get().GetQuad();
+		vertexBuffer     = mesh->GetVertexBuffer();
+		indexBuffer      = mesh->GetIndexBuffer();
+	}
+	else
+	{
+		const Mesh& mesh = ModelManagerLocator::get().GetModel(cubeModelId_)->GetMesh(0);
+		vertexBuffer     = mesh.GetVertexBuffer();
+		indexBuffer      = mesh.GetIndexBuffer();
+	}
+
+	VkDescriptorBufferInfo vertexBufferDescriptor {vertexBuffer, 0, VK_WHOLE_SIZE};
+	VkDescriptorBufferInfo indexBufferDescriptor {indexBuffer, 0, VK_WHOLE_SIZE};
+
+	std::vector<VkWriteDescriptorSet> writeDescriptorSets = {
         // Binding 0: Top level acceleration structure
         accelerationStructureWrite,
         // Binding 1: Ray tracing result image
@@ -711,4 +761,5 @@ void VkRenderer::HandleResize()
 		descriptorSet_, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1, &storageImageDescriptor);
     vkUpdateDescriptorSets(device, 1, &resultImageWrite, 0, VK_NULL_HANDLE);
 }
+#endif
 }    // namespace neko::vk

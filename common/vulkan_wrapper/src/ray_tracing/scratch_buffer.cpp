@@ -1,3 +1,4 @@
+#ifdef NEKO_RAYTRACING
 #include "vk/ray_tracing/scratch_buffer.h"
 
 namespace neko::vk
@@ -48,3 +49,4 @@ void ScratchBuffer::Destroy() const
 	if (handle) vkDestroyBuffer(vkObj->device, handle, nullptr);
 }
 }
+#endif

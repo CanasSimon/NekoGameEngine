@@ -78,7 +78,9 @@ public:
 		VkMemoryPropertyFlags properties,
 		VkBool32* memTypeFound = nullptr) const;
 
+#ifdef NEKO_RAYTRACING
 	[[nodiscard]] void* GetEnabledFeatures() const { return deviceCreatepNextChain; }
+#endif
 
 private:
 	[[nodiscard]] QueueFamilyIndices FindQueueFamilies(VkSurfaceKHR surface) const;
@@ -86,14 +88,18 @@ private:
 	[[nodiscard]] bool CheckDeviceExtensionSupport() const;
 	[[nodiscard]] bool IsDeviceSuitable(VkSurfaceKHR surface) const;
 
+#ifdef NEKO_RAYTRACING
 	void SetEnabledFeatures();
+#endif
 
 	VkPhysicalDevice gpu_ {};
 	QueueFamilyIndices queueFamilyIndices_ {};
 
+#ifdef NEKO_RAYTRACING
 	VkPhysicalDeviceBufferDeviceAddressFeatures enabledBufferDeviceAddressFeatures {};
 	VkPhysicalDeviceRayTracingPipelineFeaturesKHR enabledRayTracingPipelineFeatures {};
 	VkPhysicalDeviceAccelerationStructureFeaturesKHR enabledAccelerationStructureFeatures {};
 	void* deviceCreatepNextChain {};
+#endif
 };
 }    // namespace neko::vk

@@ -1,6 +1,6 @@
 #include "vk_draw_system.h"
 
-#include "mathematics/transform.h"
+#include "math/transform.h"
 
 namespace neko::vk
 {

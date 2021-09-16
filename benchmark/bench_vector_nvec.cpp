@@ -1,5 +1,5 @@
 #include <benchmark/benchmark.h>
-#include <mathematics/vector_nvec.h>
+#include <math/vector_nvec.h>
 
 static void BM_SquareMagnitudeSimple(benchmark::State& state)
 {

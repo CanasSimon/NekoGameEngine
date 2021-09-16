@@ -23,7 +23,7 @@
  SOFTWARE.
  */
 #include <graphics/shape.h>
-#include <mathematics/vector.h>
+#include <math/vector.h>
 
 namespace neko::gl
 {

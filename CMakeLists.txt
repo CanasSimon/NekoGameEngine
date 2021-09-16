@@ -164,6 +164,9 @@ if (Neko_Profile)
     set_target_properties(profiler_sample_disabled_profiler PROPERTIES FOLDER Externals)
 endif ()
 
+add_compile_definitions(TRACY_ENABLE)
+add_subdirectory("${EXTERNAL_DIR}/tracy")
+
 # Enables SDL2
 if (Neko_SDL2)
     find_package(SDL2 CONFIG REQUIRED)

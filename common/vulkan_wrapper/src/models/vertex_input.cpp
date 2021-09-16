@@ -29,31 +29,12 @@ VertexInput Vertex::GetVertexInput(std::uint32_t binding)
 	bindingDescription.stride    = sizeof(Vertex);
 	bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
-	std::vector<VkVertexInputAttributeDescription> attributeDescriptions(5);
-	attributeDescriptions[0].binding  = binding;
-	attributeDescriptions[0].location = 0;
-	attributeDescriptions[0].format   = VK_FORMAT_R32G32B32_SFLOAT;
-	attributeDescriptions[0].offset   = offsetof(Vertex, position);
-
-	attributeDescriptions[1].binding  = binding;
-	attributeDescriptions[1].location = 1;
-	attributeDescriptions[1].format   = VK_FORMAT_R32G32B32_SFLOAT;
-	attributeDescriptions[1].offset   = offsetof(Vertex, normal);
-
-	attributeDescriptions[2].binding  = binding;
-	attributeDescriptions[2].location = 2;
-	attributeDescriptions[2].format   = VK_FORMAT_R32G32_SFLOAT;
-	attributeDescriptions[2].offset   = offsetof(Vertex, texCoords);
-
-	attributeDescriptions[3].binding  = binding;
-	attributeDescriptions[3].location = 3;
-	attributeDescriptions[3].format   = VK_FORMAT_R32G32B32_SFLOAT;
-	attributeDescriptions[3].offset   = offsetof(Vertex, tangent);
-
-	attributeDescriptions[4].binding  = binding;
-	attributeDescriptions[4].location = 4;
-	attributeDescriptions[4].format   = VK_FORMAT_R32G32B32_SFLOAT;
-	attributeDescriptions[4].offset   = offsetof(Vertex, bitangent);
+	const std::vector<VkVertexInputAttributeDescription> attributeDescriptions = {
+		{0, binding, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, position)},
+		{1, binding, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, normal)},
+		{2, binding, VK_FORMAT_R32G32_SFLOAT,    offsetof(Vertex, texCoords)},
+		{3, binding, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, tangent)},
+		{4, binding, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, bitangent)}};
 
 	return VertexInput(binding, bindingDescription, attributeDescriptions);
 }

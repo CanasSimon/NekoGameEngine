@@ -53,13 +53,13 @@ public:
 	template<typename T>
 	void Push(const StringHash& descriptorHash, const T& descriptor)
 	{
-		if (!shader_) { return; }
+		if (!shader_) return;
 
 		// Finds the local value given to the descriptor name.
 		auto it = descriptor_.find(descriptorHash);
 		if (it != descriptor_.end())
 		{
-			if (it->second.descriptor == AsPtr(descriptor)) { return; }
+			if (it->second.descriptor == AsPtr(descriptor)) return;
 
 			descriptor_.erase(it);
 		}

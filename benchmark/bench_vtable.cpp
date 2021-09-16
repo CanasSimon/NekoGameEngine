@@ -3,7 +3,7 @@
 //
 #include <memory>
 #include <random>
-#include "mathematics/rect.h"
+#include "math/rect.h"
 #include <benchmark/benchmark.h>
 
 

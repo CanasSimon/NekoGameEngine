@@ -27,4 +27,4 @@
 #include <core_pch.h>
 #include <SDL.h>
 #include <imgui_impl_sdl.h>
-#include <mathematics/matrix.h>
+#include <math/matrix.h>

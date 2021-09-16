@@ -2,7 +2,7 @@
 // #include <random>
 // #include "random_fill.h"
 #include <benchmark/benchmark.h>
-#include <mathematics/transform.h>
+#include <math/transform.h>
 
 using namespace neko;
 

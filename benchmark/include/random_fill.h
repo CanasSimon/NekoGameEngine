@@ -1,7 +1,7 @@
 #pragma once
 
-#include "mathematics/vector.h"
-#include "mathematics/matrix.h"
+#include "math/vector.h"
+#include "math/matrix.h"
 
 
 float RandomFloat()

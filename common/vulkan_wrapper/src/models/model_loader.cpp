@@ -68,11 +68,7 @@ void ModelLoader::Update()
 				}
 			}
 
-			if (loadedTextures == textureMaps_)
-			{
-				isLoaded++;
-				material.CreatePipeline(true);
-			}
+			if (loadedTextures == textureMaps_) isLoaded++;
 		}
 
 		if (isLoaded == model_.meshes_.size()) flags_ |= LOADED;

@@ -22,7 +22,7 @@
  SOFTWARE.
  */
 #include "engine/resource_locations.h"
-#include "mathematics/transform.h"
+#include "math/transform.h"
 
 #include "gl/font.h"
 

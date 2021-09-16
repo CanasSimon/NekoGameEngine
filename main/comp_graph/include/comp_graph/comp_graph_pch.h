@@ -35,8 +35,8 @@
 #endif
 
 #include "imgui.h"
-#include "mathematics/matrix.h"
-#include "mathematics/transform.h"
+#include "math/matrix.h"
+#include "math/transform.h"
 #include "sdl_engine/sdl_camera.h"
 
 #ifdef NEKO_PROFILE

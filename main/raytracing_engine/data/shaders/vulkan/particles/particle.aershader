@@ -1,0 +1,81 @@
+{
+    "vert": "shaders/vulkan/particles/particle.vert.spv",
+    "frag": "shaders/vulkan/particles/particle.frag.spv",
+    "attributes": [
+        {
+            "name": "inPosition",
+            "location": 0,
+            "size": 12,
+            "type": 3
+        },
+        {
+            "name": "inTexCoords",
+            "location": 2,
+            "size": 8,
+            "type": 2
+        },
+        {
+            "name": "inModelMatrix",
+            "location": 3,
+            "size": 64,
+            "type": 15
+        },
+        {
+            "name": "inColorOffset",
+            "location": 7,
+            "size": 16,
+            "type": 4
+        },
+        {
+            "name": "inOffsets",
+            "location": 8,
+            "size": 16,
+            "type": 4
+        },
+        {
+            "name": "inBlend",
+            "location": 9,
+            "size": 12,
+            "type": 3
+        }
+    ],
+    "uniforms": [
+        {
+            "name": "diffuseMap",
+            "binding": 1,
+            "type": 1,
+            "stageFlags": 16,
+            "writeOnly": false
+        },
+		{
+            "name": "depthMap",
+            "binding": 2,
+            "type": 3,
+            "stageFlags": 16,
+            "writeOnly": false
+        }
+    ],
+    "uniformBlocks": [
+        {
+            "name": "UboScene",
+			"binding" : 0,
+            "size": 128,
+            "stageFlags": 1,
+            "type": 0,
+            "uniforms": [
+                {
+                    "name": "view",
+                    "offset": 0,
+                    "size": 64,
+                    "writeOnly": false
+                },
+                {
+                    "name": "proj",
+                    "offset": 64,
+                    "size": 64,
+                    "writeOnly": false
+                }
+            ]
+        }
+    ]
+}

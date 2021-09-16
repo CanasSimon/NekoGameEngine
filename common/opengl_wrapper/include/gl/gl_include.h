@@ -24,7 +24,7 @@
  */
 #ifdef NEKO_OPENGL
 #include "engine/log.h"
-#include "mathematics/vector.h"
+#include "math/vector.h"
 
 #define GL_GLEXT_PROTOTYPES 1
 #include <GL/glew.h>

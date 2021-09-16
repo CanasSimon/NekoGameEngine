@@ -26,7 +26,7 @@
 
 #include "graphics/lights.h"
 #include "graphics/shader.h"
-#include "mathematics/matrix.h"
+#include "math/matrix.h"
 
 #include "gl/texture.h"
 

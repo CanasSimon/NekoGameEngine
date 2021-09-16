@@ -83,6 +83,7 @@ private:
 
     void RenderAll() override;
 
+#ifdef NEKO_RAYTRACING
     //Raytracing stoof
     void DrawRaytraced();
 
@@ -129,6 +130,11 @@ private:
 	std::vector<VkRayTracingShaderGroupCreateInfoKHR> shaderGroups {};
 	std::vector<VkShaderModule> shaderModules_ {};
 
-    vk::ModelId sceneModelId_ = sole::uuid();
+	vk::ModelId cubeModelId_   = sole::uuid();
+	std::size_t instanceIndex_ = 0;
+
+	std::vector<VkAccelerationStructureKHR> handles_;
+	unsigned objectCount_ = 0;
+#endif
 };
 }

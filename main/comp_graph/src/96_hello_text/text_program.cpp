@@ -23,7 +23,7 @@
  */
 
 #include "96_hello_text/text_program.h"
-#include "mathematics/transform.h"
+#include "math/transform.h"
 
 namespace neko
 {

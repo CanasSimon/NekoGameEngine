@@ -1,6 +1,6 @@
 #pragma once
 
-#include <mathematics/vector.h>
+#include <math/vector.h>
 
 
 namespace neko

@@ -1,7 +1,7 @@
 #include <benchmark/benchmark.h>
 #include <random>
 #include <algorithm>
-#include <mathematics/aabb.h>
+#include <math/aabb.h>
 #include <random_fill.h>
 
 const unsigned long fromRange = 2;

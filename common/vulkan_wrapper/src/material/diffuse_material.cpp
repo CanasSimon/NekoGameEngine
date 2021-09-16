@@ -56,7 +56,7 @@ bool DiffuseMaterial::operator==(const DiffuseMaterial& other) const
 
 void DiffuseMaterial::CreatePipeline(bool forceRecreate)
 {
-	if (pipelineMaterial_ && !forceRecreate) return;
+	if (pipelineMaterial_.IsBuilt() && !forceRecreate) return;
 
 	ResetPipeline();
 }
@@ -197,8 +197,7 @@ void DiffuseMaterial::ResetPipeline()
         cullMode,
         VK_FRONT_FACE_CLOCKWISE);
 
-	pipelineMaterial_ = std::optional_ref<MaterialPipeline>(
-		MaterialPipeline::CreateMaterialPipeline(stage, createInfo));
+    pipelineMaterial_ = MaterialPipeline::Create(stage, createInfo);
 }
 
 ordered_json DiffuseMaterial::ToJson() const

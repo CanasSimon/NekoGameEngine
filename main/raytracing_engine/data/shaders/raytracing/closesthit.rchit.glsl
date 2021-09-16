@@ -29,18 +29,20 @@ struct Vertex
 
 Vertex unpack(uint index)
 {
-    // Unpack the vertices from the SSBO using the glTF vertex structure
+    // Unpack the vertices from the SSBO using the Neko vertex structure
     // The multiplier is the size of the vertex divided by four float components (=16 bytes)
     const int m = ubo.vertexSize / 16;
 
     vec4 d0 = vertices.v[m * index + 0];
     vec4 d1 = vertices.v[m * index + 1];
-    vec4 d2 = vertices.v[m * index + 4];
+    vec4 d2 = vertices.v[m * index + 2];
+    vec4 d3 = vertices.v[m * index + 4];
 
     Vertex v;
-    v.pos = d0.xyz;
+    v.pos 	 = d0.xyz;
     v.normal = vec3(d0.w, d1.x, d1.y);
-    v.color = vec4(d2.x, d2.y, d2.z, 1.0);
+    v.uv 	 = vec2(d1.z, d1.w);
+    v.color  = vec4(d3.x, d3.y, d3.z, 1.0);
 
     return v;
 }

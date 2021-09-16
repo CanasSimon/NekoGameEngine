@@ -23,9 +23,9 @@
  */
 
 #include "06_hello_model/model_program.h"
-#include "mathematics/vector.h"
-#include "mathematics/matrix.h"
-#include "mathematics/transform.h"
+#include "math/vector.h"
+#include "math/matrix.h"
+#include "math/transform.h"
 
 namespace neko
 {

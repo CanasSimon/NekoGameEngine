@@ -25,7 +25,7 @@
  Author: Canas Simon
  Date:
 ---------------------------------------------------------- */
-#include "mathematics/hash.h"
+#include "math/hash.h"
 
 #include "vk/shaders/attribute.h"
 #include "vk/shaders/uniform_block.h"

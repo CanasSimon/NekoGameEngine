@@ -28,8 +28,8 @@
 
 #include <nlohmann/json.hpp>
 
-#include "mathematics/rect.h"
-#include "mathematics/vector.h"
+#include "math/rect.h"
+#include "math/vector.h"
 
 using json         = nlohmann::json;
 using ordered_json = nlohmann::ordered_json;

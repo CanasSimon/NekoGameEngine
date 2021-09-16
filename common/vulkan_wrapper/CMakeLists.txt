@@ -1,4 +1,4 @@
-list(APPEND VK_WRAPPER_LIBS Neko_Core sdl_engine)
+list(APPEND VK_WRAPPER_LIBS Neko_Core sdl_engine TracyClient)
 
 find_package(Vulkan REQUIRED)
 message(STATUS "Vulkan Libraries: ${Vulkan_LIBRARIES} Include: ${Vulkan_INCLUDE_DIRS}")

@@ -1,3 +1,4 @@
+#ifdef NEKO_RAYTRACING
 #include "vk/shaders/binding_tables.h"
 
 #include "vk/vk_utilities.h"
@@ -31,3 +32,4 @@ void ShaderBindingTables::Create(std::uint32_t raygenHandleCount,
 	hit.Create(hitHandleCount);
 }
 }
+#endif

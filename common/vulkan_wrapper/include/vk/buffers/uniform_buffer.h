@@ -25,7 +25,7 @@
  Author: Canas Simon
  Date:
 ---------------------------------------------------------- */
-#include "mathematics/matrix.h"
+#include "math/matrix.h"
 
 #include "vk/buffers/buffer.h"
 #include "vk/descriptors/descriptor_interface.h"

@@ -94,6 +94,7 @@ void GraphicsPipeline::CreateShaderProgram(const json& jsonShader)
 		pipelineShaderStageCreateInfo.pName  = "main";
 		stages_.emplace_back(pipelineShaderStageCreateInfo);
 	}
+
 	shader_.Init();
 }
 
@@ -171,11 +172,11 @@ void GraphicsPipeline::CreateAttributes()
 	                             VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 	colorBlend_.blendEnable         = VK_TRUE;
 	colorBlend_.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
-	colorBlend_.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+	colorBlend_.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
 	colorBlend_.colorBlendOp        = VK_BLEND_OP_ADD;
 	colorBlend_.srcAlphaBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
-	colorBlend_.dstAlphaBlendFactor = VK_BLEND_FACTOR_DST_ALPHA;
-	colorBlend_.alphaBlendOp        = VK_BLEND_OP_MAX;
+	colorBlend_.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+	colorBlend_.alphaBlendOp        = VK_BLEND_OP_ADD;
 
 	colorBlendInfo_.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
 	colorBlendInfo_.logicOpEnable     = VK_FALSE;
@@ -291,7 +292,7 @@ void GraphicsPipeline::CreatePipelineMrt()
 		blend.srcColorBlendFactor                 = VK_BLEND_FACTOR_SRC_ALPHA;
 		blend.dstColorBlendFactor                 = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
 		blend.colorBlendOp                        = VK_BLEND_OP_ADD;
-		blend.srcAlphaBlendFactor                 = VK_BLEND_FACTOR_ONE;
+		blend.srcAlphaBlendFactor                 = VK_BLEND_FACTOR_SRC_ALPHA;
 		blend.dstAlphaBlendFactor                 = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
 		blend.alphaBlendOp                        = VK_BLEND_OP_ADD;
 		blend.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |

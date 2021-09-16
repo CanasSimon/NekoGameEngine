@@ -23,7 +23,7 @@ def generate_from_mtl(mtl_path: Path):
             if 'Ni' in key:
                 current_material["optic_density"] = float(split_line[-1])
             if not 'map' in key and 'd' in key:
-                current_material["transparency"] = float(split_line[-1])
+                current_material["alpha"] = float(split_line[-1])
             if 'Tr' in key:
                 pass
             if 'Tf' in key:

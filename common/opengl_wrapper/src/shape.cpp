@@ -23,7 +23,7 @@
  */
 
 #include <gl/shape.h>
-#include <mathematics/trigo.h>
+#include <math/trigo.h>
 #include "gl/gl_include.h"
 
 namespace neko::gl

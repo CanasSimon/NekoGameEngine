@@ -24,8 +24,8 @@
  */
 #include <map>
 #include <string>
-#include <mathematics/vector.h>
-#include <mathematics/matrix.h>
+#include <math/vector.h>
+#include <math/matrix.h>
 #include <gl/texture.h>
 #include "gl/shader.h"
 #include "utils/json_utility.h"

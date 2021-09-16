@@ -27,7 +27,7 @@
  Date : 22.11.2020
 ---------------------------------------------------------- */
 #include "PxPhysicsAPI.h"
-#include "mathematics/vector.h"
+#include "math/vector.h"
 
 namespace neko::physics {
 struct RaycastInfo {

@@ -85,7 +85,9 @@ void PhysicalDevice::Init()
 	neko_assert(queueNodeIndex != INVALID_INDEX,
 		"Unable to find a queue command family that accepts graphics commands");
 
+#ifdef NEKO_RAYTRACING
 	SetEnabledFeatures();
+#endif
 }
 
 VkSampleCountFlagBits PhysicalDevice::GetMsaaSamples() const
@@ -267,6 +269,7 @@ uint32_t PhysicalDevice::GetMemoryType(
 	return 0;
 }
 
+#ifdef NEKO_RAYTRACING
 void PhysicalDevice::SetEnabledFeatures()
 {
     // Enable features required for ray tracing using feature chaining via pNext
@@ -283,4 +286,5 @@ void PhysicalDevice::SetEnabledFeatures()
 
     deviceCreatepNextChain = &enabledAccelerationStructureFeatures;
 }
+#endif
 }    // namespace neko::vk

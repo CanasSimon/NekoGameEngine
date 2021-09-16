@@ -26,7 +26,7 @@
  Date:
 ---------------------------------------------------------- */
 #include "graphics/color.h"
-#include "mathematics/vector.h"
+#include "math/vector.h"
 
 #include "vk/vk_include.h"
 

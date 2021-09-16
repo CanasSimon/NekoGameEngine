@@ -63,6 +63,7 @@ void VkImGui::Init()
 	initInfo.Allocator                 = nullptr;
 	initInfo.MinImageCount             = surfaceCapabilities.minImageCount;
 	initInfo.ImageCount                = vkObj->swapchain.GetImageCount();
+	initInfo.Subpass                   = 1;
 	initInfo.CheckVkResultFn           = nullptr;
 	ImGui_ImplVulkan_Init(&initInfo, vkObj->GetRenderPass());
 

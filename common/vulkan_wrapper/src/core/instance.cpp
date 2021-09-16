@@ -9,7 +9,7 @@ VkResult Instance::CreateDebugUtilsMessengerExt(
 {
 	const auto func = PFN_vkCreateDebugUtilsMessengerEXT(
 		vkGetInstanceProcAddr(instance_, "vkCreateDebugUtilsMessengerEXT"));
-	if (func != nullptr) { return func(instance_, pCreateInfo, pAllocator, &debugMessenger_); }
+	if (func) return func(instance_, pCreateInfo, pAllocator, &debugMessenger_);
 
 	return VK_ERROR_EXTENSION_NOT_PRESENT;
 }

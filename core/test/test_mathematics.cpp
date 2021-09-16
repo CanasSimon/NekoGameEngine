@@ -7,12 +7,12 @@
 #include <cmath>
 #include <random>
 #include <gtest/gtest.h>
-#include <mathematics/func_table.h>
-#include <mathematics/aabb.h>
+#include <math/func_table.h>
+#include <math/aabb.h>
 
-#include <mathematics/quaternion.h>
-#include <mathematics/matrix.h>
-#include "mathematics/vector.h"
+#include <math/quaternion.h>
+#include <math/matrix.h>
+#include "math/vector.h"
 
 
 const float maxNmb = 100.0f;
@@ -69,7 +69,7 @@ TEST(Engine, Quaternion_Magnitude)
 
 TEST(Engine, Quaternion_AngleAxis)
 {
-    neko::Quaternion q = neko::Quaternion::Identity();
+    neko::Quaternion q = neko::Quaternion::Identity;
     neko::radian_t rad(30);
     neko::Vec3f axis(1, 1, 1);
     neko::Quaternion expectedAngleAxisQuaternion = neko::Quaternion(0, 0, 0, 1);    //TODO: Calculate the expected value
@@ -79,8 +79,8 @@ TEST(Engine, Quaternion_AngleAxis)
 
 TEST(Engine, Quaternion_Angle)
 {
-    neko::Quaternion q1 = neko::Quaternion::Identity();
-    neko::Quaternion q2 = neko::Quaternion::Identity();
+    neko::Quaternion q1 = neko::Quaternion::Identity;
+    neko::Quaternion q2 = neko::Quaternion::Identity;
     neko::degree_t expectedAngle(0);
     neko::degree_t angle(neko::Quaternion::Angle(q1, q2));
     EXPECT_EQ(expectedAngle, angle);

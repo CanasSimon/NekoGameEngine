@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
 #ifdef NEKO_VULKAN
-#include "mathematics/hash.h"
-#include "mathematics/matrix.h"
+#include "math/hash.h"
+#include "math/matrix.h"
 #include "utils/file_utility.h"
 #include "utils/json_utility.h"
 #include "vk/shaders/shader.h"

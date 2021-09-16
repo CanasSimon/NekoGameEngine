@@ -1,4 +1,5 @@
 #pragma once
+#ifdef NEKO_RAYTRACING
 #include "vk/vk_include.h"
 
 namespace neko::vk
@@ -22,3 +23,4 @@ struct ShaderBindingTables
     ShaderBindingTable hit;
 };
 }
+#endif

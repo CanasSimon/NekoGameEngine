@@ -27,7 +27,7 @@
 
 #include "engine/globals.h"
 #include "engine/system.h"
-#include "mathematics/hash.h"
+#include "math/hash.h"
 #include "utils/action_utility.h"
 
 namespace neko

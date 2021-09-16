@@ -56,6 +56,13 @@ void Shader::Init()
                                 descriptorType,
                                 uniform.second.GetStageFlags()));
                 break;*/
+            case Uniform::Type::DEPTH:
+                descriptorType = VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT;
+                descriptorSetLayoutBindings_.emplace_back(Image2d::GetDescriptorSetLayout(
+                    static_cast<std::uint32_t>(uniform.second.GetBinding()),
+                    descriptorType,
+                    uniform.second.GetStageFlags()));
+                break;
 			default: break;
 		}
 

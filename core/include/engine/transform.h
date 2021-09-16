@@ -27,9 +27,9 @@
 #include "engine/entity.h"
 #include "engine/globals.h"
 #include "graphics/graphics.h"
-#include "mathematics/matrix.h"
-#include "mathematics/quaternion.h"
-#include "mathematics/vector.h"
+#include "math/matrix.h"
+#include "math/quaternion.h"
+#include "math/vector.h"
 
 namespace neko
 {

@@ -29,10 +29,11 @@
 
 #include "vk/images/texture_manager.h"
 #include "vk/material/diffuse_material.h"
+#include "vk/material/particle_material.h"
 
 namespace neko::vk
 {
-//constexpr size_t kMaterialsDefaultNum                 = 100;
+constexpr size_t kMaterialDefaultNum = 100;
 //constexpr size_t kMaterialsSkyboxDefaultNum           = 2;
 static MaterialId kDefaultMaterialId = sole::uuid0();
 //static MaterialId kDefaultSkyboxMaterialId         = HashString(kDefaultSkyboxMaterialName);
@@ -46,9 +47,10 @@ public:
 	virtual MaterialId AddNewMaterial(MaterialType, MaterialId = MaterialId()) = 0;
 	virtual void Clear()                                                       = 0;
 
-	virtual Material& GetMaterial(MaterialId)               = 0;
-	virtual DiffuseMaterial& GetDiffuseMaterial(MaterialId) = 0;
-	virtual bool IsMaterialLoaded(MaterialId)               = 0;
+	virtual Material& GetMaterial(MaterialId)                 = 0;
+	virtual DiffuseMaterial& GetDiffuseMaterial(MaterialId)   = 0;
+	virtual ParticleMaterial& GetParticleMaterial(MaterialId) = 0;
+	virtual bool IsMaterialLoaded(MaterialId)                 = 0;
 };
 
 class NullMaterialManager : public IMaterialManager
@@ -62,6 +64,11 @@ public:
 	Material& GetMaterial(MaterialId) override { neko_assert(false, "Material Manager is null!"); }
 
 	DiffuseMaterial& GetDiffuseMaterial(MaterialId) override
+	{
+		neko_assert(false, "Material Manager is null!");
+	}
+
+    ParticleMaterial& GetParticleMaterial(MaterialId) override
 	{
 		neko_assert(false, "Material Manager is null!");
 	}
@@ -80,10 +87,11 @@ public:
 
 	Material& GetMaterial(MaterialId resourceId) override;
     DiffuseMaterial& GetDiffuseMaterial(MaterialId resourceId) override;
+    ParticleMaterial& GetParticleMaterial(MaterialId resourceId) override;
     bool IsMaterialLoaded(MaterialId resourceId) override;
 
 private:
-	std::map<MaterialId, DiffuseMaterial> diffuseMaterials_;
+	std::unordered_map<MaterialId, DiffuseMaterial> diffuseMaterials_;
 
 	//std::vector<ResourceId> skyboxMaterialIds_;
 	//std::vector<SkyboxMaterial> skyboxMaterials_;
@@ -91,8 +99,7 @@ private:
 	//std::vector<ResourceId> trailMaterialIds_;
 	//std::vector<TrailMaterial> trailMaterials_;
 
-	//std::vector<ResourceId> particleMaterialIds_;
-	//std::vector<ParticleMaterial> particleMaterials_;
+    std::unordered_map<MaterialId, ParticleMaterial> particleMaterials_;
 
 	//ImageCube defaultImageCube_;
 };

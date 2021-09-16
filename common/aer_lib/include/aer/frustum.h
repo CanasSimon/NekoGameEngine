@@ -28,8 +28,8 @@
 ---------------------------------------------------------- */
 
 #include <graphics/camera.h>
-#include "mathematics/aabb.h"
-#include "mathematics/vector.h"
+#include "math/aabb.h"
+#include "math/vector.h"
 
 namespace neko
 {

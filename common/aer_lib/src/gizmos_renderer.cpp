@@ -7,7 +7,7 @@
 #ifdef NEKO_OPENGL
 #include "engine/engine.h"
 #include "engine/resource_locations.h"
-#include "mathematics/transform.h"
+#include "math/transform.h"
 
 namespace neko
 {

@@ -3,9 +3,9 @@
 //
 
 #include <gtest/gtest.h>
-#include <mathematics/matrix.h>
-#include "mathematics/vector.h"
-#include "mathematics/vector_nvec.h"
+#include <math/matrix.h>
+#include "math/vector.h"
+#include "math/vector_nvec.h"
 
 
 TEST(Engine, TestTypeSize)
